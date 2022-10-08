@@ -76,12 +76,14 @@ project "Renderer"
 		"vendor/Glad/include",
 		"vendor/glm/",
 		"vendor/STBimage",
+		"vendor/freetype2/include",
 	}
 	
 	links 
 	{
 		"GLFW",
-		"Glad"
+		"Glad",
+		"Freetype"
 	}
 	
 	filter "system:windows"
@@ -107,3 +109,4 @@ group "Vendor"
 	include "vendor/glfw"
 	include "vendor/googletest"
 	include "vendor/Glad"
+	include "vendor/freetype2"
