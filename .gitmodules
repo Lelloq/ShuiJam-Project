@@ -1,0 +1,30 @@
+[submodule "vendor/glad"]
+	path = vendor/glad
+	url = https://github.com/IMAT3904/simplifiedGLAD.git
+	branch = master
+	update = rebase
+[submodule "vendor/glfw"]
+	path = vendor/glfw
+	url = https://github.com/IMAT3904/glfw.git
+	branch = master
+	update = rebase
+[submodule "vendor/glm"]
+	path = vendor/glm
+	url = https://github.com/g-truc/glm.git
+	branch = master
+	update = rebase
+[submodule "vendor/GoogleTest"]
+	path = vendor/GoogleTest
+	url = https://github.com/IMAT3904/googletest.git
+	branch = master
+	update = rebase
+[submodule "vendor/spdlog"]
+	path = vendor/spdlog
+	url = https://github.com/gabime/spdlog.git
+	branch = master
+	update = rebase
+[submodule "vendor/STBimage"]
+	path = vendor/STBimage
+	url = https://github.com/nothings/stb.git
+	branch = master
+	update = rebase
