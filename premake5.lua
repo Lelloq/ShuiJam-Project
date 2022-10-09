@@ -33,20 +33,20 @@ project "ShuiJam"
 		"vendor/glfw/include",
 		"vendor/glm/",
 		"vendor/spdlog/include",
-		"vendor/zlib"
+		"vendor/zlib",
 	}
 
 	filter "configurations:Debug"
-		defines "NG_DEBUG"
+		defines "DEBUG"
 		runtime "Debug"
 		symbols "On"
 
 	filter "configurations:Release"
-		defines "NG_RELEASE"
+		defines "RELEASE"
 		runtime "Release"
 		optimize "On"
 
-project "Renderer"
+project "SJRenderer"
 	location "SJRenderer"
 	kind "StaticLib"
 	language "C++"
@@ -62,8 +62,10 @@ project "Renderer"
 	{
 		"%{prj.name}/code/**.h",
 		"%{prj.name}/code/**.cpp",
-		"SJRenderer/precompiled/pch.h",
-		"SJRenderer/precompiled/pch.cpp"
+		"%{prj.name}/precompiled/pch.h",
+		"%{prj.name}/precompiled/pch.cpp",
+		"%{prj.name}/shader/vert/**.vert",
+		"%{prj.name}/shader/frag/**.frag"
 	}
 
 	includedirs
@@ -77,13 +79,16 @@ project "Renderer"
 		"vendor/glm/",
 		"vendor/STBimage",
 		"vendor/freetype2/include",
+		"vendor/OpenAL/include"
 	}
 	
 	links 
 	{
 		"GLFW",
 		"Glad",
-		"Freetype"
+		"Freetype",
+		"OpenAL",
+		"zlib"
 	}
 	
 	filter "system:windows"
@@ -92,16 +97,16 @@ project "Renderer"
 
 		defines
 		{
-			"NG_PLATFORM_WINDOWS"
+			"PLATFORM_WINDOWS"
 		}
 
 	filter "configurations:Debug"
-		defines "NG_DEBUG"
+		defines "DEBUG"
 		runtime "Debug"
 		symbols "On"
 
 	filter "configurations:Release"
-		defines "NG_RELEASE"
+		defines "RELEASE"
 		runtime "Release"
 		optimize "On"
 
