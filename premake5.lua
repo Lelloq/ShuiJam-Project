@@ -79,7 +79,10 @@ project "SJRenderer"
 		"vendor/glm/",
 		"vendor/STBimage",
 		"vendor/freetype2/include",
-		"vendor/OpenAL/include"
+		"vendor/OpenAL/include",
+		"vendor/OpenAL/src/",
+		"vendor/OpenAL/src/common",
+		"vendor/zlib/"
 	}
 	
 	links 
@@ -87,8 +90,7 @@ project "SJRenderer"
 		"GLFW",
 		"Glad",
 		"Freetype",
-		"OpenAL",
-		"zlib"
+		"OpenAL32.dll",
 	}
 	
 	filter "system:windows"
