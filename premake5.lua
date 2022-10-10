@@ -85,7 +85,6 @@ project "SJRenderer"
 		"GLFW",
 		"Glad",
 		"Freetype",
-		"OpenAL-Soft",
 	}
 	
 	filter "system:windows"
