@@ -78,6 +78,7 @@ project "SJRenderer"
 		"vendor/glm/",
 		"vendor/STBimage",
 		"vendor/freetype2/include",
+		"vendor/OpenAL/includeAL"
 	}
 	
 	links 
@@ -85,6 +86,7 @@ project "SJRenderer"
 		"GLFW",
 		"Glad",
 		"Freetype",
+		"OpenAL"
 	}
 	
 	filter "system:windows"
@@ -111,3 +113,4 @@ group "Vendor"
 	include "vendor/googletest"
 	include "vendor/Glad"
 	include "vendor/freetype2"
+	include "vendor/OpenAL"
