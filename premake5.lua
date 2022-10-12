@@ -28,7 +28,8 @@ project "ShuiJam"
 	}
 
 	includedirs
-	{
+	{	
+		"SJEngine/code/include",
 		"%{prj.name}/include",
 		"vendor/glfw/include",
 		"vendor/glm/",
@@ -45,8 +46,8 @@ project "ShuiJam"
 		runtime "Release"
 		optimize "On"
 
-project "SJRenderer"
-	location "SJRenderer"
+project "SJEngine"
+	location "SJEngine"
 	kind "StaticLib"
 	language "C++"
 	staticruntime "off"
@@ -55,7 +56,7 @@ project "SJRenderer"
 	objdir ("build/" .. outputdir .. "/%{prj.name}")
 	
 	pchheader "pch.h"
-	pchsource "SJRenderer/precompiled/pch.cpp"
+	pchsource "SJEngine/precompiled/pch.cpp"
 	
 	files
 	{
@@ -78,7 +79,8 @@ project "SJRenderer"
 		"vendor/glm/",
 		"vendor/STBimage",
 		"vendor/freetype2/include",
-		"vendor/OpenAL/includeAL"
+		"vendor/OpenAL-Soft/includeAL",
+		"vendor/ZipLib/Source/ZipLib"
 	}
 	
 	links 
@@ -113,4 +115,4 @@ group "Vendor"
 	include "vendor/googletest"
 	include "vendor/Glad"
 	include "vendor/freetype2"
-	include "vendor/OpenAL"
+	include "vendor/OpenAL-Soft"
