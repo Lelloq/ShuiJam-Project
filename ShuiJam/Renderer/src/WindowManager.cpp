@@ -20,6 +20,15 @@ void WindowManager::Initialise()
 	glfwSwapInterval(m_vsync);
 }
 
+void WindowManager::Start()
+{
+	while (!glfwWindowShouldClose(m_window))
+	{
+		Loop();
+	}
+	Shutdown();
+}
+
 void WindowManager::Shutdown()
 {
 	glfwTerminate();

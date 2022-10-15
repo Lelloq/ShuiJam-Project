@@ -14,5 +14,6 @@ public:
 
 	void Shutdown();
 	void Loop();
+	void Start();
 	inline GLFWwindow* getWindow() { return m_window; }
 };
