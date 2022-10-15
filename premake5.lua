@@ -43,7 +43,6 @@ project "ShuiJam"
 		"%{prj.name}/Precompiled/",
 		"vendor/glfw/include",
 		"vendor/glm/",
-		"vendor/spdlog/include",
 		"vendor/Glad/include",
 		"vendor/STBimage",
 		"vendor/freetype2/include",
@@ -51,7 +50,8 @@ project "ShuiJam"
 		"vendor/minimp3/",
 		"vendor/libogg/include",
 		"vendor/Vorbis/include",
-		"vendor/ZipLib/Source/ZipLib"
+		"vendor/ZipLib/Source/ZipLib",
+		"vendor/drwav/"
 	}
 
 	links 
