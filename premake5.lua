@@ -51,7 +51,7 @@ project "ShuiJam"
 		"vendor/libogg/include",
 		"vendor/Vorbis/include",
 		"vendor/ZipLib/Source/ZipLib",
-		"vendor/drwav/"
+		"vendor/drwav"
 	}
 
 	links 
