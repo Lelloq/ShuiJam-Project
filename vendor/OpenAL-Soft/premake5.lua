@@ -1,18 +1,18 @@
-project "OpenAL"
+project "OpenAL-Soft"
 	kind "StaticLib"
 	language "C++"
 	cppdialect "C++14"
 	staticruntime "on"
 
-	targetdir ("../../bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("../../build/" .. outputdir .. "/%{prj.name}")
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
 	includedirs
 	{
-		"srcAL",
-		"srcAL/alc",
-		"srcAL/common",
-		"includeAL",
+		"src",
+		"src/alc",
+		"src/common",
+		"include",
 		"include/AL"
 	}
 
@@ -20,6 +20,11 @@ project "OpenAL"
 	{
 		"src/**.h",
 		"src/**.cpp"
+	}
+
+	excludes
+	{
+		"src/alc/mixer/mixer_neon.cpp"
 	}
 
 	defines
@@ -42,6 +47,11 @@ project "OpenAL"
 			"NOMINMAX",
 			"CMAKE_INTDIR=\"Debug\"",
 			"OpenAL_EXPORTS"
+		}
+
+		links
+		{
+			"winmm"
 		}
 
 	filter "configurations:Debug"
