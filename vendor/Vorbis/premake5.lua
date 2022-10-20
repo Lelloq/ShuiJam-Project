@@ -3,8 +3,8 @@ project "Vorbis"
 	language "C"
 	staticruntime "on"
 
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+	targetdir ("../../bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("../../build/" .. outputdir .. "/%{prj.name}")
 
 	includedirs
 	{

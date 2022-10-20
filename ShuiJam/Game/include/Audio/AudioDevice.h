@@ -1,23 +1,16 @@
 #pragma once
-#include "AL/alc.h"
+#include <AL/al.h>
+#include <AL/alc.h>
+#include <AL/alext.h>
 
 class AudioDevice
 {
 private:
-	static AudioDevice* s_audioDevice;
-	ALCdevice* p_Device;
-	ALCcontext* p_Context;
+	ALCdevice* p_ALCDevice;
+	ALCcontext* p_ALCContext;
 
 	AudioDevice();
+	~AudioDevice();
 public:
-	static AudioDevice* getAudioDevice()
-	{
-		if(!s_audioDevice)
-		{
-			s_audioDevice = new AudioDevice;
-			return s_audioDevice;
-		}
-	};
-
-	void InitialiseDevice();
+	static AudioDevice* get();
 };

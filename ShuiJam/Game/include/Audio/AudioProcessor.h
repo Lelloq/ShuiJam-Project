@@ -17,5 +17,5 @@ struct Mp3Data
 
 class AudioProcessor
 {
-	
+
 };
