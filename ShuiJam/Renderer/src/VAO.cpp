@@ -1,16 +1,19 @@
 #include "pch.h"
 #include "VAO.h"
 
+//Generate 1 vertex array assigned to the id
 VAO::VAO()
 {
 	glGenVertexArrays(1, &m_ID);
 }
 
+//Delete the created vertex array
 VAO::~VAO()
 {
 	glDeleteVertexArrays(1, &m_ID);
 }
 
+//Adds the layout to the vertex buffer
 void VAO::AddBuffer(const VBO& vb, const BufferLayout& layout)
 {
 	Bind();
@@ -26,11 +29,13 @@ void VAO::AddBuffer(const VBO& vb, const BufferLayout& layout)
 	}
 }
 
+//Binds vertex array
 void VAO::Bind() const
 {
 	glBindVertexArray(m_ID);
 }
 
+//Unbinds vertex array
 void VAO::Unbind() const
 {
 	glBindVertexArray(0);
