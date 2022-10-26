@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "WindowManager.h"
+#include "ShuiJam.h"
 
 WindowManager* gameWindow = new WindowManager(1280, 720, 0, 0, "ShuiJam");
 
