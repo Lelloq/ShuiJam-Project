@@ -1,3 +1,4 @@
+/*\file EBO.h*/
 #pragma once
 #include "Renderer.h"
 

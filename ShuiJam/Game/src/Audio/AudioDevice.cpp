@@ -2,8 +2,8 @@
 #include "Audio/AudioDevice.h"
 
 //Defining the members
-AudioDevice* AudioDevice::s_device{ nullptr };//!< Assignes s_device to nullptr
-std::mutex AudioDevice::m; //!< Assigns m for the mutex to be locked during the get instance
+AudioDevice* AudioDevice::s_device{ nullptr };//Assigns s_device to nullptr
+std::mutex AudioDevice::m; //Assigns m for the mutex to be locked during the get instance
 
 //Using mutex to create a thread safe singleton for the audio device
 AudioDevice* AudioDevice::get()

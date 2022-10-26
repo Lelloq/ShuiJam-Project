@@ -1,3 +1,4 @@
+/*\file BufferLayout.h*/
 #pragma once
 #include "Renderer.h"
 #include <iostream>

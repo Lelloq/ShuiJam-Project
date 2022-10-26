@@ -1,3 +1,4 @@
+/*\file Renderer.h*/
 #pragma once
 #include <glad/glad.h>
 
