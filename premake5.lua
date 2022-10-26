@@ -41,10 +41,10 @@ project "ShuiJam"
 		"%{prj.name}/Renderer/include",
 		"%{prj.name}/Game/include",
 		"%{prj.name}/Game",
-		"%{prj.name}/Precompiled",
-		"vendor/glfw/include",
+		"%{prj.name}/Precompiled/",
+		"vendor/glfw/include/",
 		"vendor/glm/",
-		"vendor/Glad/include",
+		"vendor/Glad/include/",
 		"vendor/STBimage",
 		"vendor/freetype2/include",
 		"vendor/OpenAL-Soft/include",
@@ -53,9 +53,9 @@ project "ShuiJam"
 		"vendor/minimp3/",
 		"vendor/libogg/include/",
 		"vendor/Vorbis/include/",
-		"vendor/ZipLib/Source/ZipLib/",
 		"vendor/drwav/",
-		"vendor/sqlite/"
+		"vendor/sqlite/",
+		"vendor/bit7z/include"
 	}
 
 	links 
@@ -64,7 +64,8 @@ project "ShuiJam"
 		"Glad",
 		"Freetype",
 		"OpenAL-Soft",
-		"Vorbis"
+		"Vorbis",
+		"bit7z",
 	}
 
 	defines
@@ -94,3 +95,4 @@ group "Vendor"
 	include "vendor/OpenAL-Soft"
 	include "vendor/Vorbis"
 	include "vendor/libogg"
+	include "vendor/bit7z"
