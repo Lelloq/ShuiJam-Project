@@ -49,12 +49,13 @@ project "ShuiJam"
 		"vendor/freetype2/include",
 		"vendor/OpenAL-Soft/include",
 		"vendor/OpenAL-Soft/src",
-		"vendor/OpenAL-Soft/src/common",
+		"vendor/OpenAL-Soft/src/common/",
 		"vendor/minimp3/",
-		"vendor/libogg/include",
-		"vendor/Vorbis/include",
-		"vendor/ZipLib/Source/ZipLib",
-		"vendor/drwav"
+		"vendor/libogg/include/",
+		"vendor/Vorbis/include/",
+		"vendor/ZipLib/Source/ZipLib/",
+		"vendor/drwav/",
+		"vendor/sqlite/"
 	}
 
 	links 
