@@ -8,7 +8,7 @@ using namespace bit7z;
 
 void main()
 {
-	Bit7zLibrary lib{ L"7z.dll" };
+	Bit7zLibrary lib{ L"../vendor/bit7z/dll/7z.dll" };
 	BitExtractor ext { lib, BitFormat::SevenZip };
 
 	ext.extract(L"../SJAssets/Input/1114344 Sangatsu no Phantasia - Pastel Rain.osz", L"../SJAssets/Songs/");
