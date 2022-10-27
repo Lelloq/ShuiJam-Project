@@ -106,6 +106,11 @@ project "bit7z"
         "_7Z_VOL",
         "WIN64",
     }    
+	
+	links
+	{
+		"7z.dll"
+	}
 
     filter "configurations:Debug"
         targetsuffix "_d"
