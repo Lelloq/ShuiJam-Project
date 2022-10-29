@@ -9,18 +9,6 @@ using namespace bit7z;
 
 void main()
 {
-	try
-	{
-		Bit7zLibrary lib{ L"../vendor/bit7z/dll/7z.dll" };
-		BitExtractor ext{ lib, BitFormat::Zip };
-
-		ext.extract(L"../SJAssets/Input/1114344 Sangatsu no Phantasia - Pastel Rain.osz", L"../SJAssets/Songs/");
-	}
-	catch (const BitException& ex)
-	{
-		std::cout << ex.what();
-	}
-
 	gameWindow->Start();
 	while(!glfwWindowShouldClose(gameWindow->getWindow()))
 	{
