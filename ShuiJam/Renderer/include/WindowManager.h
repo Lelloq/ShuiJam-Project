@@ -7,18 +7,19 @@
 class WindowManager
 {
 private:
-	GLFWwindow* m_window = nullptr;
-	int m_width, m_height, m_vsync;
-	bool m_fullscreen;
-	std::string m_title;
-	void Initialise();
+	GLFWwindow* m_window = nullptr; //!< GLFW window pointer initialised as nullptr
+	int m_width, m_height, m_vsync; //!< int width, height and vsync
+	bool m_fullscreen; //!< bool is fullscreen member
+	std::string m_title; //!< title
+	void Initialise(); //!< private void Initialise() function
 
 public:
-	WindowManager(int width, int height, int vsync, bool fullscreen, std::string title) : m_width(width), m_height(height), m_vsync(vsync), m_fullscreen(fullscreen), m_title(title) { Initialise(); }
+	WindowManager(int width, int height, int vsync, bool fullscreen, std::string title) 
+		: m_width(width), m_height(height), m_vsync(vsync), m_fullscreen(fullscreen), m_title(title) { Initialise(); } //!< initialises glfw with desired properties in members
 
-	void Shutdown();
-	void Loop();
-	void Start();
-	void CloseWindow();
-	inline GLFWwindow* getWindow() { return m_window; }
+	void Shutdown(); //!< Void shutdown terminates glfw
+	void Update(); //!< Updates the current window
+	void Start(); //!< Starts GLFW window
+	void CloseWindow(); //!< Closes glfw window
+	inline GLFWwindow* getWindow() { return m_window; } //!< GLFW window getter
 };

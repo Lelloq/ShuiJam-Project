@@ -41,7 +41,7 @@ void WindowManager::CloseWindow()
 }
 
 //Swaps buffers - will change name soon it's a bit misleading
-void WindowManager::Loop()
+void WindowManager::Update()
 {
 	glfwSwapBuffers(m_window);
 	glfwPollEvents();

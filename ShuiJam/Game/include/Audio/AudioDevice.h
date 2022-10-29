@@ -8,11 +8,11 @@
 class AudioDevice
 {
 private:
-	ALCdevice* p_ALCDevice;
-	ALCcontext* p_ALCContext;
+	ALCdevice* p_ALCDevice; //!< ALCdevice pointer
+	ALCcontext* p_ALCContext; //!< ALCcontext pointer
 
-	static AudioDevice* s_device;
-	static std::mutex m;
+	static AudioDevice* s_device; //!< Audio device singleton instance
+	static std::mutex m; //!< Static mutex guard member
 
 	AudioDevice();
 	~AudioDevice();

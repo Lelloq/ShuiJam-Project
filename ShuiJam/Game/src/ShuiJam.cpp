@@ -12,7 +12,7 @@ void main()
 	gameWindow->Start();
 	while(!glfwWindowShouldClose(gameWindow->getWindow()))
 	{
-		gameWindow->Loop();
+		gameWindow->Update();
 	}
 	gameWindow->Shutdown();
 }
