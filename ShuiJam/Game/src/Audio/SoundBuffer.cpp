@@ -12,10 +12,7 @@ SoundBuffer::SoundBuffer()
 
 SoundBuffer::~SoundBuffer()
 {
-	for(auto it = p_SFXBuffers.begin(); it != p_SFXBuffers.end(); ++it)
-	{
-		alDeleteBuffers(1, &it->second);
-	}
+	alDeleteBuffers(p_SFXBuffers.size(), p_SFXBuffers.data());
 	p_SFXBuffers.clear();
 }
 
@@ -31,15 +28,42 @@ SoundBuffer* SoundBuffer::getSoundBuffer()
 
 ALuint SoundBuffer::addSFX(std::string name,std::string filename)
 {
-	if (filename.find(".mp3"))
+	ALenum format;
+	ALuint buffer;
+
+	if (filename.find(".wav"))
 	{
-		MP3Data data = AudioProcessor::ProcessMP3Data(filename);
+		WavData data = AudioProcessor::ProcessWavData(filename);
+
+		format = AL_NONE;
+		if (data.channels == 1) format = AL_FORMAT_MONO16;
+		else format = AL_FORMAT_STEREO16;
+
+		alGenBuffers(1, &buffer);
+		alBufferData(buffer, format, data.pcmData.data(), data.pcmData.size(), data.sampleRate);
+
+		p_SFXBuffers.push_back(buffer);
+		return buffer;
+	}
+	else if(filename.find(".mp3"))
+	{
+		return buffer;
+	}
+	else if(filename.find(".ogg"))
+	{
+		return buffer;
 	}
 	return ALuint();
 }
 
-void SoundBuffer::removeSFX(const std::string name)
+void SoundBuffer::removeSFX(const ALuint& buffer)
 {
-	alDeleteBuffers(1, &p_SFXBuffers[name]);
-	p_SFXBuffers.erase(name);
+	for(auto it = p_SFXBuffers.begin(); it != p_SFXBuffers.end(); ++it)
+	{
+		if(*it == buffer)
+		{
+			alDeleteBuffers(1, &*it);
+			p_SFXBuffers.erase(it);
+		}
+	}
 }

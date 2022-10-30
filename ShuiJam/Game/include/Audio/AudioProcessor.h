@@ -5,13 +5,15 @@
 #include <minimp3.h>
 #include <minimp3_ex.h>
 #include <string>
+#include <vector>
 
 /*\struct WaveData*/
 struct WavData
 {
-	unsigned int channels;
-	unsigned int sampleRate;
-	drwav_int64 totalPCMFrameCount;
+	drwav_uint32 channels; //!< Channels for the wav data mono/stereo
+	drwav_uint32 sampleRate; //!< Sample rate of the audio file
+	drwav_uint64 totalPCMFrameCount; //!< Total samples of the audio file
+	std::vector<uint32_t> pcmData; //!< The PCM data of the audio file
 };
 
 /*\struct MP3Data*/
