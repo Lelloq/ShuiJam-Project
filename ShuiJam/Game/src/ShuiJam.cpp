@@ -5,8 +5,6 @@
 
 WindowManager* gameWindow = new WindowManager(1280, 720, 0, 0, "ShuiJam");
 
-using namespace bit7z;
-
 void main()
 {
 	gameWindow->Start();
