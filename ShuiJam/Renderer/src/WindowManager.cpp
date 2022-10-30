@@ -1,3 +1,4 @@
+/*\file WindowManager.cpp*/
 #include "pch.h"
 #include "WindowManager.h"
 
