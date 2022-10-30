@@ -1,3 +1,4 @@
+/*\file SoundBuffer.h*/
 #pragma once
 #include <AL/al.h>
 #include <vector>
