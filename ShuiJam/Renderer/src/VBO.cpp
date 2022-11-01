@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "VBO.h"
 
 //Creates the vbo with the changeable draw type

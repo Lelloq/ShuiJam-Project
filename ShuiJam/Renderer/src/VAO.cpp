@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "VAO.h"
 
 //Generate 1 vertex array assigned to the id

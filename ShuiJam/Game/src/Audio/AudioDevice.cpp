@@ -1,5 +1,4 @@
 /*\file AudioDevice.cpp*/
-#include "pch.h"
 #include "Audio/AudioDevice.h"
 
 //Defining the members

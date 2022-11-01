@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "EBO.h"
 
 //Generate indices with desired draw type

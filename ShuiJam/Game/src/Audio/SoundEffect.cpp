@@ -1,33 +1,32 @@
 /*\file SoundBuffer.cpp*/
-#include "pch.h"
-#include "Audio/SoundBuffer.h"
+#include "Audio/SoundEffect.h"
 #include "Audio/AudioProcessor.h"
 
-SoundBuffer* SoundBuffer::s_Buffer{nullptr};
-std::mutex SoundBuffer::m;
+SoundEffect* SoundEffect::s_Buffer{nullptr};
+std::mutex SoundEffect::m;
 
-SoundBuffer::SoundBuffer()
+SoundEffect::SoundEffect()
 {
 	p_SFXBuffers.clear();
 }
 
-SoundBuffer::~SoundBuffer()
+SoundEffect::~SoundEffect()
 {
 	alDeleteBuffers(p_SFXBuffers.size(), p_SFXBuffers.data());
 	p_SFXBuffers.clear();
 }
 
-SoundBuffer* SoundBuffer::getSoundBuffer()
+SoundEffect* SoundEffect::get()
 {
 	std::lock_guard<std::mutex> lock(m);
 	if(s_Buffer == nullptr)
 	{
-		s_Buffer = new SoundBuffer();
+		s_Buffer = new SoundEffect();
 	}
 	return s_Buffer;
 }
 
-ALuint SoundBuffer::addSFX(std::string name,std::string filename)
+ALuint SoundEffect::addSFX(std::string filename)
 {
 	ALenum format;
 	ALuint buffer;
@@ -57,7 +56,7 @@ ALuint SoundBuffer::addSFX(std::string name,std::string filename)
 	return ALuint();
 }
 
-void SoundBuffer::removeSFX(const ALuint& buffer)
+void SoundEffect::removeSFX(const ALuint& buffer)
 {
 	for(auto it = p_SFXBuffers.begin(); it != p_SFXBuffers.end(); ++it)
 	{
@@ -67,4 +66,25 @@ void SoundBuffer::removeSFX(const ALuint& buffer)
 			p_SFXBuffers.erase(it);
 		}
 	}
+}
+
+SFXSource::SFXSource()
+{
+	alGenSources(1, &m_source);
+	alSourcef(m_source, AL_PITCH, 1);
+	alSourcef(m_source, AL_GAIN, 1);
+	alSource3f(m_source, AL_POSITION, 0, 0, 0);
+	alSource3f(m_source, AL_VELOCITY, 0, 0, 0);
+	alSourcei(m_source, AL_LOOPING, false);
+}
+
+SFXSource::~SFXSource()
+{
+	alDeleteSources(1, &m_source);
+}
+
+void SFXSource::Play(const ALuint buffer)
+{
+	alSourcei(m_source, AL_BUFFER, (ALint)buffer);
+	alSourcePlay(m_source);
 }

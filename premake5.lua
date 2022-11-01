@@ -21,17 +21,14 @@ project "ShuiJam"
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("build/" .. outputdir .. "/%{prj.name}")
 
-	pchheader "pch.h"
-	pchsource "ShuiJam/Precompiled/pch.cpp"
-
 	files
 	{
 		"%{prj.name}/Game/include/**.h",
 		"%{prj.name}/Game/src/**.cpp",
 		"%{prj.name}/Renderer/include/**.h",
+		"%{prj.name}/Externals/**.c",
+		"%{prj.name}/Externals/**.cpp",
 		"%{prj.name}/Renderer/src/**.cpp",
-		"%{prj.name}/Precompiled/pch.h",
-		"%{prj.name}/Precompiled/pch.cpp",
 		"%{prj.name}/Renderer/shader/vert/**.vert",
 		"%{prj.name}/Renderer/shader/frag/**.frag"
 	}
@@ -41,7 +38,7 @@ project "ShuiJam"
 		"%{prj.name}/Renderer/include",
 		"%{prj.name}/Game/include",
 		"%{prj.name}/Game",
-		"%{prj.name}/Precompiled/",
+		"%{prj.name}/Externals/",
 		"vendor/glfw/include/",
 		"vendor/glm/",
 		"vendor/Glad/include/",
