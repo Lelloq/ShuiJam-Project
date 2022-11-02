@@ -6,5 +6,5 @@
 class InputManager
 {
 public:
-	virtual void SetCallback(GLFWwindow* window, GLFWkeyfun callback);
+	
 };
