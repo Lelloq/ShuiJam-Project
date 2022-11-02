@@ -2,6 +2,7 @@
 #include "ShuiJam.h"
 #include "bitextractor.hpp"
 #include "bitexception.hpp"
+#include <iostream>
 
 WindowManager* gameWindow = new WindowManager(1280, 720, 0, 0, "ShuiJam");
 
