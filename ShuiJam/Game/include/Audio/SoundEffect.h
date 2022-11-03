@@ -30,6 +30,7 @@ class SFXSource
 {
 private:
 	ALuint m_source;
+	ALuint m_buffer;
 
 public:
 	SFXSource();

@@ -70,12 +70,14 @@ void SoundEffect::removeSFX(const ALuint& buffer)
 
 SFXSource::SFXSource()
 {
+	m_buffer = 0;
 	alGenSources(1, &m_source);
 	alSourcef(m_source, AL_PITCH, 1);
 	alSourcef(m_source, AL_GAIN, 1);
 	alSource3f(m_source, AL_POSITION, 0, 0, 0);
 	alSource3f(m_source, AL_VELOCITY, 0, 0, 0);
 	alSourcei(m_source, AL_LOOPING, false);
+	alSourcei(m_source, AL_BUFFER, m_buffer);
 }
 
 SFXSource::~SFXSource()
@@ -85,6 +87,10 @@ SFXSource::~SFXSource()
 
 void SFXSource::Play(const ALuint buffer)
 {
-	alSourcei(m_source, AL_BUFFER, (ALint)buffer);
+	if(buffer != m_buffer)
+	{
+		m_buffer = buffer;
+		alSourcei(m_source, AL_BUFFER, (ALint)buffer);
+	}
 	alSourcePlay(m_source);
 }
