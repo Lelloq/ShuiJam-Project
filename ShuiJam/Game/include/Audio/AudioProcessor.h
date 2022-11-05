@@ -20,23 +20,22 @@ struct WavData
 /*\struct MP3Data*/
 struct MP3Data
 {
-	unsigned int channels;
-	unsigned int frame_bytes;
-	unsigned int hz;
-	unsigned int layer;
-	unsigned int bitrate_kbps;
+	mp3d_sample_t* buffer; //!< MP3 buffer pointer, holds the PCM data
+	unsigned int channels; //!< Channels for MP3 data mono/stereo
+	unsigned int sampleRate; //!< Sample rate of the audio file
+	size_t size;//!< Size of the buffer
 };
 
 /*\struct OggData*/
 struct OggData
 {
-
+	
 };
 
 class AudioProcessor
 {
 public:
-	static WavData ProcessWavData(std::string& filepath);
-	static MP3Data ProcessMP3Data(std::string& filepath);
-	static OggData ProcessOggData(std::string& filepath);
+	static WavData ProcessWavData(std::string& filepath);//!< Decodes wav data
+	static MP3Data ProcessMP3Data(std::string& filepath);//!< Decodes mp3 data 
+	static OggData ProcessOggData(std::string& filepath);//!< Decodes ogg data
 };

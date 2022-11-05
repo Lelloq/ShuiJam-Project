@@ -7,8 +7,9 @@
 WindowManager* gameWindow = new WindowManager(1280, 720, 0, 0, "ShuiJam");
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 AudioDevice* audioDevice = AudioDevice::get();
-ALuint testsfx = SoundEffect::get()->addSFX("../SJAssets/Sounds/hitclap.wav");
-SFXSource* SFX = new SFXSource();
+SoundEffect* soundEffect = SoundEffect::get();
+ALuint testsfx = soundEffect->addSFX("../SJAssets/Sounds/hitclap.wav");
+SFXSource SFX = SFXSource();
 
 void main()
 {
@@ -26,7 +27,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_E && action == GLFW_PRESS)
 	{
 		std::cout << "E";
-		SFX->Play(testsfx);
+		SFX.Play(testsfx);
 	}
 	if (key == GLFW_KEY_E && action == GLFW_REPEAT)
 		std::cout << "e";

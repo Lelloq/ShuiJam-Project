@@ -47,10 +47,21 @@ ALuint SoundEffect::addSFX(std::string filename)
 	}
 	else if(filename.find(".mp3"))
 	{
+		MP3Data data = AudioProcessor::ProcessMP3Data(filename);
+
+		format = AL_NONE;
+		if (data.channels == 1) format = AL_FORMAT_MONO16;
+		else format = AL_FORMAT_STEREO16;
+
+		alGenBuffers(1, &buffer);
+		alBufferData(buffer, format, data.buffer, data.size, data.sampleRate);
+
+		p_SFXBuffers.push_back(buffer);
 		return buffer;
 	}
 	else if(filename.find(".ogg"))
 	{
+
 		return buffer;
 	}
 	return ALuint();

@@ -19,10 +19,21 @@ WavData AudioProcessor::ProcessWavData(std::string& filepath)
 
 MP3Data AudioProcessor::ProcessMP3Data(std::string& filepath)
 {
-	return MP3Data();
+	MP3Data data = MP3Data();
+	mp3dec_t mp3d;
+	mp3dec_file_info_t info;
+	int result = mp3dec_load(&mp3d, filepath.c_str(), &info, NULL, NULL);
+	
+	data.buffer = info.buffer;
+	data.size = info.samples * sizeof(mp3d_sample_t);
+	data.sampleRate = info.hz;
+	data.channels = info.channels;
+
+	return data;
 }
 
 OggData AudioProcessor::ProcessOggData(std::string& filepath)
 {
+	OggData data = OggData();
 	return OggData();
 }
