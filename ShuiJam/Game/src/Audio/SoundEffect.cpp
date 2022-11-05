@@ -26,14 +26,14 @@ SoundEffect* SoundEffect::get()
 	return s_Buffer;
 }
 
-ALuint SoundEffect::addSFX(std::string filename)
+ALuint SoundEffect::addSFX(std::filesystem::path filepath)
 {
 	ALenum format;
 	ALuint buffer;
 
-	if (filename.find(".wav"))
+	if (filepath.extension() == ".wav")
 	{
-		WavData data = AudioProcessor::ProcessWavData(filename);
+		WavData data = AudioProcessor::ProcessWavData(filepath);
 
 		format = AL_NONE;
 		if (data.channels == 1) format = AL_FORMAT_MONO16;
@@ -45,23 +45,32 @@ ALuint SoundEffect::addSFX(std::string filename)
 		p_SFXBuffers.push_back(buffer);
 		return buffer;
 	}
-	else if(filename.find(".mp3"))
+	else if(filepath.extension() == ".mp3")
 	{
-		MP3Data data = AudioProcessor::ProcessMP3Data(filename);
+		MP3Data data = AudioProcessor::ProcessMP3Data(filepath);
 
 		format = AL_NONE;
 		if (data.channels == 1) format = AL_FORMAT_MONO16;
 		else format = AL_FORMAT_STEREO16;
 
 		alGenBuffers(1, &buffer);
-		alBufferData(buffer, format, data.buffer, data.size, data.sampleRate);
+		alBufferData(buffer, format, data.pcmData, data.size, data.sampleRate);
 
 		p_SFXBuffers.push_back(buffer);
 		return buffer;
 	}
-	else if(filename.find(".ogg"))
+	else if(filepath.extension() == ".ogg")
 	{
+		OggData data = AudioProcessor::ProcessOggData(filepath);
 
+		format = AL_NONE;
+		if (data.channels == 1) format = AL_FORMAT_MONO16;
+		else format = AL_FORMAT_STEREO16;
+
+		alGenBuffers(1, &buffer);
+		alBufferData(buffer, format, data.pcmData, data.size, data.sampleRate);
+
+		p_SFXBuffers.push_back(buffer);
 		return buffer;
 	}
 	return ALuint();

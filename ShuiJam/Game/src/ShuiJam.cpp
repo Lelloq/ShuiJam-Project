@@ -6,13 +6,15 @@
 
 WindowManager* gameWindow = new WindowManager(1280, 720, 0, 0, "ShuiJam");
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-AudioDevice* audioDevice = AudioDevice::get();
-SoundEffect* soundEffect = SoundEffect::get();
-ALuint testsfx = soundEffect->addSFX("../SJAssets/Sounds/hitclap.wav");
-SFXSource SFX = SFXSource();
 
 void main()
 {
+	AudioDevice* audioDevice = AudioDevice::get();
+	SoundEffect* soundEffect = SoundEffect::get();
+	ALuint testsfx = soundEffect->addSFX("../SJAssets/Sounds/DragonLady.ogg");
+	SFXSource SFX = SFXSource();
+
+	SFX.Play(testsfx);
 	gameWindow->Start();
 	glfwSetKeyCallback(gameWindow->getWindow(), key_callback);
 	while(!glfwWindowShouldClose(gameWindow->getWindow()))
@@ -27,7 +29,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_E && action == GLFW_PRESS)
 	{
 		std::cout << "E";
-		SFX.Play(testsfx);
 	}
 	if (key == GLFW_KEY_E && action == GLFW_REPEAT)
 		std::cout << "e";

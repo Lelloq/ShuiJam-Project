@@ -3,7 +3,7 @@
 #include <AL/al.h>
 #include <vector>
 #include <mutex>
-#include <string>
+#include <filesystem>
 
 /*\class SoundEffect*/
 class SoundEffect
@@ -21,7 +21,7 @@ public:
 	void operator=(const SoundEffect&) = delete; //!< Prevents setting another SoundBuffer
 	static SoundEffect* get(); //!< gets instance of sound buffers
 
-	ALuint addSFX(std::string filename); //!< adds sound effect
+	ALuint addSFX(std::filesystem::path filepath); //!< adds sound effect
 	void removeSFX(const ALuint& buffer); //!< removes sound effect
 };
 
