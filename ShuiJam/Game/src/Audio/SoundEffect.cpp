@@ -31,6 +31,7 @@ ALuint SoundEffect::addSFX(std::filesystem::path filepath)
 	ALenum format;
 	ALuint buffer;
 
+	//Process the files depending on the extension name and stores it into the al buffer
 	if (filepath.extension() == ".wav")
 	{
 		WavData data = AudioProcessor::ProcessWavData(filepath);
@@ -78,6 +79,7 @@ ALuint SoundEffect::addSFX(std::filesystem::path filepath)
 
 void SoundEffect::removeSFX(const ALuint& buffer)
 {
+	//Removes the buffer if it is the one in the parameter
 	for(auto it = p_SFXBuffers.begin(); it != p_SFXBuffers.end(); ++it)
 	{
 		if(*it == buffer)
@@ -107,6 +109,7 @@ SFXSource::~SFXSource()
 
 void SFXSource::Play(const ALuint buffer)
 {
+	//If the buffer is not the same it will store the buffer in the source and then plays it
 	if(buffer != m_buffer)
 	{
 		m_buffer = buffer;
