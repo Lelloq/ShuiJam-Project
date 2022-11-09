@@ -13,7 +13,7 @@ VAO::~VAO()
 }
 
 //Adds the layout to the vertex buffer
-void VAO::AddBuffer(const VBO& vb, const BufferLayout& layout)
+void VAO::AddBuffer(VBO& vb, BufferLayout& layout)
 {
 	Bind();
 	vb.Bind();

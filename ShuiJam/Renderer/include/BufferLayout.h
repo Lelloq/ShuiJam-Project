@@ -1,15 +1,15 @@
 /*\file BufferLayout.h*/
 #pragma once
-#include "Renderer.h"
+#include "Shader.h"
 #include <iostream>
 #include <vector>
 
 //Buffer elements struct - used by the VAO to create the vertex layout
 struct BufferElements
 {
-	unsigned int type;
-	unsigned int count;
-	unsigned char normalized;
+	unsigned int type;//!< Layout type
+	unsigned int count;//!< How many of that type
+	unsigned char normalized;//!< If the value is normalized
 
 	//Made static so that the function can be accessed directly without having to create an instance of BufferElements
 	static unsigned int GetSizeofType(unsigned int type)
@@ -30,10 +30,10 @@ struct BufferElements
 class BufferLayout
 {
 private:
-	std::vector<BufferElements> m_elements;
-	unsigned int m_stride;
+	std::vector<BufferElements> m_elements;//!< Vector of buffer elements
+	uint32_t m_stride;//!< Buffer layout stride
 public:
-	BufferLayout() : m_stride(0){};
+	BufferLayout() : m_stride(0){}; //!< Constructor that initialises stride to 0
 
 	//Create generic type so that other types can be put into the template arguments
 	template<typename T>

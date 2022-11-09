@@ -2,7 +2,7 @@
 
 //Creates the vbo with the changeable draw type
 //Need to be done since at some point dynamic geometry will be drawn
-VBO::VBO(const void* data, unsigned int size, GLenum drawtype)
+VBO::VBO(const void* data, uint32_t size, GLenum drawtype)
 {
 	glGenBuffers(1, &m_ID);
 	glBindBuffer(GL_ARRAY_BUFFER, m_ID);

@@ -25,6 +25,8 @@ void WindowManager::Start()
 	glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
 
 	glfwSwapInterval(m_vsync);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 //Termines glfw and destroys window

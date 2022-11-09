@@ -1,6 +1,7 @@
 /*\file Renderer.cpp*/
 #include "Renderer.h"
 
+//Draw objects on screen
 void Renderer::Draw(VAO& vao, EBO& ebo, Shader& shader) const
 {
 	shader.use();

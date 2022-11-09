@@ -1,7 +1,7 @@
 #include "EBO.h"
 
 //Generate indices with desired draw type
-EBO::EBO(const void* data, unsigned int count, GLenum drawtype) : m_count(count)
+EBO::EBO(const void* data, uint32_t count, GLenum drawtype) : m_count(count)
 {
 	glGenBuffers(1, &m_ID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ID);

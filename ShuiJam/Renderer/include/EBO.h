@@ -1,18 +1,19 @@
 /*\file EBO.h*/
 #pragma once
-#include "Renderer.h"
+#include "Shader.h"
 
+/*\class EBO*/
 class EBO
 {
 private:
-	GLuint m_ID;
-	unsigned int m_count;
+	uint32_t m_ID;//!< Renderer ID
+	uint32_t m_count;//!< Indices count
 public:
-	EBO(const void* data, unsigned int count, GLenum drawtype);
-	~EBO();
+	EBO(const void* data, uint32_t count, GLenum drawtype);//!< Create EBO with specified data
+	~EBO();//!< Delete ebo
 
-	void Bind() const;
-	void Unbind() const;
+	void Bind() const;//!< Bind EBO
+	void Unbind() const;//!< Unbind EBO
 
-	inline unsigned int GetCount() const { return m_count; }
+	inline uint32_t GetCount() const { return m_count; }//!< Get indices count
 };

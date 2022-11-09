@@ -1,7 +1,7 @@
 /*\file Texture.cpp*/
 #include "Texture.h"
 
-Texture::Texture(std::string filepath)
+Texture::Texture(const char* filepath)
 {
 	//Generate and bind texture to texture unit 0
 	glGenTextures(1, &m_ID);
@@ -18,7 +18,7 @@ Texture::Texture(std::string filepath)
 
 	//If data exists generate the texture
 	int width, height, channels;
-	unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &channels, 0);
+	unsigned char* data = stbi_load(filepath, &width, &height, &channels, 0);
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);

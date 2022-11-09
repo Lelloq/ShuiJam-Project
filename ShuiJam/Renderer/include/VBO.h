@@ -1,15 +1,16 @@
 /*\file VBO.h*/
 #pragma once
-#include "Renderer.h"
+#include "Shader.h"
 
+/*\class VBO*/
 class VBO
 {
 private:
-	GLuint m_ID;
+	uint32_t m_ID;//!< Renderer ID
 public:
-	VBO(const void* data, unsigned int size, GLenum drawtype);
-	~VBO();
+	VBO(const void* data, uint32_t size, GLenum drawtype);//!< Create buffer with specified data and size
+	~VBO();//! Destructor deletes buffer
 
-	void Bind() const;
-	void Unbind() const;
+	void Bind() const;//!< Bind vbo
+	void Unbind() const;//!< Unbind vbo
 };

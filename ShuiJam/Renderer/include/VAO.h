@@ -1,18 +1,19 @@
 /*\file VAO.h*/
 #pragma once
-#include "Renderer.h"
+#include "Shader.h"
 #include "VBO.h"
 #include "BufferLayout.h"
 
+/*\class VAO*/
 class VAO
 {
 private:
-	GLuint m_ID;
+	uint32_t m_ID;//!< Renderer ID
 public:
-	VAO();
-	~VAO();
+	VAO();//!< Default constructor
+	~VAO();//!< Destructor deletes vertex array
 
-	void AddBuffer(const VBO& vb, const BufferLayout& layout);
-	void Bind() const;
-	void Unbind() const;
+	void AddBuffer(VBO& vb, BufferLayout& layout);//!< Add layout to the buffer
+	void Bind() const;//!< Bind buffer
+	void Unbind() const;//!< Unbind buffer
 };

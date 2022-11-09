@@ -10,7 +10,7 @@
 class Shader
 {
 private:
-	GLuint m_ID; //!< Shader ID
+	uint32_t m_ID; //!< Shader ID
 public:
 	Shader(const char* vertexPath, const char* fragPath); //!< Compile the shaders
 	void use();//!< Use the shader
