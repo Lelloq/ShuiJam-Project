@@ -1,1 +1,0 @@
-Image files for notes, playfield and menu

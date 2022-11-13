@@ -7,11 +7,13 @@
 
 namespace SJ
 {
+	/*\class AudioDevice
+	Static class in a singleton*/
 	class AudioDevice
 	{
 	private:
-		ALCdevice* p_ALCDevice; //!< ALCdevice pointer
-		ALCcontext* p_ALCContext; //!< ALCcontext pointer
+		ALCdevice* m_ALCDevice; //!< ALCdevice pointer
+		ALCcontext* m_ALCContext; //!< ALCcontext pointer
 
 		static AudioDevice* s_device; //!< Audio device singleton instance
 		static std::mutex m; //!< Static mutex guard member

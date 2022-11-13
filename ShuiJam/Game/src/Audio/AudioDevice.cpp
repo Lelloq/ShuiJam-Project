@@ -20,18 +20,18 @@ namespace SJ
 	//Create the OpenAL sound device in the constructor
 	AudioDevice::AudioDevice()
 	{
-		p_ALCDevice = alcOpenDevice(nullptr); // nullptr = get default device
-		p_ALCContext = alcCreateContext(p_ALCDevice, nullptr);  // create context
+		m_ALCDevice = alcOpenDevice(nullptr); // nullptr = get default device
+		m_ALCContext = alcCreateContext(m_ALCDevice, nullptr);  // create context
 
-		alcMakeContextCurrent(p_ALCContext);   // make context current
+		alcMakeContextCurrent(m_ALCContext);   // make context current
 	}
 
 	//Closes the OpenAL sound device in the destructor
 	AudioDevice::~AudioDevice()
 	{
 		alcMakeContextCurrent(nullptr);
-		alcDestroyContext(p_ALCContext);
-		alcCloseDevice(p_ALCDevice);
+		alcDestroyContext(m_ALCContext);
+		alcCloseDevice(m_ALCDevice);
 	}
 }
 
