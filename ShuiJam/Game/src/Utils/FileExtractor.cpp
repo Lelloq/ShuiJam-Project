@@ -5,6 +5,7 @@
 //Filter out the non 7 key .osu files within each file
 //Delete files that are not the main audio file
 
+//Currently unfixable bugs - sometimes the song name is too long which makes the bit7z library unable to read the output path
 namespace SJ
 {
 	FileExtractor* FileExtractor::s_extractor{ nullptr };
