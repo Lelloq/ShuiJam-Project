@@ -4,16 +4,19 @@
 #include "VBO.h"
 #include "BufferLayout.h"
 
-/*\class VAO*/
-class VAO
+namespace SJ
 {
-private:
-	uint32_t m_ID;//!< Renderer ID
-public:
-	VAO();//!< Default constructor
-	~VAO();//!< Destructor deletes vertex array
+	/*\class VAO*/
+	class VAO
+	{
+	private:
+		uint32_t m_ID;//!< Renderer ID
+	public:
+		VAO();//!< Default constructor
+		~VAO();//!< Destructor deletes vertex array
 
-	void AddBuffer(VBO& vb, BufferLayout& layout);//!< Add layout to the buffer
-	void Bind() const;//!< Bind buffer
-	void Unbind() const;//!< Unbind buffer
-};
+		void AddBuffer(VBO& vb, BufferLayout& layout);//!< Add layout to the buffer
+		void Bind() const;//!< Bind buffer
+		void Unbind() const;//!< Unbind buffer
+	};
+}

@@ -4,24 +4,24 @@
 #include "bitexception.hpp"
 #include <iostream>
 
-WindowManager* gameWindow = new WindowManager(1280, 720, 0, 0, "ShuiJam");
+SJ::WindowManager gameWindow = SJ::WindowManager(1280, 720, 0, 0, "ShuiJam");
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 void main()
 {
-	AudioDevice* audioDevice = AudioDevice::get();
-	SoundEffect* soundEffect = SoundEffect::get();
+	SJ::AudioDevice* audioDevice = SJ::AudioDevice::get();
+	SJ::SoundEffect* soundEffect = SJ::SoundEffect::get();
 	ALuint testsfx = soundEffect->addSFX("../SJAssets/Sounds/DragonLady.ogg");
-	SFXSource SFX = SFXSource();
+	SJ::SFXSource SFX = SJ::SFXSource();
 
 	SFX.Play(testsfx);
-	gameWindow->Start();
-	glfwSetKeyCallback(gameWindow->getWindow(), key_callback);
-	while(!glfwWindowShouldClose(gameWindow->getWindow()))
+	gameWindow.Start();
+	glfwSetKeyCallback(gameWindow.getWindow(), key_callback);
+	while(!glfwWindowShouldClose(gameWindow.getWindow()))
 	{
-		gameWindow->Update();
+		gameWindow.Update();
 	}
-	gameWindow->Shutdown();
+	gameWindow.Shutdown();
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)

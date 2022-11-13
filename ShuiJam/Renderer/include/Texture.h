@@ -4,13 +4,16 @@
 #include <stb_image.h>
 #include <string>
 
-/*\class Texture*/
-class Texture
+namespace SJ
 {
-private:
-	uint32_t m_ID;//!< Texture ID
-public:
-	Texture(const char* filepath); //!< Load texture from file path
-	~Texture();//!< Deconstructor that deletes texture
-	void Bind(uint32_t unit);//!< Bind texture to a texture unit
-};
+	/*\class Texture*/
+	class Texture
+	{
+	private:
+		uint32_t m_ID;//!< Texture ID
+	public:
+		Texture(const char* filepath); //!< Load texture from file path
+		~Texture();//!< Deconstructor that deletes texture
+		void Bind(uint32_t unit);//!< Bind texture to a texture unit
+	};
+}

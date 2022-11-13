@@ -2,15 +2,18 @@
 #pragma once
 #include "Shader.h"
 
-/*\class VBO*/
-class VBO
+namespace SJ
 {
-private:
-	uint32_t m_ID;//!< Renderer ID
-public:
-	VBO(const void* data, uint32_t size, GLenum drawtype);//!< Create buffer with specified data and size
-	~VBO();//! Destructor deletes buffer
+	/*\class VBO*/
+	class VBO
+	{
+	private:
+		uint32_t m_ID;//!< Renderer ID
+	public:
+		VBO(const void* data, uint32_t size, GLenum drawtype);//!< Create buffer with specified data and size
+		~VBO();//! Destructor deletes buffer
 
-	void Bind() const;//!< Bind vbo
-	void Unbind() const;//!< Unbind vbo
-};
+		void Bind() const;//!< Bind vbo
+		void Unbind() const;//!< Unbind vbo
+	};
+}
