@@ -1,7 +1,5 @@
 /*\file ShuiJam.cpp*/
 #include "ShuiJam.h"
-#include "bitextractor.hpp"
-#include "bitexception.hpp"
 #include <iostream>
 
 SJ::WindowManager gameWindow = SJ::WindowManager(1280, 720, 0, 0, "ShuiJam");
@@ -13,6 +11,9 @@ void main()
 	SJ::SoundEffect* soundEffect = SJ::SoundEffect::get();
 	ALuint testsfx = soundEffect->addSFX("../SJAssets/Sounds/DragonLady.ogg");
 	SJ::SFXSource SFX = SJ::SFXSource();
+
+	SJ::FileExtractor* fe = SJ::FileExtractor::get();
+	fe->extractFiles();
 
 	SFX.Play(testsfx);
 	gameWindow.Start();
