@@ -47,22 +47,28 @@ namespace SJ
 					std::wstring inputPath = std::filesystem::current_path();
 					std::filesystem::current_path("../Songs");
 					std::wstring songPath = std::filesystem::current_path();//Set the path to the songs folder
-					std::filesystem::create_directory(folderName);
-					songPath += '/'; songPath += folderName;//Append '/' and folder name
+					std::filesystem::create_directory("x");//Create a temp folder so it's less likely to cause an error when extracting the file due to having a too long string
+					songPath += '/'; songPath += L"x";//Append '/' and temp
 					inputPath += '/'; inputPath += fileName;//Append '/' and folder name
-
 					m_extractor.extract(inputPath, songPath);//Extract the file from the input folder and put into the songs folder
+					std::filesystem::rename("x", folderName);//Rename the temp folder to the song name to prevent clashing with duplicate names
 					std::filesystem::current_path("../Input");
 					std::filesystem::remove(fileName);
 					std::filesystem::current_path(m_origin);
+					#ifdef DEBUG
+					std::wcout << "Extracted " << folderName << std::endl;
+					#endif 
 				}
 			}
 			catch (const BitException& e)
 			{
-				std::cout << e.what();
+				std::cout << e.what() << std::endl;
 				std::filesystem::remove(folderName);
 			}
 			std::filesystem::current_path(m_origin);
 		}
+		#ifdef DEBUG
+		std::cout << "Extraction complete" << std::endl;
+		#endif
 	}
 }
