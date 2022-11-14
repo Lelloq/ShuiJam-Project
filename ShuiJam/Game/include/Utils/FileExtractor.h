@@ -14,10 +14,10 @@ namespace SJ
 	class FileExtractor
 	{
 	private:
-		const wchar_t* m_songsFolder = L"../SJAssets/Songs/";//!< Location of the songs folder
-		const wchar_t* m_inputFolder = L"../SJAssets/Input/";//!< Location of the inputs folder
+		const wchar_t* m_songsFolder = L"../ShuiJamGame/Songs/";//!< Location of the songs folder
+		const wchar_t* m_inputFolder = L"../ShuiJamGame/Input/";//!< Location of the inputs folder
 		std::filesystem::path m_origin;
-		Bit7zLibrary m_lib{ L"../SJAssets/7z.dll" };//!< Location of the 7zip dll file
+		Bit7zLibrary m_lib{ L"../ShuiJamGame/7z.dll" };//!< Location of the 7zip dll file
 		BitExtractor m_extractor{ m_lib,BitFormat::Zip };//!< Extraction method
 
 		static FileExtractor* s_extractor;//!< Singleton extractor class

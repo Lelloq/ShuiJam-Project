@@ -9,7 +9,7 @@ void main()
 {
 	SJ::AudioDevice* audioDevice = SJ::AudioDevice::get();
 	SJ::SoundEffect* soundEffect = SJ::SoundEffect::get();
-	ALuint testsfx = soundEffect->addSFX("../SJAssets/Sounds/DragonLady.ogg");
+	ALuint testsfx = soundEffect->addSFX("../ShuiJamGame/Sounds/DragonLady.ogg");
 	SJ::SFXSource SFX = SJ::SFXSource();
 
 	SJ::FileExtractor* fe = SJ::FileExtractor::get();
