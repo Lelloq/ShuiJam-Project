@@ -6,7 +6,8 @@
 #include <filesystem>
 namespace SJ
 {
-	/*\class SoundEffect*/
+	/*\class SoundEffect
+	Static class that uses OpenAL and handles sound effects, DO NOT put music in the buffers*/
 	class SoundEffect
 	{
 	private:
@@ -26,7 +27,8 @@ namespace SJ
 		void removeSFX(const ALuint& buffer); //!< removes sound effect
 	};
 
-	/*\class SFXSource*/
+	/*\class SFXSource
+	\Sound source for the sound effects - if you want to play multiple you need to make multiple sound sources*/
 	class SFXSource
 	{
 	private:

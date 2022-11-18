@@ -24,7 +24,7 @@ namespace SJ
 		mp3dec_t mp3d;//MP3 decoder
 		mp3dec_file_info_t info;//MP3 info
 		int result = mp3dec_load(&mp3d, filepath.string().c_str(), &info, NULL, NULL); //MP3 info stores all the decoded results
-		if(result <= 0) //Returns empty if fails to load the file
+		if(result < 0) //Returns empty if fails to load the file
 		{
 			std::cout << "Failed to load mp3 file from path:" << filepath;
 			return MP3Data();
