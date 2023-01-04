@@ -33,7 +33,7 @@ namespace SJ
 	{
 	private:
 		ALuint m_source;
-		ALuint m_buffer;
+		ALuint m_buffer = 0;
 
 	public:
 		SFXSource();

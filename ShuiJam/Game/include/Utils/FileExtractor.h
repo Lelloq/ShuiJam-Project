@@ -20,6 +20,8 @@ namespace SJ
 		Bit7zLibrary m_lib{ L"../ShuiJamGame/7z.dll" };//!< Location of the 7zip dll file
 		BitExtractor m_extractor{ m_lib,BitFormat::Zip };//!< Extraction method
 
+		bool m_extracted;//!<For testing purposes to see if the file has been extracted successfully
+
 		static FileExtractor* s_extractor;//!< Singleton extractor class
 		FileExtractor();
 		~FileExtractor() {};
@@ -30,5 +32,6 @@ namespace SJ
 		void operator=(const FileExtractor&) = delete; //!< Prevents setting another FileExtractor
 		static FileExtractor* get();//!< Singleton getter
 		void extractFiles(); //!< Extract 7zip file
+		inline bool isExtracted() { return m_extracted; }//!<Returns true if there was a file extracted
 	};
 }

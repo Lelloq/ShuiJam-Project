@@ -30,7 +30,9 @@ project "ShuiJam"
 		"%{prj.name}/Externals/**.cpp",
 		"%{prj.name}/Renderer/src/**.cpp",
 		"%{prj.name}/Renderer/shader/vert/**.vert",
-		"%{prj.name}/Renderer/shader/frag/**.frag"
+		"%{prj.name}/Renderer/shader/frag/**.frag",
+		"%{prj.name}/Tests/src/**.cpp",
+		"%{prj.name}/Tests/include/**.h",
 	}
 
 	includedirs
@@ -39,6 +41,7 @@ project "ShuiJam"
 		"%{prj.name}/Game/include",
 		"%{prj.name}/Game",
 		"%{prj.name}/Externals/",
+		"%{prj.name}/Tests/include/",
 		"vendor/glfw/include/",
 		"vendor/glm/",
 		"vendor/Glad/include/",
@@ -50,13 +53,15 @@ project "ShuiJam"
 		"vendor/minimp3/",
 		"vendor/libogg/include/",
 		"vendor/Vorbis/include/",
-		"vendor/drwav/",
+		"vendor/drlibs/",
 		"vendor/sqlite/",
-		"vendor/bit7z/include"
+		"vendor/bit7z/include",
+		"vendor/googletest/googletest/include",	
 	}
 
 	links 
 	{
+		"googletest",
 		"GLFW",
 		"Glad",
 		"Freetype",

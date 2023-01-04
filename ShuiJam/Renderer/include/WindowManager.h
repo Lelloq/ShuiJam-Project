@@ -16,6 +16,7 @@ namespace SJ
 		void Initialise(); //!< private void Initialise() function
 
 	public:
+		WindowManager(){};//!< Default constructor
 		WindowManager(int width, int height, int vsync, bool fullscreen, std::string title) 
 			: m_width(width), m_height(height), m_vsync(vsync), m_fullscreen(fullscreen), m_title(title) { Initialise(); } //!< initialises glfw with desired properties in members
 

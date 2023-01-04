@@ -1,23 +1,48 @@
 /*\file ShuiJam.cpp*/
 #include "ShuiJam.h"
 #include <iostream>
+#include "Audio/Music.h"
 
-SJ::WindowManager gameWindow = SJ::WindowManager(1280, 720, 0, 0, "ShuiJam");
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+//#include "../Tests/include/sjtester.h"
+const bool RUNTESTING = false;
+
+SJ::WindowManager gameWindow;
+SJ::AudioDevice* audioDevice;
+SJ::SoundEffect* soundEffect;
+void menuInputCallbacks(SJ::MenuScene scene);
+void setup()
+{
+	gameWindow = SJ::WindowManager(1280, 720, 0, 0, "ShuiJam");
+    audioDevice = SJ::AudioDevice::get();
+	soundEffect = SJ::SoundEffect::get();
+}
 
 void main()
 {
-	SJ::AudioDevice* audioDevice = SJ::AudioDevice::get();
-	SJ::SoundEffect* soundEffect = SJ::SoundEffect::get();
-	ALuint testsfx = soundEffect->addSFX("../ShuiJamGame/Sounds/DragonLady.ogg");
-	SJ::SFXSource SFX = SJ::SFXSource();
+	//If I'm not running google test then I'll create the devices and window
+	if(RUNTESTING)
+	{
+		//SJTester::runtests();
+		return;
+	}
+	else
+	{
+		setup();
+	}
+
+	SJ::MenuScene menu = SJ::MenuScene(gameWindow.getWindow());
+
+	//SJ::Music m("../ShuiJamGame/Sounds/audio.mp3");
+	//m.Play();
+	SJ::SFXSource* SFX = new(SJ::SFXSource);
+	ALuint testsfx = soundEffect->addSFX("../ShuiJamGame/Sounds/halcyon.mp3");
 
 	SJ::FileExtractor* fe = SJ::FileExtractor::get();
 	fe->extractFiles();
 
-	SFX.Play(testsfx);
+	SFX->Play(testsfx);
 	gameWindow.Start();
-	glfwSetKeyCallback(gameWindow.getWindow(), key_callback);
+	menuInputCallbacks(menu);
 	while(!glfwWindowShouldClose(gameWindow.getWindow()))
 	{
 		gameWindow.Update();
@@ -25,12 +50,12 @@ void main()
 	gameWindow.Shutdown();
 }
 
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void menuInputCallbacks(SJ::MenuScene scene)
 {
-	if (key == GLFW_KEY_E && action == GLFW_PRESS)
-	{
-		std::cout << "E";
-	}
-	if (key == GLFW_KEY_E && action == GLFW_REPEAT)
-		std::cout << "e";
+	glfwSetWindowUserPointer(gameWindow.getWindow(), &scene);
+
+	glfwSetKeyCallback(gameWindow.getWindow(), [](GLFWwindow* win, int key, int scancode, int action, int mods) 
+		{
+			static_cast<SJ::MenuScene*>(glfwGetWindowUserPointer(win))->getKey(key, action);
+		});
 }

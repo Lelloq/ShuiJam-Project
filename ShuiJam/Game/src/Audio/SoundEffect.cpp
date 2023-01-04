@@ -3,7 +3,7 @@
 #include "Audio/AudioProcessor.h"
 namespace SJ
 {
-	SoundEffect* SoundEffect::s_Buffer{nullptr};
+	SoundEffect* SoundEffect::s_Buffer = nullptr;
 	std::mutex SoundEffect::m;
 
 	SoundEffect::SoundEffect()
@@ -41,7 +41,7 @@ namespace SJ
 			else format = AL_FORMAT_STEREO16;
 
 			alGenBuffers(1, &buffer);
-			alBufferData(buffer, format, data.pcmData.data(), data.pcmData.size(), data.sampleRate);
+			alBufferData(buffer, format, data.buffer, data.size, data.sampleRate);
 
 			p_SFXBuffers.push_back(buffer);
 			return buffer;
@@ -55,7 +55,7 @@ namespace SJ
 			else format = AL_FORMAT_STEREO16;
 
 			alGenBuffers(1, &buffer);
-			alBufferData(buffer, format, data.pcmData, data.size, data.sampleRate);
+			alBufferData(buffer, format, data.buffer, data.size, data.sampleRate);
 
 			p_SFXBuffers.push_back(buffer);
 			return buffer;
@@ -69,7 +69,7 @@ namespace SJ
 			else format = AL_FORMAT_STEREO16;
 
 			alGenBuffers(1, &buffer);
-			alBufferData(buffer, format, data.pcmData, data.size, data.sampleRate);
+			alBufferData(buffer, format, data.buffer, data.size, data.sampleRate);
 
 			p_SFXBuffers.push_back(buffer);
 			return buffer;
@@ -91,7 +91,6 @@ namespace SJ
 
 	SFXSource::SFXSource()
 	{
-		m_buffer = 0;
 		alGenSources(1, &m_source);
 		alSourcef(m_source, AL_PITCH, 1);
 		alSourcef(m_source, AL_GAIN, 1);
@@ -111,7 +110,7 @@ namespace SJ
 		if(buffer != m_buffer)
 		{
 			m_buffer = buffer;
-			alSourcei(m_source, AL_BUFFER, (ALint)buffer);
+			alSourcei(m_source, AL_BUFFER, (ALint)m_buffer);
 		}
 		alSourcePlay(m_source);
 	}

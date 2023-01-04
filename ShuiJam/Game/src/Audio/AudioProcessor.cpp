@@ -12,8 +12,9 @@ namespace SJ
 			drwav_free(pSampleData, nullptr);
 			return WavData();
 		}
-		data.pcmData.resize(size_t(data.totalPCMFrameCount * data.channels) * 2); //Adjusts the size to fit the pcm data
-		std::memcpy(data.pcmData.data(), pSampleData, data.pcmData.size());//Copies the pcm data to the vector
+		data.size = size_t(data.totalPCMFrameCount * data.channels) * 2;//Size of all the samples
+		data.buffer = new uint16_t[data.size]; //Adjusts the size to fit the pcm data
+		std::memcpy(data.buffer, pSampleData, data.size);//Copies the pcm data to the buffer
 		drwav_free(pSampleData, nullptr);//Frees the data
 		return data;
 	}
@@ -30,7 +31,7 @@ namespace SJ
 			return MP3Data();
 		}
 
-		data.pcmData = info.buffer;//Stores the MP3 decoded buffer data into pcmData
+		data.buffer = info.buffer;//Stores the MP3 decoded buffer data into pcmData
 		data.size = info.samples * sizeof(mp3d_sample_t);//Calculates the size of the buffer
 		data.sampleRate = info.hz;//MP3 sample rate
 		data.channels = info.channels;//Mono/stereo sound
@@ -55,9 +56,9 @@ namespace SJ
 		data.channels = info->channels;//Ogg channels mono/stereo
 		data.samples = ov_pcm_total(&vfile, -1);//Ogg samples
 		data.size = 2 * data.channels * data.samples; //Tried to use it without increasing the size but an access violation runtime error occurs so I multiplied it by 2
-
+		//Probably uses 2 bytes per sample
 		uint8_t* buf = new uint8_t[data.size];//This will be used as the buffer data to send for OpenAL to use
-		uint8_t* bufferPtr = buf;//Bufferptr which will increase as vorbis reads the bytes
+		uint8_t* bufferPtr = buf;//Bufferptr which will move as vorbis reads the bytes
 		int eof = 0;
 		while(!eof)
 		{
@@ -74,7 +75,7 @@ namespace SJ
 				return OggData();
 			}
 		}
-		data.pcmData = buf;
+		data.buffer = buf;
 
 		ov_clear(&vfile);
 		fclose(file);

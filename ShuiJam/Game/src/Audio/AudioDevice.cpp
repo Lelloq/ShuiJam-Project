@@ -3,7 +3,7 @@
 namespace SJ
 {
 	//Defining the members
-	AudioDevice* AudioDevice::s_device{ nullptr };//Assigns s_device to nullptr
+	AudioDevice* AudioDevice::s_device = nullptr;//Assigns s_device to nullptr
 	std::mutex AudioDevice::m; //Assigns m for the mutex to be locked during the get instance
 
 	//Using mutex to create a thread safe singleton for the audio device

@@ -4,14 +4,24 @@
 #include "Audio/AudioDevice.h"
 #include "Audio/SoundEffect.h"
 #include <GLFW/glfw3.h>
+#include <functional>
 
-class MenuScene
+//TODO - create vertex class objects to store vertex data for menu images
+namespace SJ
 {
-private:
-	GLFWwindow* m_window;
-	//TODO - create vertex class objects to store vertex data for menu images
-public:
-	MenuScene(GLFWwindow* window);
-	~MenuScene();
-	void getKey(GLFWwindow* window, int key, int scancode, int action, int mods);
-};
+	class MenuScene
+	{
+	private:
+		GLFWwindow* m_window;
+		SJ::AudioDevice* m_device;//!< Audio device
+		SJ::SoundEffect* m_sfx;//!< Sound effect
+		SJ::SFXSource* m_source;//!< Sound effect source
+
+		ALuint m_anyKeySound;
+	public:
+		MenuScene() {};
+		MenuScene(GLFWwindow* window);
+		~MenuScene();
+		void getKey(int key,int action);
+	};
+}

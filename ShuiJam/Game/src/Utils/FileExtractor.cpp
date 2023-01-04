@@ -34,6 +34,7 @@ namespace SJ
 
 	void FileExtractor::fileExtractorThread()
 	{
+		m_extracted = false;
 		for (const auto& entry : std::filesystem::directory_iterator(m_inputFolder))
 		{
 			std::wstring fileName = entry.path().filename().wstring(); //Get the filename that has the extension
@@ -58,6 +59,7 @@ namespace SJ
 					#ifdef DEBUG
 					std::wcout << "Extracted " << folderName << std::endl;
 					#endif 
+					m_extracted = true;
 				}
 			}
 			catch (const BitException& e)
