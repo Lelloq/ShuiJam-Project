@@ -58,13 +58,13 @@ namespace SJ
 		data.size = 2 * data.channels * data.samples; //Tried to use it without increasing the size but an access violation runtime error occurs so I multiplied it by 2
 		//Probably uses 2 bytes per sample
 		uint8_t* buf = new uint8_t[data.size];//This will be used as the buffer data to send for OpenAL to use
-		uint8_t* bufferPtr = buf;//Bufferptr which will move as vorbis reads the bytes
+		uint8_t* bufferPtr = buf;//Bufferptr which will move as vorbis reads the bytes (Walker pointer)
 		int eof = 0;
 		while(!eof)
 		{
 			int section;
 			long length = ov_read(&vfile, (char*)bufferPtr, 4096, 0, 2, 1, &section);//Read bytes
-			bufferPtr += length;
+			bufferPtr += length;//Fill the buffer with the bytes
 			if(length == 0)
 			{
 				eof = 1;

@@ -16,7 +16,7 @@ namespace SJ
 		SJ::AudioDevice* m_device;//!< Audio device
 		SJ::SoundEffect* m_sfx;//!< Sound effect
 		SJ::SFXSource* m_source;//!< Sound effect source
-
+		
 		ALuint m_anyKeySound;
 	public:
 		MenuScene() {};

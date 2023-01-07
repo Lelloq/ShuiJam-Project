@@ -41,7 +41,7 @@ namespace SJ
 		{
 			for(int i = 0; i < NUM_BUFFERS; i++)
 			{
-				drmp3_uint64 sample = drmp3_read_pcm_frames_s16(&mStream->mp3,1,mStream->buffer);
+				drmp3_uint64 sample = drmp3_read_pcm_frames_s16(&mStream->mp3,2,mStream->buffer);
 
 				alBufferData(m_buffers[i], m_format, mStream->buffer, mStream->mp3.channels * sizeof(short), mStream->mp3.sampleRate);
 			}
