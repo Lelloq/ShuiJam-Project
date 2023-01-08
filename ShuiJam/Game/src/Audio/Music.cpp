@@ -24,44 +24,81 @@ namespace SJ
 				mStream->buffer = new int16_t[frame_size];
 			}
 		}
-		
+		else if(filePath.extension() == ".wav")
+		{
+			wStream.reset(new WavStreamData);
+			m_extension = ".wav";
+			if (!drwav_init_file(&wStream->wav, filePath.string().c_str(), NULL)) std::cout << "Failed to load song file: " << filePath.string() << std::endl;
+			else
+			{
+				if (wStream->wav.channels == 1) m_format = AL_FORMAT_MONO16;
+				else if (wStream->wav.channels == 2) m_format = AL_FORMAT_STEREO16;
+
+				frame_size = (size_t)(BUFFER_SIZE * wStream->wav.channels) * 2;
+				wStream->buffer = new int16_t[frame_size];
+			}
+		}
 	}
 	Music::~Music()
 	{
 		alDeleteSources(1, &m_source);
-
 		alDeleteBuffers(NUM_BUFFERS, m_buffers);
 	}
 	void Music::Play()
 	{
 		//Original taken from "Code, Tech, and Tutorials" modified for use to make it work on other file types
-		ALsizei i;
+		ALsizei i, state;
 
-		alSourceRewind(m_source);//Rewind the audio source back to 0 seconds
-		alSourcei(m_source, AL_BUFFER, 0);//Clear buffer so it can be filled layer
-		if (m_extension == ".mp3")
+		alGetSourcei(m_source, AL_SOURCE_STATE, &state);//Prevent playing if its already playing
+		if(state != AL_PLAYING)
 		{
-			for (i = 0; i < NUM_BUFFERS; i++)
+			alSourceRewind(m_source);//Rewind the audio source back to 0 seconds
+			alSourcei(m_source, AL_BUFFER, 0);//Clear buffer so it can be filled layer
+			if (m_extension == ".mp3")
 			{
-				drmp3_uint64 sample = drmp3_read_pcm_frames_s16(&mStream->mp3, BUFFER_SIZE, mStream->buffer);//Frame data
-				if (sample < 1) break;
-				sample *= mStream->mp3.channels * 2;//Resize it to channels by size of a short (without this it will playback really fast)
-				alBufferData(m_buffers[i], m_format, mStream->buffer, (ALsizei)sample, mStream->mp3.sampleRate);
-			}
+				for (i = 0; i < NUM_BUFFERS; i++)
+				{
+					drmp3_uint64 sample = drmp3_read_pcm_frames_s16(&mStream->mp3, BUFFER_SIZE, mStream->buffer);//Frame data
+					if (sample < 1) break;
+					sample *= mStream->mp3.channels * 2;//Resize it to channels by size of a short (without this it will playback really fast)
+					alBufferData(m_buffers[i], m_format, mStream->buffer, (ALsizei)sample, mStream->mp3.sampleRate);//Fill al buffer data
+				}
 
-			if(alGetError() != AL_NO_ERROR)
+				if(alGetError() != AL_NO_ERROR)
+				{
+					std::cout << "Error buffering for playback" << std::endl;
+				}
+
+				alSourceQueueBuffers(m_source, i, m_buffers);
+				alSourcePlay(m_source);
+			}
+			else if(m_extension == ".wav")
 			{
-				std::cout << "Error buffering for playback" << std::endl;
-			}
+				for (i = 0; i < NUM_BUFFERS; i++)
+				{
+					drwav_uint64 sample = drwav_read_pcm_frames_s16(&wStream->wav, BUFFER_SIZE, wStream->buffer);//Frame data
+					if (sample < 1) break;
+					sample *= wStream->wav.channels * 2;//Resize it to channels by size of a short (without this it will playback really fast)
+					alBufferData(m_buffers[i], m_format, wStream->buffer, (ALsizei)sample, wStream->wav.sampleRate);//Fill al buffer data
+				}
 
-			alSourceQueueBuffers(m_source, i, m_buffers);
-			alSourcePlay(m_source);
+				if (alGetError() != AL_NO_ERROR)
+				{
+					std::cout << "Error buffering for playback" << std::endl;
+				}
+
+				alSourceQueueBuffers(m_source, i, m_buffers);
+				alSourcePlay(m_source);
+			}
 		}
 	}
 
 	void Music::Stop()
 	{
-
+		alSourceStop(m_source);
+		if (mStream != NULL) mStream.release(); return;
+		if (wStream != NULL) wStream.release(); return;
+		if (oStream != NULL) oStream.release(); return;
 	}
 
 	void Music::Update()
@@ -89,12 +126,23 @@ namespace SJ
 				if(sample > 0)
 				{
 					sample *= mStream->mp3.channels * 2;//Resize it to channels by size of a short (without this it will playback really fast)
-					alBufferData(bufid, m_format, mStream->buffer, (ALsizei)sample, mStream->mp3.sampleRate);
-					alSourceQueueBuffers(m_source, 1, &bufid);
+					alBufferData(bufid, m_format, mStream->buffer, (ALsizei)sample, mStream->mp3.sampleRate);//Fill al buffer data
+					alSourceQueueBuffers(m_source, 1, &bufid);//Add the buffer to the queue
+				}
+			}
+			else if(m_extension == ".wav")
+			{
+				drwav_uint64 sample = drwav_read_pcm_frames_s16(&wStream->wav, BUFFER_SIZE, wStream->buffer);//Frame data
+				if (sample > 0)
+				{
+					sample *= wStream->wav.channels * 2;//Resize it to channels by size of a short (without this it will playback really fast)
+					alBufferData(bufid, m_format, wStream->buffer, (ALsizei)sample, wStream->wav.sampleRate);//Fill al buffer data
+					alSourceQueueBuffers(m_source, 1, &bufid);//Add the buffer to the queue
 				}
 			}
 		}
 
+		//Keep playing the source to the end unless it has been paused or stopped
 		if(state != AL_PLAYING && state != AL_PAUSED)
 		{
 			ALint queued;

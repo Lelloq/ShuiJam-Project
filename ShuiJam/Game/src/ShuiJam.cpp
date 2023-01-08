@@ -35,7 +35,7 @@ void main()
 	SJ::Music m("../ShuiJamGame/Sounds/audio.mp3");
 	m.Play();
 	std::shared_ptr<SJ::SFXSource> SFX(new SJ::SFXSource);
-	//ALuint testsfx = soundEffect->addSFX("../ShuiJamGame/Sounds/halcyon.mp3");
+	//ALuint testsfx = soundEffect->addSFX("../ShuiJamGame/Sounds/audio.mp3");
 
 	SJ::FileExtractor* fe = SJ::FileExtractor::get();
 	fe->extractFiles();
@@ -48,6 +48,7 @@ void main()
 		gameWindow.Update();
 		m.Update();
 	}
+
 	gameWindow.Shutdown();
 }
 
