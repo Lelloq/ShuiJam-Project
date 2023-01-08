@@ -9,7 +9,7 @@ namespace SJ
 		m_device = SJ::AudioDevice::get();
 		m_sfx = SJ::SoundEffect::get();
 
-		m_source = new(SJ::SFXSource);
+		m_source.reset(new SJ::SFXSource);
 		m_anyKeySound = m_sfx->addSFX("../ShuiJamGame/Sounds/hitclap.wav");
 	}
 

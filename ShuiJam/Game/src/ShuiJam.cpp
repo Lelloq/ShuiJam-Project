@@ -32,20 +32,21 @@ void main()
 
 	SJ::MenuScene menu = SJ::MenuScene(gameWindow.getWindow());
 
-	//SJ::Music m("../ShuiJamGame/Sounds/audio.mp3");
-	//m.Play();
-	SJ::SFXSource* SFX = new(SJ::SFXSource);
-	ALuint testsfx = soundEffect->addSFX("../ShuiJamGame/Sounds/halcyon.mp3");
+	SJ::Music m("../ShuiJamGame/Sounds/halcyon.mp3");
+	m.Play();
+	std::shared_ptr<SJ::SFXSource> SFX(new SJ::SFXSource);
+	//ALuint testsfx = soundEffect->addSFX("../ShuiJamGame/Sounds/halcyon.mp3");
 
 	SJ::FileExtractor* fe = SJ::FileExtractor::get();
 	fe->extractFiles();
 
-	SFX->Play(testsfx);
+	//SFX->Play(testsfx);
 	gameWindow.Start();
 	menuInputCallbacks(menu);
 	while(!glfwWindowShouldClose(gameWindow.getWindow()))
 	{
 		gameWindow.Update();
+		m.Update();
 	}
 	gameWindow.Shutdown();
 }

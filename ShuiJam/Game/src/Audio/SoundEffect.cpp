@@ -74,6 +74,7 @@ namespace SJ
 			p_SFXBuffers.push_back(buffer);
 			return buffer;
 		}
+		std::cout << "ERROR: Attempted to process an invalid song file" << std::endl;
 		return ALuint();
 	}
 

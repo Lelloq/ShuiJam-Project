@@ -12,7 +12,6 @@ namespace SJ
 	{
 		drmp3 mp3;
 		int16_t* buffer;
-		drmp3_uint64 index = 0;
 	};
 
 	struct OggStreamData
