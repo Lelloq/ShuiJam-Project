@@ -14,6 +14,12 @@ namespace SJ
 		int16_t* buffer;
 	};
 
+	struct WavStreamData
+	{
+		drwav wav;
+		int16_t* buffer;
+	};
+
 	struct OggStreamData
 	{
 		OggVorbis_File vfile;

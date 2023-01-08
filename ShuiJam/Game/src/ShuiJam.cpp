@@ -32,7 +32,7 @@ void main()
 
 	SJ::MenuScene menu = SJ::MenuScene(gameWindow.getWindow());
 
-	SJ::Music m("../ShuiJamGame/Sounds/halcyon.mp3");
+	SJ::Music m("../ShuiJamGame/Sounds/audio.mp3");
 	m.Play();
 	std::shared_ptr<SJ::SFXSource> SFX(new SJ::SFXSource);
 	//ALuint testsfx = soundEffect->addSFX("../ShuiJamGame/Sounds/halcyon.mp3");

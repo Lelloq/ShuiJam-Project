@@ -44,9 +44,9 @@ namespace SJ
 		{
 			for (i = 0; i < NUM_BUFFERS; i++)
 			{
-				drmp3_uint64 sample = drmp3_read_pcm_frames_s16(&mStream->mp3, BUFFER_SIZE, mStream->buffer);
+				drmp3_uint64 sample = drmp3_read_pcm_frames_s16(&mStream->mp3, BUFFER_SIZE, mStream->buffer);//Frame data
 				if (sample < 1) break;
-				sample *= mStream->mp3.channels * 2;
+				sample *= mStream->mp3.channels * 2;//Resize it to channels by size of a short (without this it will playback really fast)
 				alBufferData(m_buffers[i], m_format, mStream->buffer, (ALsizei)sample, mStream->mp3.sampleRate);
 			}
 
@@ -86,10 +86,10 @@ namespace SJ
 
 			if(m_extension == ".mp3")
 			{
-				drmp3_uint64 sample = drmp3_read_pcm_frames_s16(&mStream->mp3, BUFFER_SIZE, mStream->buffer);
+				drmp3_uint64 sample = drmp3_read_pcm_frames_s16(&mStream->mp3, BUFFER_SIZE, mStream->buffer);//Frame data
 				if(sample > 0)
 				{
-					sample *= mStream->mp3.channels * 2;
+					sample *= mStream->mp3.channels * 2;//Resize it to channels by size of a short (without this it will playback really fast)
 					alBufferData(bufid, m_format, mStream->buffer, (ALsizei)sample, mStream->mp3.sampleRate);
 					alSourceQueueBuffers(m_source, 1, &bufid);
 				}
