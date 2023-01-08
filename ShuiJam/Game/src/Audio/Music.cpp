@@ -3,7 +3,7 @@
 
 namespace SJ
 {
-	Music::Music(std::filesystem::path filePath) : mStream(new MP3StreamData())
+	Music::Music(std::filesystem::path filePath)
 	{
 		alGenSources(1, &m_source);
 		alGenBuffers(NUM_BUFFERS, m_buffers);
@@ -12,6 +12,7 @@ namespace SJ
 
 		if(filePath.extension() == ".mp3")
 		{
+			mStream.reset(new MP3StreamData);
 			m_extension = ".mp3";
 			if (!drmp3_init_file(&mStream->mp3, filePath.string().c_str(), NULL)) std::cout << "Failed to load song file: " << filePath.string() << std::endl;
 			else
@@ -28,8 +29,6 @@ namespace SJ
 	Music::~Music()
 	{
 		alDeleteSources(1, &m_source);
-
-		if (mStream != nullptr) delete mStream;
 
 		alDeleteBuffers(NUM_BUFFERS, m_buffers);
 	}

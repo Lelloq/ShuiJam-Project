@@ -34,9 +34,9 @@ namespace SJ
 		ALuint m_source;//!<OpenAL sound source
 		ALuint m_buffers[NUM_BUFFERS];//!<Number of buffers
 		ALenum m_format;//!<OpenAL audio format
-		MP3StreamData* mStream;//!<Empty Mp3Data struct if the file reads a mp3 file
-		OggData oStream;//!<Empty OggData struct if the file reads an ogg file
-		WavData wStream;//!<Empty WavData struct if the file reads a wav file
+		std::shared_ptr<MP3StreamData> mStream;//!<Empty Mp3Data struct if the file reads a mp3 file
+		std::shared_ptr<OggStreamData> oStream;//!<Empty OggData struct if the file reads an ogg file
+		std::shared_ptr<WavStreamData> wStream;//!<Empty WavData struct if the file reads a wav file
 
 		double timepos = 0.000f;
 		std::size_t duration = 0;
