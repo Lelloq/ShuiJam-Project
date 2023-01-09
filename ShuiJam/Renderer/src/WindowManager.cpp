@@ -1,4 +1,4 @@
-/*\file WindowManager.cpp*/
+﻿/*\file WindowManager.cpp*/
 #include "WindowManager.h"
 
 namespace SJ

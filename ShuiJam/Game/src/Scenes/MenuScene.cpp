@@ -18,12 +18,21 @@ namespace SJ
 	{
 	}
 
-	void MenuScene::getKey(int key, int action)
+	void MenuScene::getKey(int key, int scancode, int action, int mods)
 	{
 		if(action == GLFW_PRESS)
 		{
 			m_source->Play(m_anyKeySound);
 			std::cout << key << std::endl;
 		}
+	}
+	void MenuScene::getMouseButton(int button, int action, int mods)
+	{
+	}
+	void MenuScene::getScroll(double xoffset, double yoffset)
+	{
+	}
+	void MenuScene::fileDrop(int count, const char** paths)
+	{
 	}
 }

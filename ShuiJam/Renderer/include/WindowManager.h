@@ -1,4 +1,4 @@
-/*\file WindowManager.h*/
+﻿/*\file WindowManager.h*/
 #pragma once
 #include<glad/glad.h>
 #include<GLFW/glfw3.h>
