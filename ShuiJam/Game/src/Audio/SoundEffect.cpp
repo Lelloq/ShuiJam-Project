@@ -8,13 +8,13 @@ namespace SJ
 
 	SoundEffect::SoundEffect()
 	{
-		p_SFXBuffers.clear();
+		m_SFXBuffers.clear();
 	}
 
 	SoundEffect::~SoundEffect()
 	{
-		alDeleteBuffers(p_SFXBuffers.size(), p_SFXBuffers.data());
-		p_SFXBuffers.clear();
+		alDeleteBuffers(m_SFXBuffers.size(), m_SFXBuffers.data());
+		m_SFXBuffers.clear();
 	}
 
 	SoundEffect* SoundEffect::get()
@@ -29,9 +29,14 @@ namespace SJ
 
 	ALuint SoundEffect::addSFX(std::filesystem::path filepath)
 	{
+		//Initially taken from "Code, Tech, and Tutorials" modified for it to work using other file types
 		ALenum format;
 		ALuint buffer;
 
+		//Each of the conditions does the same thing but for different files
+		//Get the audio format (mono/stereo)
+		//Generate albuffer and fill the buffer with data
+		//Push the buffer into the vector of sound effects
 		if (filepath.extension() == ".wav")
 		{
 			WavData data = AudioProcessor::ProcessWavData(filepath);
@@ -43,7 +48,7 @@ namespace SJ
 			alGenBuffers(1, &buffer);
 			alBufferData(buffer, format, data.buffer, data.size, data.sampleRate);
 
-			p_SFXBuffers.push_back(buffer);
+			m_SFXBuffers.push_back(buffer);
 			return buffer;
 		}
 		else if(filepath.extension() == ".mp3")
@@ -57,7 +62,7 @@ namespace SJ
 			alGenBuffers(1, &buffer);
 			alBufferData(buffer, format, data.buffer, data.size, data.sampleRate);
 
-			p_SFXBuffers.push_back(buffer);
+			m_SFXBuffers.push_back(buffer);
 			return buffer;
 		}
 		else if(filepath.extension() == ".ogg")
@@ -71,7 +76,7 @@ namespace SJ
 			alGenBuffers(1, &buffer);
 			alBufferData(buffer, format, data.buffer, data.size, data.sampleRate);
 
-			p_SFXBuffers.push_back(buffer);
+			m_SFXBuffers.push_back(buffer);
 			return buffer;
 		}
 		std::cout << "ERROR: Attempted to process an invalid song file" << std::endl;
@@ -80,12 +85,12 @@ namespace SJ
 
 	void SoundEffect::removeSFX(const ALuint& buffer)
 	{
-		for(auto it = p_SFXBuffers.begin(); it != p_SFXBuffers.end(); ++it)
+		for(auto it = m_SFXBuffers.begin(); it != m_SFXBuffers.end(); ++it)
 		{
 			if(*it == buffer)
 			{
 				alDeleteBuffers(1, &*it);
-				p_SFXBuffers.erase(it);
+				m_SFXBuffers.erase(it);
 			}
 		}
 	}

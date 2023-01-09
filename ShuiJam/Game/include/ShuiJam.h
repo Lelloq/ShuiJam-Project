@@ -4,3 +4,4 @@
 #include "WindowManager.h"
 #include "Scenes/MenuScene.h"
 #include "Utils/FileExtractor.h"
+#include "Utils/Properties.h"

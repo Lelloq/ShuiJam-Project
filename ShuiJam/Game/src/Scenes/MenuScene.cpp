@@ -1,5 +1,6 @@
 /*\file MenuScenec.pp*/
 #include "Scenes/MenuScene.h"
+#include "Utils/Properties.h"
 
 namespace SJ
 {
@@ -10,7 +11,7 @@ namespace SJ
 		m_sfx = SJ::SoundEffect::get();
 
 		m_source.reset(new SJ::SFXSource);
-		m_anyKeySound = m_sfx->addSFX("../ShuiJamGame/Sounds/hitclap.wav");
+		m_anyKeySound = m_sfx->addSFX(SJFOLDER + SOUNDS + "hitclap.wav");
 	}
 
 	MenuScene::~MenuScene()

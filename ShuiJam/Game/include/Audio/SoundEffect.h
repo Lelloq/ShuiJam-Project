@@ -17,7 +17,7 @@ namespace SJ
 		static SoundEffect* s_Buffer; //!< Static sound buffer singleton
 		static std::mutex m; //!< mutex lock guard for sound buffer
 
-		std::vector<ALuint> p_SFXBuffers; //!< Key value map of sfx buffers
+		std::vector<ALuint> m_SFXBuffers; //!< Key value map of sfx buffers
 	public:
 		SoundEffect(SoundEffect& other) = delete; //!< Prevents cloning another SoundBuffer
 		void operator=(const SoundEffect&) = delete; //!< Prevents setting another SoundBuffer

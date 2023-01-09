@@ -10,6 +10,7 @@ namespace SJ
 
 		std::size_t frame_size;
 
+		//Open the file using drmp3 if it detects a mp3 file
 		if(filePath.extension() == ".mp3")
 		{
 			mStream.reset(new MP3StreamData);
@@ -20,10 +21,12 @@ namespace SJ
 				if (mStream->mp3.channels == 1) m_format = AL_FORMAT_MONO16;
 				else if (mStream->mp3.channels == 2) m_format = AL_FORMAT_STEREO16;
 				
+				//Allocate the buffer which will be used to fill the queued buffers
 				frame_size = (size_t)(BUFFER_SIZE * mStream->mp3.channels) * 2;
 				mStream->buffer = new int16_t[frame_size];
 			}
 		}
+		//Open the file using drwav if it detects a wav file
 		else if(filePath.extension() == ".wav")
 		{
 			wStream.reset(new WavStreamData);
@@ -34,6 +37,7 @@ namespace SJ
 				if (wStream->wav.channels == 1) m_format = AL_FORMAT_MONO16;
 				else if (wStream->wav.channels == 2) m_format = AL_FORMAT_STEREO16;
 
+				//Allocate the buffer which will be used to fill the queued buffers
 				frame_size = (size_t)(BUFFER_SIZE * wStream->wav.channels) * 2;
 				wStream->buffer = new int16_t[frame_size];
 			}
