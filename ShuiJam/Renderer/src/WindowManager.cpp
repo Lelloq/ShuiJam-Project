@@ -18,7 +18,11 @@ namespace SJ
 	void WindowManager::Start()
 	{
 		if(m_fullscreen) {m_window = glfwCreateWindow(m_width, m_height, m_title.c_str(), glfwGetPrimaryMonitor(), NULL); }
-		else { m_window = glfwCreateWindow(m_width, m_height, m_title.c_str(), NULL, NULL); }
+		else 
+		{ 
+			m_window = glfwCreateWindow(m_width, m_height, m_title.c_str(), NULL, NULL); 
+			glfwSetWindowPos(m_window, GetSystemMetrics(SM_CXSCREEN) / 2 - m_width / 2, GetSystemMetrics(SM_CYSCREEN) / 2 - m_height / 2);
+		}
 		glfwMakeContextCurrent(m_window);
 
 		gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);

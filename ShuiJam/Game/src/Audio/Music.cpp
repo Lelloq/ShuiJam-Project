@@ -52,7 +52,6 @@ namespace SJ
 	{
 		//Original taken from "Code, Tech, and Tutorials" modified for use to make it work on other file types
 		ALsizei i, state;
-
 		alGetSourcei(m_source, AL_SOURCE_STATE, &state);//Prevent playing if its already playing
 		if(state != AL_PLAYING)
 		{
@@ -67,7 +66,6 @@ namespace SJ
 					sample *= mStream->mp3.channels * 2;//Resize it to channels by size of a short (without this it will playback really fast)
 					alBufferData(m_buffers[i], m_format, mStream->buffer, (ALsizei)sample, mStream->mp3.sampleRate);//Fill al buffer data
 				}
-
 				if(alGetError() != AL_NO_ERROR)
 				{
 					std::cout << "Error buffering for playback" << std::endl;
@@ -94,6 +92,7 @@ namespace SJ
 				alSourceQueueBuffers(m_source, i, m_buffers);
 				alSourcePlay(m_source);
 			}
+			startTimer();
 		}
 	}
 
@@ -120,7 +119,7 @@ namespace SJ
 		while(processed > 0)
 		{
 			ALuint bufid;
-			
+
 			alSourceUnqueueBuffers(m_source, 1, &bufid);
 			processed--;
 
@@ -156,5 +155,29 @@ namespace SJ
 
 			alSourcePlay(m_source);
 		}
+	}
+
+	//Needs to be changed somewhat in the future to account for lag spikes
+	void Music::timerThread()
+	{
+		using namespace std;
+		m_atEnd = false;
+		while(!mStream->mp3.atEnd)
+		{
+			auto start = chrono::steady_clock::now();
+			this_thread::sleep_for(1ms);
+			auto end = chrono::steady_clock::now();
+			m_timepos += chrono::duration<double>(end - start).count();
+			std::cout << m_timepos << std::endl;
+		}
+		m_atEnd = true;
+		startTimer();
+	}
+
+	void Music::startTimer()
+	{
+		std::thread tThread(&Music::timerThread, this);
+		if (!m_atEnd) tThread.detach();
+		else tThread.join();
 	}
 }
