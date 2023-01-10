@@ -32,7 +32,7 @@ void main()
 
 	SJ::MenuScene menu = SJ::MenuScene(gameWindow.getWindow());
 
-	SJ::Music m(SJFOLDER + SOUNDS + "zerked.mp3");
+	SJ::Music m(SJFOLDER + SOUNDS + "parallax.mp3");
 	m.Play();
 	std::shared_ptr<SJ::SFXSource> SFX(new SJ::SFXSource);
 	//ALuint testsfx = soundEffect->addSFX("../ShuiJamGame/Sounds/audio.mp3");
@@ -46,6 +46,7 @@ void main()
 	while(!glfwWindowShouldClose(gameWindow.getWindow()))
 	{
 		gameWindow.Update();
+		std::cout << m.getTimePosition() << std::endl;
 		m.Update();
 	}
 

@@ -168,7 +168,6 @@ namespace SJ
 			this_thread::sleep_for(1ms);
 			auto end = chrono::steady_clock::now();
 			m_timepos += chrono::duration<double>(end - start).count();
-			std::cout << m_timepos << std::endl;
 		}
 		m_atEnd = true;
 		startTimer();

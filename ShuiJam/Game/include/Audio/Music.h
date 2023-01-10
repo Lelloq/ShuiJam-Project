@@ -41,10 +41,9 @@ namespace SJ
 		std::unique_ptr<OggStreamData> oStream;//!<Empty OggData struct if the file reads an ogg file
 		std::unique_ptr<WavStreamData> wStream;//!<Empty WavData struct if the file reads a wav file
 
-		double m_timepos = 0.f;
-		bool m_atEnd = false;
-		std::size_t duration = 0;
-		std::string m_extension;
+		double m_timepos = 0.f;//!<Time position of the song in seconds
+		bool m_atEnd = false;//!<Is the song at the end
+		std::string m_extension;//!<Song file extension
 
 		void timerThread();//!<Function that accumulates time, done on a separate thread
 		void startTimer();//!<Creates a thread that starts the timer
@@ -54,6 +53,6 @@ namespace SJ
 		void Play();//!<Plays the music
 		void Stop();//!<Stops the music
 		void Update();//!<Updates the buffer stream
-		inline double getTimePosition() { return m_timepos; }//!<Get time position in milliseconds
+		inline double getTimePosition() { return m_timepos * 1000; }//!<Get time position in milliseconds
 	};
 }
