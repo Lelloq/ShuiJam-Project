@@ -5,10 +5,11 @@
 #include <AL/al.h>
 #include <chrono>
 #include <thread>
+#include <fstream>
 
 namespace SJ
 {
-	static const std::size_t NUM_BUFFERS = 4;//!<Number of buffers inside a buffer
+	static const std::size_t NUM_BUFFERS = 8;//!<Number of buffers inside a buffer
 	static const ALsizei BUFFER_SIZE = 8192;//!<Size of the buffer
 
 	struct MP3StreamData
@@ -27,6 +28,8 @@ namespace SJ
 	{
 		OggVorbis_File vfile;
 		vorbis_info* info;
+		int16_t* buffer;
+		int section;
 	};
 
 	/*\class Music

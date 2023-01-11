@@ -32,10 +32,10 @@ void main()
 
 	SJ::MenuScene menu = SJ::MenuScene(gameWindow.getWindow());
 
-	SJ::Music m(SJFOLDER + SOUNDS + "parallax.mp3");
+	SJ::Music m(SJFOLDER + SOUNDS + "DragonLady.ogg");
 	m.Play();
 	std::shared_ptr<SJ::SFXSource> SFX(new SJ::SFXSource);
-	//ALuint testsfx = soundEffect->addSFX("../ShuiJamGame/Sounds/audio.mp3");
+	//ALuint testsfx = soundEffect->addSFX(SJFOLDER + SOUNDS + "DragonLady.ogg");
 
 	SJ::FileExtractor* fe = SJ::FileExtractor::get();
 	fe->extractFiles();

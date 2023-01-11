@@ -76,7 +76,6 @@ namespace SJ
 			}
 		}
 		data.buffer = buf;
-		delete[] buf;
 
 		ov_clear(&vfile);
 		fclose(file);

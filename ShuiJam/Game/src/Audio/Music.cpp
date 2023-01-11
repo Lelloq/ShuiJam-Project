@@ -3,6 +3,7 @@
 
 namespace SJ
 {
+	FILE* file;//Created a global file since creating it in the struct in the header file caused errors
 	Music::Music(std::filesystem::path filePath)
 	{
 		alGenSources(1, &m_source);
@@ -42,6 +43,24 @@ namespace SJ
 				wStream->buffer = new int16_t[frame_size];
 			}
 		}
+		//Open the file using vorbis if it detects an ogg file
+		else if(filePath.extension() == ".ogg")
+		{
+			file = fopen(filePath.string().c_str(), "rb");
+
+			oStream.reset(new OggStreamData);
+			m_extension = ".ogg";
+			if (ov_open_callbacks(file, &oStream->vfile, NULL, 0, OV_CALLBACKS_NOCLOSE) < 0) { std::cout << "Failed to load song file: " << filePath.string() << std::endl; }
+			else
+			{
+				oStream->info = ov_info(&oStream->vfile, -1);
+				if (oStream->info->channels == 1) m_format = AL_FORMAT_MONO16;
+				else if (oStream->info->channels == 2) m_format = AL_FORMAT_STEREO16;
+
+				frame_size = (size_t)(BUFFER_SIZE * oStream->info->channels) * 2;
+				oStream->buffer = new int16_t[frame_size];
+			}
+		}
 	}
 	Music::~Music()
 	{
@@ -70,7 +89,7 @@ namespace SJ
 				{
 					std::cout << "Error buffering for playback" << std::endl;
 				}
-
+				//Queue and play buffers
 				alSourceQueueBuffers(m_source, i, m_buffers);
 				alSourcePlay(m_source);
 			}
@@ -88,20 +107,49 @@ namespace SJ
 				{
 					std::cout << "Error buffering for playback" << std::endl;
 				}
+				
+				alSourceQueueBuffers(m_source, i, m_buffers);
+				alSourcePlay(m_source);
+			}
+			else if(m_extension == ".ogg")
+			{
+				//Read the bytes using ovread and fill each buffer with data
+				for(i = 0; i < NUM_BUFFERS; i++)
+				{
+					long sample = ov_read(&oStream->vfile, (char*)oStream->buffer, BUFFER_SIZE, 0, 2, 1, &oStream->section);
+					if (sample < 1) break;
+					alBufferData(m_buffers[i], m_format, oStream->buffer, (ALsizei)sample, oStream->info->rate);
+				}
 
 				alSourceQueueBuffers(m_source, i, m_buffers);
 				alSourcePlay(m_source);
 			}
-			startTimer();
+			startTimer();//Start the song timer
 		}
 	}
 
 	void Music::Stop()
 	{
+		//Stop the music and free all data
 		alSourceStop(m_source);
-		if (mStream != NULL) mStream.release(); return;
-		if (wStream != NULL) wStream.release(); return;
-		if (oStream != NULL) oStream.release(); return;
+		if (mStream != NULL) 
+		{ 
+			drmp3_free(&mStream->mp3, nullptr);
+			mStream.release(); 
+			return; }
+		else if (wStream != NULL) 
+		{ 
+			drwav_free(&wStream->wav, nullptr);
+			wStream.release(); 
+			return; 
+		}
+		else if (oStream != NULL) 
+		{ 
+			fclose(file);
+			ov_clear(&oStream->vfile);
+			oStream.release(); 
+			return; 
+		}
 	}
 
 	void Music::Update()
@@ -143,6 +191,16 @@ namespace SJ
 					alSourceQueueBuffers(m_source, 1, &bufid);//Add the buffer to the queue
 				}
 			}
+			else if(m_extension == ".ogg")
+			{
+				//Read the bytes up to 8192 bytes and then fill the buffer with data
+				long sample = ov_read(&oStream->vfile, (char*)oStream->buffer, BUFFER_SIZE, 0, 2, 1, &oStream->section);
+				if(sample > 0)
+				{
+					alBufferData(bufid, m_format, oStream->buffer, (ALsizei)sample, oStream->info->rate);
+					alSourceQueueBuffers(m_source, 1, &bufid);
+				}
+			}
 		}
 
 		//Keep playing the source to the end unless it has been paused or stopped
@@ -151,7 +209,12 @@ namespace SJ
 			ALint queued;
 
 			alGetSourcei(m_source, AL_BUFFERS_QUEUED, &queued);
-			if (queued == 0) return;
+			if (queued == 0) 
+			{
+				m_atEnd = true;
+				Stop();
+				return; 
+			}
 
 			alSourcePlay(m_source);
 		}
@@ -161,15 +224,13 @@ namespace SJ
 	void Music::timerThread()
 	{
 		using namespace std;
-		m_atEnd = false;
-		while(!mStream->mp3.atEnd)
+		while(!m_atEnd)
 		{
 			auto start = chrono::steady_clock::now();
 			this_thread::sleep_for(1ms);
 			auto end = chrono::steady_clock::now();
 			m_timepos += chrono::duration<double>(end - start).count();
 		}
-		m_atEnd = true;
 		startTimer();
 	}
 
@@ -177,6 +238,10 @@ namespace SJ
 	{
 		std::thread tThread(&Music::timerThread, this);
 		if (!m_atEnd) tThread.detach();
-		else tThread.join();
+		else 
+		{ 
+			tThread.join(); 
+			m_atEnd = false;
+		}
 	}
 }
