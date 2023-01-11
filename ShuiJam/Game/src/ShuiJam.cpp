@@ -19,16 +19,7 @@ void setup()
 
 void main()
 {
-	//If I'm not running google test then I'll create the devices and window
-	if(RUNTESTING)
-	{
-		//SJTester::runtests();
-		return;
-	}
-	else
-	{
-		setup();
-	}
+	setup();
 
 	SJ::MenuScene menu = SJ::MenuScene(gameWindow.getWindow());
 
