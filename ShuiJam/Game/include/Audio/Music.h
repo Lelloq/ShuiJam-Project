@@ -12,18 +12,24 @@ namespace SJ
 	static const std::size_t NUM_BUFFERS = 8;//!<Number of buffers inside a buffer
 	static const ALsizei BUFFER_SIZE = 8192;//!<Size of the buffer
 
+	/*\struct MP3StreamData
+	\brief Struct that holds data required to stream MP3 audio*/
 	struct MP3StreamData
 	{
 		drmp3 mp3;
 		int16_t* buffer;
 	};
 
+	/*\struct WavStreamData
+	\brief Struct that holds data required to stream wav audio*/
 	struct WavStreamData
 	{
 		drwav wav;
 		int16_t* buffer;
 	};
 
+	/*\struct OggStreamData
+	\brief Struct that holds data required to stream ogg audio*/
 	struct OggStreamData
 	{
 		OggVorbis_File vfile;
