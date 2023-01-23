@@ -15,11 +15,15 @@ namespace SJ
 	class MenuScene : public Scene
 	{
 	private:
+		//WINDOW
 		GLFWwindow* m_window;
+		//AUDIO
 		SJ::AudioDevice* m_device;//!< Audio device
 		SJ::SoundEffect* m_sfx;//!< Sound effect
 		std::shared_ptr<SJ::SFXSource> m_source;//!< Sound effect source
-		
+		//GRAPHICS
+		std::shared_ptr<Shader> m_shader;
+
 		ALuint m_anyKeySound;
 	public:
 		MenuScene() {};
