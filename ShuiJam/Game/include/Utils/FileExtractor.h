@@ -10,7 +10,8 @@
 namespace SJ
 {
 	using namespace bit7z;
-	/*\class FileExtractor*/
+	/*\class FileExtractor
+	\brief extracts .osz files into the songs folder*/
 	class FileExtractor
 	{
 	private:
