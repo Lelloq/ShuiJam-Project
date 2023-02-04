@@ -4,13 +4,9 @@
 
 namespace SJ
 {
-	MenuScene::MenuScene(GLFWwindow* window)
+	MenuScene::MenuScene(GLFWwindow* window) : m_window(window), m_device(SJ::AudioDevice::get()), m_sfx(SJ::SoundEffect::get())
 	{
-		m_window = window;
-		m_device = SJ::AudioDevice::get();
-		m_sfx = SJ::SoundEffect::get();
-
-		m_source.reset(new SJ::SFXSource);
+		m_source = std::make_shared<SJ::SFXSource>();
 		m_anyKeySound = m_sfx->addSFX(SJFOLDER + SOUNDS + "hitclap.wav");
 	}
 
