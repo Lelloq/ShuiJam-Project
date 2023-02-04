@@ -8,21 +8,16 @@
 
 namespace SJ
 {
-	FileExtractor* FileExtractor::s_extractor{ nullptr };
+	std::unique_ptr<FileExtractor> FileExtractor::s_extractor = nullptr;
 
 	//Don't need mutex since file extractor will only be done in the main thread
-	FileExtractor* FileExtractor::get()
+	std::unique_ptr<FileExtractor> FileExtractor::get()
 	{
 		if (s_extractor == nullptr)
 		{
-			s_extractor = new FileExtractor();
+			s_extractor = std::make_unique<FileExtractor>();
 		}
-		return s_extractor;
-	}
-
-	FileExtractor::FileExtractor()
-	{
-		m_origin = std::filesystem::current_path(); //Get the original path to reset
+		return std::move(s_extractor);
 	}
 
 	void FileExtractor::extractFiles()
@@ -69,6 +64,7 @@ namespace SJ
 			}
 			std::filesystem::current_path(m_origin);
 		}
+		m_extracted = true;
 		#ifdef DEBUG
 		std::cout << "Extraction complete" << std::endl;
 		#endif

@@ -28,7 +28,7 @@ void main()
 	std::shared_ptr<SJ::SFXSource> SFX(new SJ::SFXSource);
 	//ALuint testsfx = soundEffect->addSFX(SJFOLDER + SOUNDS + "parallax.mp3");
 
-	SJ::FileExtractor* fe = SJ::FileExtractor::get();
+	std::unique_ptr<SJ::FileExtractor> fe = SJ::FileExtractor::get();
 	fe->extractFiles();
 
 	//SFX->Play(testsfx);
