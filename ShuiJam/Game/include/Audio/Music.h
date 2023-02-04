@@ -32,6 +32,7 @@ namespace SJ
 	\brief Struct that holds data required to stream ogg audio*/
 	struct OggStreamData
 	{
+		static FILE* file;
 		OggVorbis_File vfile;
 		vorbis_info* info;
 		int16_t* buffer;
@@ -50,7 +51,7 @@ namespace SJ
 		std::unique_ptr<OggStreamData> oStream;//!<Empty OggData struct if the file reads an ogg file
 		std::unique_ptr<WavStreamData> wStream;//!<Empty WavData struct if the file reads a wav file
 
-		double m_timepos = 0.f;//!<Time position of the song in seconds
+		int m_timepos = 0;//!<Time position of the song in milliseconds
 		bool m_atEnd = false;//!<Is the song at the end
 		std::string m_extension;//!<Song file extension
 
@@ -62,6 +63,6 @@ namespace SJ
 		void Play();//!<Plays the music
 		void Stop();//!<Stops the music
 		void Update();//!<Updates the buffer stream
-		inline double getTimePosition() { return m_timepos * 1000; }//!<Get time position in milliseconds
+		inline int getTimePosition() { return m_timepos; }//!<Get time position in milliseconds
 	};
 }

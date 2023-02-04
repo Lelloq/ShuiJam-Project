@@ -46,7 +46,7 @@ namespace SJ
 		//Open the file using vorbis if it detects an ogg file
 		else if(filePath.extension() == ".ogg")
 		{
-			file = fopen(filePath.string().c_str(), "rb");
+			fopen_s(&file, filePath.string().c_str(), "rb");
 
 			oStream.reset(new OggStreamData);
 			m_extension = ".ogg";
@@ -136,7 +136,8 @@ namespace SJ
 		{ 
 			drmp3_free(&mStream->mp3, nullptr);
 			mStream.release(); 
-			return; }
+			return; 
+		}
 		else if (wStream != NULL) 
 		{ 
 			drwav_free(&wStream->wav, nullptr);
@@ -226,10 +227,10 @@ namespace SJ
 		using namespace std;
 		while(!m_atEnd)
 		{
-			auto start = chrono::steady_clock::now();
+			auto start = chrono::steady_clock::now();	
 			this_thread::sleep_for(1ms);
 			auto end = chrono::steady_clock::now();
-			m_timepos += chrono::duration<double>(end - start).count();
+			m_timepos += chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 		}
 		startTimer();
 	}
