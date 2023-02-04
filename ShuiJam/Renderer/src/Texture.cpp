@@ -1,5 +1,7 @@
 /*\file Texture.cpp*/
 #include "Texture.h"
+#include <stb_image.h>
+#include <glad/glad.h>
 
 namespace SJ
 {

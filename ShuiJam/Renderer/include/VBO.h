@@ -10,7 +10,7 @@ namespace SJ
 	private:
 		uint32_t m_ID;//!< Renderer ID
 	public:
-		VBO(const void* data, uint32_t size, GLenum drawtype);//!< Create buffer with specified data and size
+		VBO(const void* data, uint32_t size, unsigned int drawtype);//!< Create buffer with specified data and size
 		~VBO();//! Destructor deletes buffer
 
 		void Bind() const;//!< Bind vbo

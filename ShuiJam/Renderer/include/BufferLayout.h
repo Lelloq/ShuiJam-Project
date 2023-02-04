@@ -3,6 +3,7 @@
 #include "Shader.h"
 #include <iostream>
 #include <vector>
+#include <glad/glad.h>
 
 namespace SJ
 {

@@ -1,5 +1,6 @@
-#include "Shader.h"
 /*\file Shader.h*/
+#include "Shader.h"
+#include <glad/glad.h>
 
 namespace SJ
 {
