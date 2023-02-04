@@ -15,20 +15,16 @@ namespace SJ
 	class FileExtractor
 	{
 	private:
-		const std::wstring m_songsFolder = L"../ShuiJamGame/Songs/";//!< Location of the songs folder
-		const std::wstring m_inputFolder = L"../ShuiJamGame/Input/";//!< Location of the inputs folder
-		const std::filesystem::path m_origin = std::filesystem::current_path();
-		Bit7zLibrary m_lib{ L"../ShuiJamGame/7z.dll" };//!< Location of the 7zip dll file
-		BitExtractor m_extractor{ m_lib,BitFormat::Zip };//!< Extraction method
+		inline static const std::wstring m_songsFolder = L"../ShuiJamGame/Songs/";//!< Location of the songs folder
+		inline static const std::wstring m_inputFolder = L"../ShuiJamGame/Input/";//!< Location of the inputs folder
+		inline static const std::filesystem::path m_origin = std::filesystem::current_path();
+		inline static Bit7zLibrary m_lib{ L"../ShuiJamGame/7z.dll" };//!< Location of the 7zip dll file
+		inline static BitExtractor m_extractor{ m_lib,BitFormat::Zip };//!< Extraction method
 
-		bool m_extracted = false;//!<If the file has been extracted successfully
-
-		static std::unique_ptr<FileExtractor> s_extractor;//!< Singleton extractor class
-
-		void fileExtractorThread();
+		static bool s_extracted;//!<If the file has been extracted successfully
+		static void fileExtractorThread();
 	public:
-		static std::unique_ptr<FileExtractor> get();//!< Singleton getter
-		void extractFiles(); //!< Extract 7zip file
-		inline bool isExtracted() { return m_extracted; }//!<Returns true if there was a file extracted
+		static void extractFiles(); //!< Extract 7zip file
+		inline static bool isExtracted() { return s_extracted; }//!<Returns true if there was a file extracted
 	};
 }

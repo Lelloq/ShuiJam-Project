@@ -8,28 +8,18 @@
 
 namespace SJ
 {
-	std::unique_ptr<FileExtractor> FileExtractor::s_extractor = nullptr;
-
-	//Don't need mutex since file extractor will only be done in the main thread
-	std::unique_ptr<FileExtractor> FileExtractor::get()
-	{
-		if (s_extractor == nullptr)
-		{
-			s_extractor = std::make_unique<FileExtractor>();
-		}
-		return std::move(s_extractor);
-	}
+	bool FileExtractor::s_extracted = false;
 
 	void FileExtractor::extractFiles()
 	{
-		std::thread thread(&FileExtractor::fileExtractorThread, this);
-		thread.detach(); //Detaches the thread so that it can run the extractor separately no rejoining
+		std::thread thread(fileExtractorThread);
+		thread.detach();//Detaches the thread so that it can run the extractor separately no rejoining
 		//No rejoining because the file extractor class is a static which means it's going to be there for the lifetime of the program
 	}
 
 	void FileExtractor::fileExtractorThread()
 	{
-		m_extracted = false;
+		s_extracted = false;
 		for (const auto& entry : std::filesystem::directory_iterator(m_inputFolder))
 		{
 			std::wstring fileName = entry.path().filename().wstring(); //Get the filename that has the extension
@@ -43,18 +33,25 @@ namespace SJ
 					std::wstring inputPath = std::filesystem::current_path();
 					std::filesystem::current_path("../Songs");
 					std::wstring songPath = std::filesystem::current_path();//Set the path to the songs folder
-					std::filesystem::create_directory("x");//Create a temp folder so it's less likely to cause an error when extracting the file due to having a too long string
-					songPath += '/'; songPath += L"x";//Append '/' and temp
-					inputPath += '/'; inputPath += fileName;//Append '/' and folder name
-					m_extractor.extract(inputPath, songPath);//Extract the file from the input folder and put into the songs folder
-					std::filesystem::rename("x", folderName);//Rename the temp folder to the song name to prevent clashing with duplicate names
-					std::filesystem::current_path("../Input");
-					std::filesystem::remove(fileName);
-					std::filesystem::current_path(m_origin);
+					if(!std::filesystem::exists(folderName))
+					{
+						std::filesystem::create_directory("x");//Create a temp folder so it's less likely to cause an error when extracting the file due to having a too long string
+						songPath += '/'; songPath += L"x";//Append '/' and temp
+						inputPath += '/'; inputPath += fileName;//Append '/' and folder name
+						m_extractor.extract(inputPath, songPath);//Extract the file from the input folder and put into the songs folder
+						std::filesystem::rename("x", folderName);//Rename the temp folder to the song name to prevent clashing with duplicate names
+						std::filesystem::current_path("../Input");
+						std::filesystem::remove(fileName);
+						std::filesystem::current_path(m_origin);
+					}
+					else
+					{
+						std::filesystem::current_path("../Input");
+						std::filesystem::remove(fileName);
+					}
 					#ifdef DEBUG
 					std::wcout << "Extracted " << folderName << std::endl;
 					#endif 
-					m_extracted = true;
 				}
 			}
 			catch (const BitException& e)
@@ -64,7 +61,7 @@ namespace SJ
 			}
 			std::filesystem::current_path(m_origin);
 		}
-		m_extracted = true;
+		s_extracted = true;
 		#ifdef DEBUG
 		std::cout << "Extraction complete" << std::endl;
 		#endif
