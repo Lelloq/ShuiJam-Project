@@ -12,9 +12,12 @@ namespace SJ
 
 	void FileExtractor::extractFiles()
 	{
-		std::thread thread(fileExtractorThread);
-		thread.detach();//Detaches the thread so that it can run the extractor separately no rejoining
-		//No rejoining because the file extractor class is a static which means it's going to be there for the lifetime of the program
+		s_extracted = false;
+		static std::thread thread(fileExtractorThread);//Create a thread
+		if (s_extracted) //Once the extractor has finished join the thread back to the main thread
+		{ 
+			thread.join(); 
+		}
 	}
 
 	void FileExtractor::fileExtractorThread()

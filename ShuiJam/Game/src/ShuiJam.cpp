@@ -25,9 +25,7 @@ void main()
 	std::shared_ptr<SJ::SFXSource> SFX(new SJ::SFXSource);
 	//ALuint testsfx = soundEffect->addSFX(SJFOLDER + SOUNDS + "parallax.mp3");
 
-	std::cout << SJ::FileExtractor::isExtracted() << std::endl;
 	SJ::FileExtractor::extractFiles();
-	std::cout << SJ::FileExtractor::isExtracted() << std::endl;
 
 	//SFX->Play(testsfx);
 	gameWindow.Start();
@@ -37,7 +35,7 @@ void main()
 	while(!glfwWindowShouldClose(gameWindow.getWindow()))
 	{
 		gameWindow.Update();
-		//std::cout << m.getTimePosition() << std::endl;
+		std::cout << m.getTimePosition() << std::endl;
 		m.Update();
 	}
 
