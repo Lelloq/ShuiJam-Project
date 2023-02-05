@@ -14,6 +14,14 @@ namespace SJ
 	{
 	}
 
+	void MenuScene::Update(float dt)
+	{
+	}
+
+	void MenuScene::Render()
+	{
+	}
+
 	void MenuScene::getKey(int key, int scancode, int action, int mods)
 	{
 		if(action == GLFW_PRESS)

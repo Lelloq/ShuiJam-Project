@@ -24,11 +24,14 @@ namespace SJ
 		//GRAPHICS
 		std::shared_ptr<Shader> m_shader;
 
+
 		ALuint m_anyKeySound;
 	public:
 		MenuScene() {};
 		MenuScene(GLFWwindow* window);
 		~MenuScene();
+		void Update(float dt);
+		void Render();
 		void getKey(int key, int scancode, int action, int mods) override;
 		void getMouseButton(int button, int action, int mods) override;
 		void getScroll(double xoffset, double yoffset) override;

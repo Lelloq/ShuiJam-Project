@@ -11,6 +11,5 @@ namespace SJ
 	public:
 		virtual void Draw() const;//!< Virtual draw function for inherited classes
 		void Draw(VAO& vao, EBO& vbo, Shader& shader) const;//!< Render stuff onto the screen without needing to create a class that draws it
-		void Clear() const;//!< Clears the window buffer and depth buffer bits
 	};
 }

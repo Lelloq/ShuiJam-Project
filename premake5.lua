@@ -26,9 +26,11 @@ project "ShuiJam"
 		"%{prj.name}/Game/include/**.h",
 		"%{prj.name}/Game/src/**.cpp",
 		"%{prj.name}/Renderer/include/**.h",
+		"%{prj.name}/Renderer/objects/include/**.h",
 		"%{prj.name}/Externals/**.c",
 		"%{prj.name}/Externals/**.cpp",
 		"%{prj.name}/Renderer/src/**.cpp",
+		"%{prj.name}/Renderer/objects/src/**.cpp",
 		"%{prj.name}/Renderer/shader/vert/**.vert",
 		"%{prj.name}/Renderer/shader/frag/**.frag",
 	}
@@ -36,6 +38,7 @@ project "ShuiJam"
 	includedirs
 	{	
 		"%{prj.name}/Renderer/include",
+		"%{prj.name}/Renderer/",
 		"%{prj.name}/Game/include",
 		"%{prj.name}/Game",
 		"%{prj.name}/Externals/",

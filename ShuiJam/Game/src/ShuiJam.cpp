@@ -17,6 +17,7 @@ void setup()
 void main()
 {
 	setup();
+	std::string currentScene = "menu";
 
 	SJ::MenuScene menu = SJ::MenuScene(gameWindow.getWindow());
 
@@ -34,9 +35,10 @@ void main()
 	SJ::Scene::setInputCallbacks(menu);
 	while(!glfwWindowShouldClose(gameWindow.getWindow()))
 	{
-		gameWindow.Update();
+		gameWindow.beginFrame();
 		std::cout << m.getTimePosition() << std::endl;
 		m.Update();
+		gameWindow.Swap();
 	}
 
 	gameWindow.Shutdown();
