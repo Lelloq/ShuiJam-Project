@@ -19,8 +19,8 @@ namespace SJ
 
 		m_texture.reset(&image);//Reset is used to indicate that its now using the texture given by the constructor
 		m_VAO = std::make_unique<VAO>();//Create a new VAO
-		m_VBO = std::make_unique<VBO>(m_verts, sizeof(m_verts), GL_STATIC_DRAW);//Create a VBO with params for the constructor
-		m_EBO = std::make_unique<EBO>(m_indices, m_indices.size(), GL_STATIC_DRAW);//Create an EBO with params for the constructor
+		m_VBO = std::make_unique<VBO>(static_cast<void*>(&m_verts), sizeof(m_verts), GL_STATIC_DRAW);//Create a VBO with params for the constructor
+		m_EBO = std::make_unique<EBO>(static_cast<void*>(&m_indices), m_indices.size(), GL_STATIC_DRAW);//Create an EBO with params for the constructor
 
 		BufferLayout layout;
 		layout.Push<float>(3);//Positions

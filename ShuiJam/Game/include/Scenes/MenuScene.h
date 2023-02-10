@@ -4,6 +4,7 @@
 #include "Scene.h"
 #include "Audio/AudioDevice.h"
 #include "Audio/SoundEffect.h"
+#include "objects/include/Rect.h"
 #include <GLFW/glfw3.h>
 #include <functional>
 
@@ -23,7 +24,7 @@ namespace SJ
 		std::shared_ptr<SJ::SFXSource> m_source;//!< Sound effect source
 		//GRAPHICS
 		std::shared_ptr<Shader> m_shader;
-
+		std::unique_ptr<Rect> titleBG;
 
 		ALuint m_anyKeySound;
 	public:
