@@ -36,7 +36,7 @@ void main()
 	while(!glfwWindowShouldClose(gameWindow.getWindow()))
 	{
 		gameWindow.beginFrame();
-		std::cout << m.getTimePosition() << std::endl;
+		//std::cout << m.getTimePosition() << std::endl;
 		m.Update();
 		gameWindow.Swap();
 	}

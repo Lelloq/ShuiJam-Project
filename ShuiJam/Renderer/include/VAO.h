@@ -18,5 +18,6 @@ namespace SJ
 		void AddBuffer(VBO& vb, BufferLayout& layout);//!< Add layout to the buffer
 		void Bind() const;//!< Bind buffer
 		void Unbind() const;//!< Unbind buffer
+		inline uint32_t getID() { return m_ID; }
 	};
 }

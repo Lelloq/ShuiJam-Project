@@ -5,15 +5,15 @@
 
 namespace SJ
 {
-	Texture::Texture(const char* filepath)
+	Texture::Texture(const char* filepath, int wrapping)
 	{
 		//Generate and bind texture to texture unit 0
 		glGenTextures(1, &m_ID);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_ID);
 		//Set texture parameters wrapping and filtering
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapping);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapping);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -35,12 +35,5 @@ namespace SJ
 	Texture::~Texture()
 	{
 		glDeleteTextures(1, &m_ID);
-	}
-
-	//Bind the texture to chosen texture unit
-	void Texture::Bind(uint32_t unit)
-	{
-		glActiveTexture(GL_TEXTURE0 + unit);
-		glBindTexture(GL_TEXTURE_2D, m_ID);
 	}
 }
