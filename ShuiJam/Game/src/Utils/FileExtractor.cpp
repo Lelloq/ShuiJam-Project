@@ -8,21 +8,19 @@
 
 namespace SJ
 {
-	bool FileExtractor::s_extracted = false;
-
-	void FileExtractor::extractFiles()
+	bool FileExtractor::extractFiles()
 	{
-		s_extracted = false;
-		static std::thread thread(fileExtractorThread);//Create a thread
-		if (s_extracted) //Once the extractor has finished join the thread back to the main thread
-		{ 
-			thread.join(); 
-		}
+		//s_extracted = false;
+		//static std::thread thread(fileExtractorThread);//Create a thread
+		//if (s_extracted) //Once the extractor has finished join the thread back to the main thread
+		//{ 
+		//	thread.join(); 
+		//}
+		return fileExtractorThread();
 	}
 
-	void FileExtractor::fileExtractorThread()
+	bool FileExtractor::fileExtractorThread()
 	{
-		s_extracted = false;
 		for (const auto& entry : std::filesystem::directory_iterator(m_inputFolder))
 		{
 			std::wstring fileName = entry.path().filename().wstring(); //Get the filename that has the extension
@@ -64,7 +62,7 @@ namespace SJ
 			}
 			std::filesystem::current_path(m_origin);
 		}
-		s_extracted = true;
+		return true;
 		#ifdef DEBUG
 		std::cout << "Extraction complete" << std::endl;
 		#endif

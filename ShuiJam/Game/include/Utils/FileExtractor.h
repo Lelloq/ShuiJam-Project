@@ -5,10 +5,15 @@
 #include <iostream>
 #include <string>
 #include <filesystem>
-#include <thread>
+#include <future>
 
 namespace SJ
 {
+	template<typename T>
+	static bool isFutureReady(const std::future<T>& future) {
+		return (future.wait_for(std::chrono::duration<float>(0.f)) == std::future_status::ready);
+	}
+
 	using namespace bit7z;
 	/*\class FileExtractor
 	\brief extracts .osz files into the songs folder*/
@@ -21,10 +26,8 @@ namespace SJ
 		inline static Bit7zLibrary m_lib{ L"../ShuiJamGame/7z.dll" };//!< Location of the 7zip dll file
 		inline static BitExtractor m_extractor{ m_lib,BitFormat::Zip };//!< Extraction method
 
-		static bool s_extracted;//!<If the file has been extracted successfully
-		static void fileExtractorThread();
+		static bool fileExtractorThread();
 	public:
-		static void extractFiles(); //!< Extract 7zip file
-		inline static bool isExtracted() { return s_extracted; }//!<Returns true if there was a file extracted
+		static bool extractFiles(); //!< Extract 7zip file
 	};
 }
