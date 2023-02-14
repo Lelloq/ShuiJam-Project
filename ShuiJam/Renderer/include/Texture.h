@@ -10,7 +10,7 @@ namespace SJ
 	private:
 		uint32_t m_ID;//!< Texture ID
 	public:
-		Texture(const char* filepath, int wrapping); //!< Load texture from file path
+		Texture(std::string& filepath, int wrapping); //!< Load texture from file path
 		~Texture();//!< Deconstructor that deletes texture
 	};
 }

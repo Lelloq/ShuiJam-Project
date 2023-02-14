@@ -9,7 +9,6 @@ namespace SJ
 	class Renderer
 	{
 	public:
-		virtual void Draw() const;//!< Virtual draw function for inherited classes
-		void Draw(VAO& vao, EBO& vbo, Shader& shader) const;//!< Render stuff onto the screen without needing to create a class that draws it
+		static void Draw(VAO& vao, EBO& ebo, Shader& shader);//!< Render stuff onto the screen without needing to create a class that draws it
 	};
 }

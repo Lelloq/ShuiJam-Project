@@ -31,12 +31,10 @@ namespace SJ
 		glm::vec2 m_position{ 0.f };//!<Position of the rectangle
 		glm::vec2 m_scale{ 1.0f, 1.0f };//!<Size of the rectangle
 		float m_angle = 0.f;//!<Angle of rotation in degrees (rotate on z axis (0,0,1) - 2D game)
-		std::unique_ptr<VAO> m_VAO;//!< Vertex array object
-		std::unique_ptr<VBO> m_VBO;//!< Vertex buffer object
-		std::unique_ptr<EBO> m_EBO;//!< Element buffer object
-		std::unique_ptr<Texture> m_texture;//!< Texture image
-
-		glm::mat4 m_model{ 1.0f };//!<Model matrix 
+		VAO* m_VAO;//!< Vertex array object
+		VBO* m_VBO;//!< Vertex buffer object
+		EBO* m_EBO;//!< Element buffer object
+		Texture* m_texture;//!< Texture image
 	public:
 		/**
 		 * Constructs a rectangle by taking in these parameters.
@@ -47,6 +45,7 @@ namespace SJ
 		 */
 		Rect(const glm::vec2& pos, const glm::vec2& size, const int zIndex, Texture& image);
 		~Rect();
-		inline uint32_t getID() { return m_VAO->getID(); }//!< Access the vao ID for rendering
+		inline VAO& getVAO() { return *m_VAO; }//!< Access the vao for rendering
+		inline EBO& getEBO() { return *m_EBO; }//!< Access the ebo for rendering
 	};
 }

@@ -2,9 +2,10 @@
 #include "Shader.h"
 #include <glad/glad.h>
 
+
 namespace SJ
 {
-	Shader::Shader(const char* vertexPath, const char* fragPath)
+	Shader::Shader(std::string& vertexPath, std::string& fragPath)
 	{
 		//Setup of shader code and shader file stream
 		std::string vertexCode;
@@ -46,6 +47,7 @@ namespace SJ
 		vertex = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(vertex, 1, &vCode, NULL);
 		glCompileShader(vertex);
+		checkCompileErrors(vertex, "VERTEX");
 		glGetShaderiv(vertex, GL_COMPILE_STATUS, &succ);
 		if(!succ)
 		{
@@ -57,6 +59,7 @@ namespace SJ
 		fragment = glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(fragment, 1, &fCode, NULL);
 		glCompileShader(fragment);
+		checkCompileErrors(fragment, "FRAGMENT");
 		glGetShaderiv(fragment, GL_COMPILE_STATUS, &succ);
 		if (!succ)
 		{
@@ -68,6 +71,7 @@ namespace SJ
 		glAttachShader(m_ID, vertex);
 		glAttachShader(m_ID, fragment);
 		glLinkProgram(m_ID);
+		checkCompileErrors(m_ID, "PROGRAM");
 		glGetProgramiv(m_ID, GL_LINK_STATUS, &succ);
 		if (!succ)
 		{
@@ -97,5 +101,34 @@ namespace SJ
 	void Shader::setBool(const std::string& name, bool val)
 	{
 		glUniform1i(glGetUniformLocation(m_ID, name.c_str()),val);
+	}
+
+	void Shader::setMat4(const std::string& name, const glm::mat4& mat) const
+	{
+		glUniformMatrix4fv(glGetUniformLocation(m_ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+	}
+
+	void Shader::checkCompileErrors(unsigned int shader, std::string type)
+	{
+		GLint success;
+		GLchar infoLog[1024];
+		if (type != "PROGRAM")
+		{
+			glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+			if (!success)
+			{
+				glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+				std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+			}
+		}
+		else
+		{
+			glGetProgramiv(shader, GL_LINK_STATUS, &success);
+			if (!success)
+			{
+				glGetProgramInfoLog(shader, 1024, NULL, infoLog);
+				std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+			}
+		}
 	}
 }

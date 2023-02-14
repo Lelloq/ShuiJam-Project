@@ -23,14 +23,13 @@ namespace SJ
 		SJ::SoundEffect* m_sfx;//!< Sound effect
 		std::shared_ptr<SJ::SFXSource> m_source;//!< Sound effect source
 		//GRAPHICS
+		std::shared_ptr<Texture> m_image;
 		std::shared_ptr<Shader> m_shader;
-		std::unique_ptr<Rect> titleBG;
+		std::shared_ptr<Rect> m_titleBG;
 
 		ALuint m_anyKeySound;
 	public:
-		MenuScene() {};
 		MenuScene(GLFWwindow* window);
-		~MenuScene();
 		void Update(float dt);
 		void Render();
 		void getKey(int key, int scancode, int action, int mods) override;

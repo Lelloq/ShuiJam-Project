@@ -10,12 +10,6 @@ namespace SJ
 {
 	bool FileExtractor::extractFiles()
 	{
-		//s_extracted = false;
-		//static std::thread thread(fileExtractorThread);//Create a thread
-		//if (s_extracted) //Once the extractor has finished join the thread back to the main thread
-		//{ 
-		//	thread.join(); 
-		//}
 		return fileExtractorThread();
 	}
 

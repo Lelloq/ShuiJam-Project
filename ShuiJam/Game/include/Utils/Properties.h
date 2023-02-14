@@ -5,3 +5,7 @@ const std::string SOUNDS = "./Sounds/";
 const std::string IMAGES = "./Images/";
 const std::string SONGINPUT = "./Input/";
 const std::string SONGS = "./Songs/";
+const std::string SHADER = "./Shader/";
+
+const int WIDTH = 1280;
+const int HEIGHT = 720;

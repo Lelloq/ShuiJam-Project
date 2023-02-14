@@ -10,7 +10,8 @@
 namespace SJ
 {
 	template<typename T>
-	static bool isFutureReady(const std::future<T>& future) {
+	static bool isFutureReady(const std::future<T>& future) 
+	{
 		return (future.wait_for(std::chrono::duration<float>(0.f)) == std::future_status::ready);
 	}
 

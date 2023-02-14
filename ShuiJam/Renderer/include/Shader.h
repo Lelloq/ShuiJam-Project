@@ -5,6 +5,8 @@
 #include <sstream>
 #include <iostream>
 
+#include <glm/glm.hpp>
+
 namespace SJ
 {
 	/*\class Shader*/
@@ -13,12 +15,14 @@ namespace SJ
 	private:
 		uint32_t m_ID; //!< Shader ID
 	public:
-		Shader(const char* vertexPath, const char* fragPath); //!< Compile the shaders
+		Shader(std::string& vertexPath, std::string& fragPath); //!< Compile the shaders
 		void use();//!< Use the shader
 
 		//!Uniform setters
 		void setFloat(const std::string &name, float val);//!< Set float uniform
 		void setInt(const std::string &name, int val);//!< Set int uniform
 		void setBool(const std::string &name, bool val);//!< Set bool uniform
+		void setMat4(const std::string& name, const glm::mat4& mat) const;
+		void checkCompileErrors(unsigned int shader, std::string type);
 	};
 }
