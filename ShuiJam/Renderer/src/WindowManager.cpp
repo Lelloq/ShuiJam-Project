@@ -49,6 +49,7 @@ namespace SJ
 	//Begins frame and clears buffer bits
 	void WindowManager::beginFrame()
 	{
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		m_currentFrame = glfwGetTime();
 		m_dt = m_currentFrame - m_lastFrame;
 		m_lastFrame = m_currentFrame;

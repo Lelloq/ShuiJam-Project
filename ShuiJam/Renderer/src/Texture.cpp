@@ -12,6 +12,15 @@ namespace SJ
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_ID);
 
+		if (filepath.find(".png") != std::string::npos)
+		{
+			stbi_set_flip_vertically_on_load(true);
+		}
+		else
+		{
+			stbi_set_flip_vertically_on_load(false);
+		}
+
 		//If data exists generate the texture
 		int width, height, channels;
 		unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &channels, 0);

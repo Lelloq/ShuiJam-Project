@@ -89,7 +89,8 @@ namespace SJ
 		{
 			if(*it == buffer)
 			{
-				alDeleteBuffers(1, &*it);
+				alSourceStop(*it);
+				alDeleteSources(1, &*it);
 				m_SFXBuffers.erase(it);
 			}
 		}
@@ -100,8 +101,6 @@ namespace SJ
 		alGenSources(1, &m_source);
 		alSourcef(m_source, AL_PITCH, 1);
 		alSourcef(m_source, AL_GAIN, 1);
-		alSource3f(m_source, AL_POSITION, 0, 0, 0);
-		alSource3f(m_source, AL_VELOCITY, 0, 0, 0);
 		alSourcei(m_source, AL_LOOPING, false);
 		alSourcei(m_source, AL_BUFFER, m_buffer);
 	}

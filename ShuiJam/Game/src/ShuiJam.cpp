@@ -16,27 +16,29 @@ void setup()
 void main()
 {
 	SJ::WindowManager gameWindow = SJ::WindowManager(1280, 720, 0, 0, "ShuiJam");
-	SJ::MenuScene menu = SJ::MenuScene(gameWindow.getWindow());
+	SJ::MenuScene menu = SJ::MenuScene();
 
 	setup();
 
-	std::string currentScene = "menu";
-
-	SJ::Music m(SJFOLDER + SOUNDS + "parallax.mp3");
-	std::shared_ptr<SJ::SFXSource> SFX(new SJ::SFXSource);
+	//SJ::Music m(SJFOLDER + SOUNDS + "parallax.mp3");
+	//std::shared_ptr<SJ::SFXSource> SFX(new SJ::SFXSource);
 
 	auto isExtracted = std::async(std::launch::async, SJ::FileExtractor::extractFiles);
-	m.Play();
+	//m.Play();
 
 	SJ::Scene::setWindow(gameWindow.getWindow());
 	SJ::Scene::setInputCallbacks(menu);
 	while(!glfwWindowShouldClose(gameWindow.getWindow()))
 	{
 		gameWindow.beginFrame();
+		if (glfwGetKey(gameWindow.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(gameWindow.getWindow(), true);
 		//std::cout << m.getTimePosition() << "\n";
-		menu.Render();
+		if(g_CurrentScene == "title")
+		{
+			menu.Render();
+		}
 		//std::cout << SJ::isFutureReady(isExtracted) << "\n";
-		m.Update();
+		//m.Update();
 		gameWindow.Swap();
 	}
 

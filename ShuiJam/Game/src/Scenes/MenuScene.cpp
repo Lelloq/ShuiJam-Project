@@ -1,27 +1,29 @@
 /*\file MenuScenec.pp*/
 #include "Scenes/MenuScene.h"
 #include "Utils/Properties.h"
+#include <GLFW/glfw3.h>
 
 namespace SJ
 {
-	MenuScene::MenuScene(GLFWwindow* window) : m_window(window), m_device(SJ::AudioDevice::get()), m_sfx(SJ::SoundEffect::get())
+	MenuScene::MenuScene() : m_device(SJ::AudioDevice::get()), m_sfx(SJ::SoundEffect::get())
 	{
 		m_source = std::make_shared<SJ::SFXSource>();
 		m_anyKeySound = m_sfx->addSFX(SJFOLDER + SOUNDS + "hitclap.wav");
 
-		m_image = std::make_shared<Texture>(SJFOLDER + IMAGES + "title.png", GL_CLAMP_TO_EDGE);
-		m_titleBG = std::make_shared<Rect>(glm::vec2(0.f, 0.f), glm::vec2(WIDTH, HEIGHT), 0, *m_image);
+		m_bg = std::make_shared<Texture>(SJFOLDER + IMAGES + "titlebg.png", GL_CLAMP_TO_EDGE);
+		m_titleBG = std::make_shared<Rect>(glm::vec2(0.f, 0.f), glm::vec2(WIDTH, HEIGHT), 0, *m_bg);
 
 		glm::mat4 model{ 1.0f };
 		glm::mat4 view{ 1.0f };
 		glm::mat4 projection{ glm::ortho(0.f, static_cast<float>(WIDTH), 0.f, static_cast<float>(HEIGHT), -1000.f, 1000.f) };
-		m_shader = std::make_shared<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
+		m_BGshader = std::make_shared<Shader>(SJFOLDER + SHADER + "title.vert", SJFOLDER + SHADER + "title.frag");
 
-		m_shader->use();
-		m_shader->setInt("image", 0);
-		m_shader->setMat4("model", model);
-		m_shader->setMat4("view", view);
-		m_shader->setMat4("projection", projection);
+		m_BGshader->use();
+		m_BGshader->setInt("image", 0);
+		m_BGshader->setFloat("transparency", 1.0f);
+		m_BGshader->setMat4("model", model);
+		m_BGshader->setMat4("view", view);
+		m_BGshader->setMat4("projection", projection);
 	}
 
 	void MenuScene::Update(float dt)
@@ -30,16 +32,16 @@ namespace SJ
 
 	void MenuScene::Render()
 	{
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		Renderer::Draw(m_titleBG->getVAO(), m_titleBG->getEBO(), *m_shader);
+		Renderer::Draw(m_titleBG->getVAO(), m_titleBG->getEBO(), *m_BGshader);
 	}
 
 	void MenuScene::getKey(int key, int scancode, int action, int mods)
 	{
-		if(action == GLFW_PRESS)
+		if(action == GLFW_PRESS && !m_pressed)
 		{
 			m_source->Play(m_anyKeySound);
-			std::cout << key << std::endl;
+			m_pressed = true;
+			g_CurrentScene = "song_select";
 		}
 	}
 	void MenuScene::getMouseButton(int button, int action, int mods)

@@ -45,20 +45,20 @@ namespace SJ
 						std::filesystem::remove(fileName);
 					}
 					#ifdef DEBUG
-					std::wcout << "Extracted " << folderName << std::endl;
+					std::wcout << "Extracted " << folderName << "\n";
 					#endif 
 				}
 			}
 			catch (const BitException& e)
 			{
-				std::cout << e.what() << std::endl;
+				std::cout << e.what() << "\n";
 				std::filesystem::remove(folderName);
 			}
 			std::filesystem::current_path(m_origin);
 		}
-		return true;
 		#ifdef DEBUG
-		std::cout << "Extraction complete" << std::endl;
+		std::cout << "Extraction complete" << "\n";
 		#endif
+		return true;
 	}
 }
