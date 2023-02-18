@@ -1,9 +1,10 @@
 ﻿/*\file WindowManager.h*/
 #pragma once
-#include<glad/glad.h>
-#include<GLFW/glfw3.h>
-#include<string>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <string>
 #include <wtypes.h>
+#include "Utils/Properties.h"
 
 namespace SJ
 {

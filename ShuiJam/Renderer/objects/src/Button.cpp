@@ -1,20 +1,29 @@
-#include "objects/include/Rect.h"
+#include "objects/include/Button.h"
+/*****************************************************************//**
+ * \file   Button.cpp
+ * \brief  Implementation of button
+ * 
+ * \date   February 2023
+ *********************************************************************/
 
 namespace SJ
 {
-	Rect::Rect(const glm::vec2& pos,const glm::vec2& size,const int zIndex, Texture& image)
+	Button::Button(const glm::vec2& pos, const glm::vec2& size, const int zIndex, Texture& image)
 	{
 		m_position = pos;
 		m_size = size;
 
+		m_clickBoundsX = glm::vec2(pos.x, pos.x + size.x);
+		m_clickBoundsY = glm::vec2(pos.y, pos.y + size.y);
+
 		//The rectangle are drawn from the top left
-		glm::vec2 posTL{pos.x, pos.y}; //Top left
-		glm::vec2 posTR{pos.x + size.x, pos.y};//Top right
-		glm::vec2 posBR{pos.x + size.x, pos.y + size.y };//Bottom right
-		glm::vec2 posBL{pos.x, pos.y + size.y};//Bottom left
+		glm::vec2 posTL{ pos.x, pos.y }; //Top left
+		glm::vec2 posTR{ pos.x + size.x, pos.y };//Top right
+		glm::vec2 posBR{ pos.x + size.x, pos.y + size.y };//Bottom right
+		glm::vec2 posBL{ pos.x, pos.y + size.y };//Bottom left
 
 		m_verts =
-		 //POSITIONS								   //UV_COORDS
+		//POSITIONS								   //UV_COORDS
 		{posTL.x, posTL.y, static_cast<float>(zIndex), 0.0f, 0.0f,
 		 posTR.x, posTR.y, static_cast<float>(zIndex), 1.0f, 0.0f,
 		 posBR.x, posBR.y, static_cast<float>(zIndex), 1.0f, 1.0f,
@@ -31,7 +40,8 @@ namespace SJ
 
 		m_VAO->AddBuffer(*m_VBO, layout);
 	}
-	Rect::~Rect()
+
+	Button::~Button()
 	{
 		m_texture->~Texture();
 		m_VAO->~VAO();

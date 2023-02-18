@@ -11,19 +11,19 @@ namespace SJ
 		m_anyKeySound = m_sfx->addSFX(SJFOLDER + SOUNDS + "hitclap.wav");
 
 		m_bg = std::make_shared<Texture>(SJFOLDER + IMAGES + "titlebg.png", GL_CLAMP_TO_EDGE);
-		m_titleBG = std::make_shared<Rect>(glm::vec2(0.f, 0.f), glm::vec2(WIDTH, HEIGHT), 0, *m_bg);
+		m_titleBG = std::make_shared<Rect>(glm::vec2(0.f, 0.f), glm::vec2(SCR_WIDTH, SCR_HEIGHT), 0, *m_bg);
 
 		glm::mat4 model{ 1.0f };
 		glm::mat4 view{ 1.0f };
-		glm::mat4 projection{ glm::ortho(0.f, static_cast<float>(WIDTH), 0.f, static_cast<float>(HEIGHT), -1000.f, 1000.f) };
-		m_BGshader = std::make_shared<Shader>(SJFOLDER + SHADER + "title.vert", SJFOLDER + SHADER + "title.frag");
+		glm::mat4 projection{ glm::ortho(0.f, static_cast<float>(SCR_WIDTH), 0.f, static_cast<float>(SCR_HEIGHT), -1000.f, 1000.f) };
+		m_shader = std::make_shared<Shader>(SJFOLDER + SHADER + "title.vert", SJFOLDER + SHADER + "title.frag");
 
-		m_BGshader->use();
-		m_BGshader->setInt("image", 0);
-		m_BGshader->setFloat("transparency", 1.0f);
-		m_BGshader->setMat4("model", model);
-		m_BGshader->setMat4("view", view);
-		m_BGshader->setMat4("projection", projection);
+		m_shader->use();
+		m_shader->setInt("image", 0);
+		m_shader->setFloat("transparency", 1.0f);
+		m_shader->setMat4("model", model);
+		m_shader->setMat4("view", view);
+		m_shader->setMat4("projection", projection);
 	}
 
 	void MenuScene::Update(float dt)
@@ -32,7 +32,7 @@ namespace SJ
 
 	void MenuScene::Render()
 	{
-		Renderer::Draw(m_titleBG->getVAO(), m_titleBG->getEBO(), *m_BGshader);
+		Renderer::Draw(m_titleBG->getVAO(), m_titleBG->getEBO(), *m_shader.get());
 	}
 
 	void MenuScene::getKey(int key, int scancode, int action, int mods)

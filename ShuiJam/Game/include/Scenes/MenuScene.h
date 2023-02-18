@@ -12,8 +12,6 @@ namespace SJ
 	class MenuScene : public Scene
 	{
 	private:
-		//WINDOW
-		GLFWwindow* m_window;
 		//AUDIO
 		SJ::AudioDevice* m_device;//!< Audio device
 		SJ::SoundEffect* m_sfx;//!< Sound effect
@@ -22,9 +20,7 @@ namespace SJ
 		std::shared_ptr<Texture> m_bg;
 		std::shared_ptr<Texture> m_title;
 		std::shared_ptr<Texture> m_text;
-		std::shared_ptr<Shader> m_BGshader;
-		std::shared_ptr<Shader> m_titleShader;
-		std::shared_ptr<Shader> m_textShader;
+		std::shared_ptr<Shader> m_shader;
 		std::shared_ptr<Rect> m_titleBG;
 
 		ALuint m_anyKeySound;

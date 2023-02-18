@@ -1,5 +1,9 @@
-/*\file Rect.h
-\brief 2D rectangle*/
+/*****************************************************************//**
+ * \file   Button.h
+ * \brief  Interactable variation of the rect class
+ * 
+ * \date   February 2023
+ *********************************************************************/
 #pragma once
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -10,17 +14,15 @@
 
 namespace SJ
 {
-	/*\class Rect
-	\brief 2D rectangle class*/
-	class Rect
+	class Button
 	{
 	private:
 		std::array<float, 20> m_verts = //!<Default vertices
-		//POSITION    //UV_COORDS
-		{0.f, 0.f, 0, 0.0f, 0.0f,
+			//POSITION    //UV_COORDS
+		{ 0.f, 0.f, 0, 0.0f, 0.0f,
 		 1.f, 0.f, 0, 1.0f, 0.0f,
 		 1.f, 1.f, 0, 1.0f, 1.0f,
-		 0.f, 1.f, 0, 0.0f, 1.0f,};
+		 0.f, 1.f, 0, 0.0f, 1.0f, };
 
 		std::array<uint32_t, 6> m_indices = //!<Indices
 		{
@@ -30,6 +32,8 @@ namespace SJ
 
 		glm::vec2 m_position;//!<Position of the rectangle
 		glm::vec2 m_size;//!<Size of the rectangle
+		glm::vec2 m_clickBoundsX;//!<Where the button begins and ends x axis
+		glm::vec2 m_clickBoundsY;//!<Where the button begins and ends y axis
 		float m_angle = 0.f;//!<Angle of rotation in degrees (rotate on z axis (0,0,1) - 2D game)
 		VAO* m_VAO;//!< Vertex array object
 		VBO* m_VBO;//!< Vertex buffer object
@@ -43,11 +47,13 @@ namespace SJ
 		 * \param zIndex - int, the z-index where the higher value is rendered infront of another in orthograhpic view
 		 * \param image - Texture&, image is put in here and will be rendered on the rectangle
 		 */
-		Rect(const glm::vec2& pos, const glm::vec2& size, const int zIndex, Texture& image);
-		~Rect();
+		Button(const glm::vec2& pos, const glm::vec2& size, const int zIndex, Texture& image);
+		~Button();
 		[[nodiscard]] inline VAO& getVAO() { return *m_VAO; }//!< Access the vao for rendering
 		[[nodiscard]] inline EBO& getEBO() { return *m_EBO; }//!< Access the ebo for rendering
 		[[nodiscard]] inline glm::vec2 getPosition() { return m_position; }
 		[[nodiscard]] inline glm::vec2 getSize() { return m_size; }
+		[[nodiscard]] inline glm::vec2 getClickBoundsX() {return m_clickBoundsX; }
+		[[nodiscard]] inline glm::vec2 getClickBoundsY() {return m_clickBoundsY; }
 	};
 }
