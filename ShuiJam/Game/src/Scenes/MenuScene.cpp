@@ -8,7 +8,7 @@ namespace SJ
 	MenuScene::MenuScene() : m_device(SJ::AudioDevice::get()), m_sfx(SJ::SoundEffect::get())
 	{
 		m_source = std::make_shared<SJ::SFXSource>();
-		m_anyKeySound = m_sfx->addSFX(SJFOLDER + SOUNDS + "hitclap.wav");
+		m_anyKeySound = m_sfx->addSFX(SJFOLDER + SOUNDS + "start.wav");
 
 		m_bg = std::make_shared<Texture>(SJFOLDER + IMAGES + "titlebg.png", GL_CLAMP_TO_EDGE);
 		m_titleBG = std::make_shared<Rect>(glm::vec2(0.f, 0.f), glm::vec2(SCR_WIDTH, SCR_HEIGHT), 0, *m_bg);

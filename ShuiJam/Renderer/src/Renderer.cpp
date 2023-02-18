@@ -12,4 +12,11 @@ namespace SJ
 		ebo.Bind();
 		glDrawElements(GL_TRIANGLES, ebo.GetCount(), GL_UNSIGNED_INT, 0);
 	}
+	void Renderer::DrawInstanced(VAO& vao, EBO& ebo, Shader& shader, unsigned int count)
+	{
+		shader.use();
+		vao.Bind();
+		ebo.Bind();
+		glDrawElementsInstanced(GL_TRIANGLES, ebo.GetCount(), GL_UNSIGNED_INT, 0, count);
+	}
 }
