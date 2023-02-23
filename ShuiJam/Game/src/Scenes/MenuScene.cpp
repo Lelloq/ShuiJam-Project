@@ -5,7 +5,7 @@
 
 namespace SJ
 {
-	MenuScene::MenuScene() : m_device(SJ::AudioDevice::get()), m_sfx(SJ::SoundEffect::get())
+	MenuScene::MenuScene() : m_sfx(SJ::SoundEffect::get())
 	{
 		m_source = std::make_shared<SJ::SFXSource>();
 		m_anyKeySound = m_sfx->addSFX(SJFOLDER + SOUNDS + "start.wav");
