@@ -12,6 +12,8 @@ namespace SJ
 	class MenuScene : public Scene
 	{
 	private:
+		//Window
+		GLFWwindow* m_window;
 		//AUDIO
 		SJ::AudioDevice* m_device;
 		SJ::SoundEffect* m_sfx;//!< Sound effect
@@ -26,7 +28,7 @@ namespace SJ
 		ALuint m_anyKeySound;
 		bool m_pressed = false;
 	public:
-		MenuScene();
+		MenuScene(GLFWwindow* window);
 		void Update(float dt);
 		void Render();
 		void getKey(int key, int scancode, int action, int mods) override;

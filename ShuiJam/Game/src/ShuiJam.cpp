@@ -7,18 +7,13 @@
 SJ::AudioDevice* audioDevice;
 SJ::SoundEffect* soundEffect;
 
-void setup()
-{
-    audioDevice = SJ::AudioDevice::get();
-	soundEffect = SJ::SoundEffect::get();
-}
-
 void main()
 {
-	SJ::WindowManager gameWindow = SJ::WindowManager(1280, 720, 0, 0, "ShuiJam");
-	SJ::MenuScene menu = SJ::MenuScene();
+	SJ::WindowManager gameWindow = SJ::WindowManager(SCR_WIDTH, SCR_HEIGHT, 0, 0, "ShuiJam");
+	SJ::MenuScene menu = SJ::MenuScene(gameWindow.getWindow());
 
-	setup();
+	audioDevice = SJ::AudioDevice::get();
+	soundEffect = SJ::SoundEffect::get();
 
 	//SJ::Music m(SJFOLDER + SOUNDS + "parallax.mp3");
 	//std::shared_ptr<SJ::SFXSource> SFX(new SJ::SFXSource);
