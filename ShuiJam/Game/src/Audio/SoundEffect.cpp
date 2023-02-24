@@ -90,8 +90,10 @@ namespace SJ
 			if(*it == buffer)
 			{
 				alSourceStop(*it);
-				alDeleteSources(1, &*it);
-				m_SFXBuffers.erase(it);
+				alSourcei(*it, AL_BUFFER, NULL);
+				alDeleteBuffers(1, &*it);
+				it = m_SFXBuffers.erase(it);
+				return;
 			}
 		}
 	}
