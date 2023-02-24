@@ -13,6 +13,7 @@ namespace SJ
 	{
 	private:
 		//AUDIO
+		SJ::AudioDevice* m_device;
 		SJ::SoundEffect* m_sfx;//!< Sound effect
 		std::shared_ptr<SJ::SFXSource> m_source;//!< Sound effect source
 		//GRAPHICS
