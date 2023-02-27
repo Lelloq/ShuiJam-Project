@@ -1,6 +1,5 @@
 /*\file TextureUnitManager.cpp*/
-#include "engine_pch.h"
-#include "rendering/TextureUnitManager.h"
+#include "TextureUnitManager.h"
 
 namespace Engine
 {
