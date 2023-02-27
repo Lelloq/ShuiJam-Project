@@ -24,6 +24,8 @@ namespace SJ
 		std::shared_ptr<Texture> m_text;
 		std::shared_ptr<Shader> m_shader;
 		std::shared_ptr<Rect> m_titleBG;
+		std::shared_ptr<Rect> m_titleText;
+		std::shared_ptr<Rect> m_startText;
 
 		ALuint m_anyKeySound;
 		bool m_pressed = false;

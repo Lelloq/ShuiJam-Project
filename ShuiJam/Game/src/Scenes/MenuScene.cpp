@@ -13,6 +13,12 @@ namespace SJ
 		m_bg = std::make_shared<Texture>(SJFOLDER + IMAGES + "titlebg.png", GL_CLAMP_TO_EDGE);
 		m_titleBG = std::make_shared<Rect>(glm::vec2(0.f, 0.f), glm::vec2(VPORT_WIDTH, VPORT_HEIGHT), 0, *m_bg);
 
+		m_title = std::make_shared<Texture>(SJFOLDER + IMAGES + "title.png", GL_CLAMP_TO_EDGE);
+		m_titleText = std::make_shared<Rect>(glm::vec2(0.f, 0.f), glm::vec2(200.f, 200.f), 1, *m_title);
+
+		m_text = std::make_shared<Texture>(SJFOLDER + IMAGES + "starttext.png", GL_CLAMP_TO_EDGE);
+		m_startText = std::make_shared<Rect>(glm::vec2(0.f, 0.f), glm::vec2(200.f, 100.f), 2, *m_text);
+
 		glm::mat4 model{ 1.0f };
 		glm::mat4 view{ 1.0f };
 		glm::mat4 projection{ glm::ortho(0.f, VPORT_WIDTH, 0.f, VPORT_HEIGHT, -1000.f, 1000.f) };
