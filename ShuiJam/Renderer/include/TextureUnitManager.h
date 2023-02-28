@@ -3,7 +3,7 @@
 #include <vector>
 #include <unordered_map>
 
-namespace Engine
+namespace SJ
 {
 	/*\class TextureUnitManager
 	\brief class that handles texture unit bindings*/

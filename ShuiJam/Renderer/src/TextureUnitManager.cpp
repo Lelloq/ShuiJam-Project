@@ -1,7 +1,7 @@
 /*\file TextureUnitManager.cpp*/
 #include "TextureUnitManager.h"
 
-namespace Engine
+namespace SJ
 {
 	TextureUnitManager::TextureUnitManager(size_t capacity)
 	{

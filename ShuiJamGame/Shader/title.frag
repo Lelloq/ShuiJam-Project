@@ -8,5 +8,5 @@ uniform float transparency = 1;
 
 void main()
 {
-	FragColour = vec4(texture(image, uv).xyz, transparency);
+	FragColour = texture(image, uv) * transparency;
 }
