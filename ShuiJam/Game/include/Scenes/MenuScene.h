@@ -15,7 +15,7 @@ namespace SJ
 		//Window
 		GLFWwindow* m_window;
 		//AUDIO
-		SJ::AudioDevice* m_device;
+		SJ::AudioDevice* m_device;//!< Sound device
 		SJ::SoundEffect* m_sfx;//!< Sound effect
 		std::shared_ptr<SJ::SFXSource> m_source;//!< Sound effect source
 		//GRAPHICS

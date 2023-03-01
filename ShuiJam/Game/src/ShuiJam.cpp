@@ -31,6 +31,7 @@ void main()
 		if(g_CurrentScene == "title")
 		{
 			menu.Render();
+			menu.Update(gameWindow.getDeltatime());
 		}
 		//std::cout << SJ::isFutureReady(isExtracted) << "\n";
 		//m.Update();

@@ -31,10 +31,13 @@ namespace SJ
 		m_shader->setMat4("projection", projection);
 	}
 
+	//Draw animated objects
 	void MenuScene::Update(float dt)
 	{
+		//TODO - animate fade in for title and animate pop in and out for start text
 	}
 
+	//Draw static objects
 	void MenuScene::Render()
 	{
 		//Renderer::Draw(m_titleBG->getVAO(), m_titleBG->getEBO(), *m_shader.get());
