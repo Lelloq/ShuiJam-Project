@@ -1,4 +1,5 @@
 #include "objects/include/Rect.h"
+#include "Renderer.h"
 
 namespace SJ
 {
@@ -31,11 +32,27 @@ namespace SJ
 
 		m_VAO->AddBuffer(*m_VBO, layout);
 	}
+
 	Rect::~Rect()
 	{
 		m_texture->~Texture();
 		m_VAO->~VAO();
 		m_VBO->~VBO();
 		m_EBO->~EBO();
+	}
+
+	void Rect::Draw(Shader& shader)
+	{
+		shader.use();
+		m_VAO->Bind();
+		m_EBO->Bind();
+		uint32_t unit;
+		//if(Renderer::textureUnitManager.full()) Renderer::textureUnitManager.clear();
+		if(Renderer::textureUnitManager.getUnit(m_texture->getID(), unit))
+		{
+			m_texture->bind(unit);
+		}
+		glDrawElements(GL_TRIANGLES, m_EBO->GetCount(), GL_UNSIGNED_INT, 0);
+		shader.setInt("image", unit);
 	}
 }

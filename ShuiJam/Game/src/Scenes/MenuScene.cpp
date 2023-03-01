@@ -17,7 +17,7 @@ namespace SJ
 		m_titleText = std::make_shared<Rect>(glm::vec2(0.f, 0.f), glm::vec2(200.f, 200.f), 1, *m_title);
 
 		m_text = std::make_shared<Texture>(SJFOLDER + IMAGES + "starttext.png", GL_CLAMP_TO_EDGE);
-		m_startText = std::make_shared<Rect>(glm::vec2(0.f, 0.f), glm::vec2(200.f, 100.f), 2, *m_text);
+		m_startText = std::make_shared<Rect>(glm::vec2(100.f, 0.f), glm::vec2(200.f, 100.f), 2, *m_text);
 
 		glm::mat4 model{ 1.0f };
 		glm::mat4 view{ 1.0f };
@@ -25,7 +25,6 @@ namespace SJ
 		m_shader = std::make_shared<Shader>(SJFOLDER + SHADER + "title.vert", SJFOLDER + SHADER + "title.frag");
 
 		m_shader->use();
-		m_shader->setInt("image", 0);
 		m_shader->setFloat("transparency", 1.0f);
 		m_shader->setMat4("model", model);
 		m_shader->setMat4("view", view);
@@ -38,7 +37,10 @@ namespace SJ
 
 	void MenuScene::Render()
 	{
-		Renderer::Draw(m_titleBG->getVAO(), m_titleBG->getEBO(), *m_shader.get());
+		//Renderer::Draw(m_titleBG->getVAO(), m_titleBG->getEBO(), *m_shader.get());
+		//m_titleBG->Draw(*m_shader);
+		m_titleText->Draw(*m_shader);
+		//m_startText->Draw(*m_shader);
 	}
 
 	void MenuScene::getKey(int key, int scancode, int action, int mods)

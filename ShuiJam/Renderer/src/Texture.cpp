@@ -1,5 +1,6 @@
 /*\file Texture.cpp*/
 #include "Texture.h"
+#include "Renderer.h"
 #include <stb_image.h>
 #include <glad/glad.h>
 
@@ -49,7 +50,6 @@ namespace SJ
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapping);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
 		}
 		//Free data from memory so no memory leaks
 		stbi_image_free(data);
@@ -59,5 +59,10 @@ namespace SJ
 	Texture::~Texture()
 	{
 		glDeleteTextures(1, &m_ID);
+	}
+	void Texture::bind(unsigned int slot)
+	{
+		glActiveTexture(GL_TEXTURE0 + slot);
+		glBindTexture(GL_TEXTURE_2D, m_ID);
 	}
 }

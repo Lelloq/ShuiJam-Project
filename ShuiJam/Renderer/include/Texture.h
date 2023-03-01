@@ -12,5 +12,7 @@ namespace SJ
 	public:
 		Texture(std::string& filepath, int wrapping); //!< Load texture from file path
 		~Texture();//!< Deconstructor that deletes texture
+		void bind(unsigned int slot);
+		[[nodiscard]] inline uint32_t getID() { return m_ID; }
 	};
 }
