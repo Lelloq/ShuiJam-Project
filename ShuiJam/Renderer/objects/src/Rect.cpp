@@ -52,7 +52,7 @@ namespace SJ
 		{
 			m_texture->bind(unit);
 		}
-		glDrawElements(GL_TRIANGLES, m_EBO->GetCount(), GL_UNSIGNED_INT, 0);
 		shader.setInt("image", unit);
+		glDrawElements(GL_TRIANGLES, m_EBO->GetCount(), GL_UNSIGNED_INT, 0);
 	}
 }

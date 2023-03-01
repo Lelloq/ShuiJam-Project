@@ -38,9 +38,9 @@ namespace SJ
 	void MenuScene::Render()
 	{
 		//Renderer::Draw(m_titleBG->getVAO(), m_titleBG->getEBO(), *m_shader.get());
-		//m_titleBG->Draw(*m_shader);
+		m_titleBG->Draw(*m_shader);
 		m_titleText->Draw(*m_shader);
-		//m_startText->Draw(*m_shader);
+		m_startText->Draw(*m_shader);
 	}
 
 	void MenuScene::getKey(int key, int scancode, int action, int mods)
