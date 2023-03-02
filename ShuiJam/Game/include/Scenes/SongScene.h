@@ -20,12 +20,27 @@ namespace SJ
 	class SongScene : public Scene
 	{
 	private:
+		//WINDOW
+		GLFWwindow* m_window;
 		//AUDIO
 		SJ::AudioDevice* m_device;//!< Audio device
 		SJ::SoundEffect* m_sfx;//!< Sound effect
-		std::shared_ptr<SJ::SFXSource> m_source;//!< Sound effect source
+		std::unique_ptr<SFXSource> m_SFXscroll;//!< Sound effect source for scrolling
+		std::unique_ptr<SFXSource> m_SFXstart;//!< Sound effect source for scrolling
+		std::unique_ptr<Music> m_music;//!< Music that plays during song select
+		//GRAPHICS
+		//Shader
+		std::unique_ptr<Shader> m_shader;
+		//Textures
+		std::unique_ptr<Texture> m_songBGIm;
+		std::unique_ptr<Texture> m_songSelectIm;
+		std::shared_ptr<Texture> m_selectWheelIm;
+		//Objects
+		std::unique_ptr<Rect> m_songBG;
+		std::unique_ptr<Rect> m_songSelect;
+
 	public:
-		SongScene();
+		SongScene(GLFWwindow* window);
 		void Update(float dt);
 		void Render();
 		void getKey(int key, int scancode, int action, int mods) override;

@@ -30,8 +30,8 @@ void main()
 		//std::cout << m.getTimePosition() << "\n";
 		if(g_CurrentScene == "title")
 		{
-			menu.Render();
 			menu.Update(gameWindow.getDeltatime());
+			menu.Render();
 		}
 		//std::cout << SJ::isFutureReady(isExtracted) << "\n";
 		//m.Update();

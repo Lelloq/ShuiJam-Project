@@ -2,48 +2,75 @@
 #include "Scenes/MenuScene.h"
 #include "Utils/Properties.h"
 #include <GLFW/glfw3.h>
+#include <chrono>
+#include <future>
 
 namespace SJ
 {
-	MenuScene::MenuScene(GLFWwindow* window) : m_window(window), m_device(SJ::AudioDevice::get()), m_sfx(SJ::SoundEffect::get())
+	MenuScene::MenuScene(GLFWwindow* window) : m_window(window), m_device(AudioDevice::get()), m_sfx(SoundEffect::get())
 	{
-		m_source = std::make_shared<SJ::SFXSource>();
+		m_source = std::make_unique<SJ::SFXSource>();
 		m_anyKeySound = m_sfx->addSFX(SJFOLDER + SOUNDS + "start.wav");
 
-		m_bg = std::make_shared<Texture>(SJFOLDER + IMAGES + "titlebg.png", GL_CLAMP_TO_EDGE);
-		m_titleBG = std::make_shared<Rect>(glm::vec2(0.f, 0.f), glm::vec2(VPORT_WIDTH, VPORT_HEIGHT), 0, *m_bg);
+		m_bgIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "titlebg.png", GL_CLAMP_TO_EDGE);
+		m_bg = std::make_unique<Rect>(glm::vec2(0.f, 0.f), glm::vec2(VPORT_WIDTH, VPORT_HEIGHT), 0, *m_bgIm);
 
-		m_title = std::make_shared<Texture>(SJFOLDER + IMAGES + "title.png", GL_CLAMP_TO_EDGE);
-		m_titleText = std::make_shared<Rect>(glm::vec2(465.f, 250.f), glm::vec2(350.f, 350.f), 1, *m_title);
+		m_titleIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "title.png", GL_CLAMP_TO_EDGE);
+		m_title = std::make_unique<Rect>(glm::vec2(465.f, 250.f), glm::vec2(350.f, 350.f), 1, *m_titleIm);
 
-		m_text = std::make_shared<Texture>(SJFOLDER + IMAGES + "starttext.png", GL_CLAMP_TO_EDGE);
-		m_startText = std::make_shared<Rect>(glm::vec2(520.f, 100.f), glm::vec2(240.f, 25.f), 2, *m_text);
+		m_startIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "starttext.png", GL_CLAMP_TO_EDGE);
+		m_start = std::make_unique<Rect>(glm::vec2(520.f, 100.f), glm::vec2(240.f, 25.f), 2, *m_startIm);
 
 		glm::mat4 model{ 1.0f };
 		glm::mat4 view{ 1.0f };
 		glm::mat4 projection{ glm::ortho(0.f, VPORT_WIDTH, 0.f, VPORT_HEIGHT, -1000.f, 1000.f) };
-		m_shader = std::make_shared<Shader>(SJFOLDER + SHADER + "title.vert", SJFOLDER + SHADER + "title.frag");
+		m_bgshader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
+		m_titleShader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
+		m_startShader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
 
-		m_shader->use();
-		m_shader->setFloat("transparency", 1.0f);
-		m_shader->setMat4("model", model);
-		m_shader->setMat4("view", view);
-		m_shader->setMat4("projection", projection);
+		m_bgshader->use();
+		m_bgshader->setMat4("model", model);
+		m_bgshader->setMat4("view", view);
+		m_bgshader->setMat4("projection", projection);
+
+		m_titleShader->use();
+		m_titleShader->setMat4("model", model);
+		m_titleShader->setMat4("view", view);
+		m_titleShader->setMat4("projection", projection);
+
+		m_startShader->use();
+		m_startShader->setMat4("model", model);
+		m_startShader->setMat4("view", view);
+		m_startShader->setMat4("projection", projection);
 	}
 
-	//Draw animated objects
+	//Animate objects
 	void MenuScene::Update(float dt)
 	{
 		//TODO - animate fade in for title and animate pop in and out for start text
+		m_titleShader->use();
+		m_titleShader->setFloat("transparency", m_intermediate);
+		if(m_intermediate < 1.f)
+		{
+			m_intermediate += dt;
+		}
+
+		m_startShader->use();
+		m_startShader->setFloat("transparency", m_toggle);
+		m_toggleValue += dt;
+		if(m_toggleValue > m_toggleThreshold)
+		{
+			m_toggle = (m_toggle == true) ? false : true;
+			m_toggleValue = 0;
+		}
 	}
 
 	//Draw static objects
 	void MenuScene::Render()
 	{
-		//Renderer::Draw(m_titleBG->getVAO(), m_titleBG->getEBO(), *m_shader.get());
-		m_titleBG->Draw(*m_shader);
-		m_titleText->Draw(*m_shader);
-		m_startText->Draw(*m_shader);
+		m_bg->Draw(*m_bgshader);
+		m_title->Draw(*m_titleShader);
+		m_start->Draw(*m_startShader);
 	}
 
 	void MenuScene::getKey(int key, int scancode, int action, int mods)
@@ -52,6 +79,7 @@ namespace SJ
 		{
 			m_source->Play(m_anyKeySound);
 			m_pressed = true;
+			m_toggleThreshold = 0.05f;
 			g_CurrentScene = "song_select";
 		}
 	}

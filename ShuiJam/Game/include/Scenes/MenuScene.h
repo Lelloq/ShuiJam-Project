@@ -12,23 +12,34 @@ namespace SJ
 	class MenuScene : public Scene
 	{
 	private:
-		//Window
+		//WINDOW
 		GLFWwindow* m_window;
 		//AUDIO
-		SJ::AudioDevice* m_device;//!< Sound device
-		SJ::SoundEffect* m_sfx;//!< Sound effect
-		std::shared_ptr<SJ::SFXSource> m_source;//!< Sound effect source
-		//GRAPHICS
-		std::shared_ptr<Texture> m_bg;
-		std::shared_ptr<Texture> m_title;
-		std::shared_ptr<Texture> m_text;
-		std::shared_ptr<Shader> m_shader;
-		std::shared_ptr<Rect> m_titleBG;
-		std::shared_ptr<Rect> m_titleText;
-		std::shared_ptr<Rect> m_startText;
-
+		AudioDevice* m_device;//!< Sound device
+		SoundEffect* m_sfx;//!< Sound effect
+		std::unique_ptr<SFXSource> m_source;//!< Sound effect source
+		//SFX buffers
 		ALuint m_anyKeySound;
+		//GRAPHICS
+		//Shader
+		std::unique_ptr<Shader> m_bgshader;
+		std::unique_ptr<Shader> m_titleShader;
+		std::unique_ptr<Shader> m_startShader;
+		//Textures
+		std::unique_ptr<Texture> m_bgIm;
+		std::unique_ptr<Texture> m_titleIm;
+		std::unique_ptr<Texture> m_startIm;
+		//Objects
+		std::unique_ptr<Rect> m_bg;
+		std::unique_ptr<Rect> m_title;
+		std::unique_ptr<Rect> m_start;
 		bool m_pressed = false;
+
+		//Animation toggles and values
+		float m_intermediate = 0.f;
+		bool m_toggle = false;
+		float m_toggleValue = 0.f;
+		float m_toggleThreshold = 0.5f;
 	public:
 		MenuScene(GLFWwindow* window);
 		void Update(float dt);
