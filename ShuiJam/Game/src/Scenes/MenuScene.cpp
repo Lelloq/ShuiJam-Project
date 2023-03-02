@@ -24,14 +24,14 @@ namespace SJ
 		glm::mat4 model{ 1.0f };
 		glm::mat4 view{ 1.0f };
 		glm::mat4 projection{ glm::ortho(0.f, VPORT_WIDTH, 0.f, VPORT_HEIGHT, -1000.f, 1000.f) };
-		m_bgshader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
+		m_bgShader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
 		m_titleShader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
 		m_startShader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
 
-		m_bgshader->use();
-		m_bgshader->setMat4("model", model);
-		m_bgshader->setMat4("view", view);
-		m_bgshader->setMat4("projection", projection);
+		m_bgShader->use();
+		m_bgShader->setMat4("model", model);
+		m_bgShader->setMat4("view", view);
+		m_bgShader->setMat4("projection", projection);
 
 		m_titleShader->use();
 		m_titleShader->setMat4("model", model);
@@ -63,12 +63,31 @@ namespace SJ
 			m_toggle = (m_toggle == true) ? false : true;
 			m_toggleValue = 0;
 		}
+
+		if(m_pressed)
+		{
+			m_timer += dt;
+			if(m_timer > 1)
+			{
+				m_sceneTransparency -= dt * 7;
+				m_bgShader->use();
+				m_bgShader->setFloat("transparency", m_sceneTransparency);
+				m_titleShader->use();
+				m_bgShader->setFloat("transparency", m_sceneTransparency);
+				m_startShader->use();
+				m_bgShader->setFloat("transparency", m_sceneTransparency);
+				if(m_sceneTransparency <= 0)
+				{
+					g_CurrentScene = "song_select";
+				}
+			}
+		}
 	}
 
 	//Draw static objects
 	void MenuScene::Render()
 	{
-		m_bg->Draw(*m_bgshader);
+		m_bg->Draw(*m_bgShader);
 		m_title->Draw(*m_titleShader);
 		m_start->Draw(*m_startShader);
 	}
@@ -78,9 +97,8 @@ namespace SJ
 		if(action == GLFW_PRESS && !m_pressed)
 		{
 			m_source->Play(m_anyKeySound);
-			m_pressed = true;
 			m_toggleThreshold = 0.05f;
-			g_CurrentScene = "song_select";
+			m_pressed = true;
 		}
 	}
 	void MenuScene::getMouseButton(int button, int action, int mods)

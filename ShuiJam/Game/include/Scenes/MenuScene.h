@@ -22,7 +22,7 @@ namespace SJ
 		ALuint m_anyKeySound;
 		//GRAPHICS
 		//Shader
-		std::unique_ptr<Shader> m_bgshader;
+		std::unique_ptr<Shader> m_bgShader;
 		std::unique_ptr<Shader> m_titleShader;
 		std::unique_ptr<Shader> m_startShader;
 		//Textures
@@ -40,6 +40,8 @@ namespace SJ
 		bool m_toggle = false;
 		float m_toggleValue = 0.f;
 		float m_toggleThreshold = 0.5f;
+		float m_timer = 0.f;
+		float m_sceneTransparency = 1.f;
 	public:
 		MenuScene(GLFWwindow* window);
 		void Update(float dt);
