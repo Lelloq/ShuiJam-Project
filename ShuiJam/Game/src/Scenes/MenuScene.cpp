@@ -103,6 +103,7 @@ namespace SJ
 	}
 	void MenuScene::getMouseButton(int button, int action, int mods)
 	{
+		/*
 		if(button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS)
 		{
 			double x, y;
@@ -111,6 +112,7 @@ namespace SJ
 			y = y * (VPORT_HEIGHT / 768.f);
 			std::cout << "x: " << x << "y: " << y << "\n";
 		}
+		*/
 	}
 	void MenuScene::getScroll(double xoffset, double yoffset)
 	{
