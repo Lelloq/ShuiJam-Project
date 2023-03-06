@@ -9,6 +9,12 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
+layout (std140) uniform VP
+{
+	mat4 v;
+	mat4 p;
+};
+
 void main()
 {
 	gl_Position = projection * view * model * vec4(aPos,1.0);
