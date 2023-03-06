@@ -30,7 +30,8 @@ project "ShuiJam"
 		"%{prj.name}/Externals/**.c",
 		"%{prj.name}/Externals/**.cpp",
 		"%{prj.name}/Renderer/src/**.cpp",
-		"%{prj.name}/Renderer/objects/src/**.cpp",
+		"%{prj.name}/Renderer/objects/**.cpp",
+		"%{prj.name}/Renderer/objects/**.h",
 		"%{prj.name}/Renderer/shader/vert/**.vert",
 		"%{prj.name}/Renderer/shader/frag/**.frag",
 	}
