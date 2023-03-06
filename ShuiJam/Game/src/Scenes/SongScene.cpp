@@ -21,12 +21,14 @@ namespace SJ
 		glm::mat4 model{ 1.0f };
 		glm::mat4 view{ 1.0f };
 		glm::mat4 projection{ glm::ortho(0.f, VPORT_WIDTH, 0.f, VPORT_HEIGHT, -1000.f, 1000.f) };
-		m_shader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
+		m_selectShader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
+		m_songBGShader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
+		m_wheelShader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
 
-		m_shader->use();
-		m_shader->setMat4("model", model);
-		m_shader->setMat4("view", view);
-		m_shader->setMat4("projection", projection);
+		m_selectShader->use();
+		m_selectShader->setMat4("model", model);
+		m_selectShader->setMat4("view", view);
+		m_selectShader->setMat4("projection", projection);
 	}
 	void SongScene::Update(float dt)
 	{
@@ -34,7 +36,7 @@ namespace SJ
 	}
 	void SongScene::Render()
 	{
-
+		m_songSelect->Draw(*m_selectShader);
 	}
 	void SongScene::getKey(int key, int scancode, int action, int mods)
 	{

@@ -76,10 +76,11 @@ namespace SJ
 				m_bgShader->setFloat("transparency", m_sceneTransparency);
 				m_startShader->use();
 				m_bgShader->setFloat("transparency", m_sceneTransparency);
-				if(m_sceneTransparency <= 0)
-				{
-					g_CurrentScene = "song_select";
-				}
+			}
+			if(m_sceneTransparency <= -3)
+			{
+				g_CurrentScene = "song_select";
+				m_sceneTransparency = 0;
 			}
 		}
 	}

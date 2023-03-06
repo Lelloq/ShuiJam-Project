@@ -13,4 +13,4 @@ const float VPORT_WIDTH = 1280.f;//Default viewport width (used for UI click pos
 const float VPORT_HEIGHT = 720.f;//Default viewport height (used for UI click position)
 
 //Globals (identified with g_)
-static std::string g_CurrentScene = "title";
+inline std::string g_CurrentScene = "title";

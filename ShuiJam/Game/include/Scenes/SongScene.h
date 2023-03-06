@@ -30,7 +30,9 @@ namespace SJ
 		std::unique_ptr<Music> m_music;//!< Music that plays during song select
 		//GRAPHICS
 		//Shader
-		std::unique_ptr<Shader> m_shader;
+		std::unique_ptr<Shader> m_selectShader;
+		std::unique_ptr<Shader> m_songBGShader;
+		std::unique_ptr<Shader> m_wheelShader;
 		//Textures
 		std::unique_ptr<Texture> m_songBGIm;
 		std::unique_ptr<Texture> m_songSelectIm;
@@ -38,6 +40,7 @@ namespace SJ
 		//Objects
 		std::unique_ptr<Rect> m_songBG;
 		std::unique_ptr<Rect> m_songSelect;
+		std::unique_ptr<Rect> m_songWheelPart;
 
 	public:
 		SongScene(GLFWwindow* window);
