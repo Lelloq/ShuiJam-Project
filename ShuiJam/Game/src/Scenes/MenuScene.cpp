@@ -47,7 +47,6 @@ namespace SJ
 	//Animate objects
 	void MenuScene::Update(float dt)
 	{
-		//TODO - animate fade in for title and animate pop in and out for start text
 		m_titleShader->use();
 		m_titleShader->setFloat("transparency", m_intermediate);
 		if(m_intermediate < 1.f)
