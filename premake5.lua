@@ -57,6 +57,7 @@ project "ShuiJam"
 		"vendor/drlibs/",
 		"vendor/sqlite/",
 		"vendor/bit7z/include",
+		"vendor/json/single_include/nlohmann",
 	}
 
 	links 
