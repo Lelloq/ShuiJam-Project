@@ -12,6 +12,7 @@
 -.osu filepath
 -beatmap ID
 -bg image path*/
+
 namespace SJ
 {
 	/*\class FileProcessor.h
