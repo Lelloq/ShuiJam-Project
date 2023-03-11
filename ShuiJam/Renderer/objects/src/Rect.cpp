@@ -45,6 +45,7 @@ namespace SJ
 	{
 		shader.use();
 		m_VAO->Bind();
+		m_VBO->Bind();
 		m_EBO->Bind();
 		uint32_t unit;
 		if(Renderer::textureUnitManager.full()) Renderer::textureUnitManager.clear();
