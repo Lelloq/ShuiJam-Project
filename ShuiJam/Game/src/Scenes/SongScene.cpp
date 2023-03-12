@@ -18,17 +18,18 @@ namespace SJ
 		m_songSelectIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "songselectmenu.png", GL_CLAMP_TO_EDGE);
 		m_songSelect = std::make_unique<Rect>(glm::vec2(0.f,0.f), glm::vec2(VPORT_WIDTH, VPORT_HEIGHT), 0, *m_songSelectIm);
 
+		m_logoIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "title.png", GL_CLAMP_TO_EDGE);
+		m_logo = std::make_unique<Button>(glm::vec2(0.f, 0.f), glm::vec2(125.f, 125.f), 1, *m_logoIm);
+
 		glm::mat4 model{ 1.0f };
 		glm::mat4 view{ 1.0f };
 		glm::mat4 projection{ glm::ortho(0.f, VPORT_WIDTH, 0.f, VPORT_HEIGHT, -1000.f, 1000.f) };
-		m_selectShader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
-		m_songBGShader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
-		m_wheelShader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
+		m_shader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
 
-		m_selectShader->use();
-		m_selectShader->setMat4("model", model);
-		m_selectShader->setMat4("view", view);
-		m_selectShader->setMat4("projection", projection);
+		m_shader->use();
+		m_shader->setMat4("model", model);
+		m_shader->setMat4("view", view);
+		m_shader->setMat4("projection", projection);
 	}
 	void SongScene::Update(float dt)
 	{
@@ -36,7 +37,8 @@ namespace SJ
 	}
 	void SongScene::Render()
 	{
-		m_songSelect->Draw(*m_selectShader);
+		m_songSelect->Draw(*m_shader);
+		m_logo->Draw(*m_shader);
 	}
 	void SongScene::getKey(int key, int scancode, int action, int mods)
 	{
@@ -44,7 +46,8 @@ namespace SJ
 	}
 	void SongScene::getMouseButton(int button, int action, int mods)
 	{
-
+		double posX, posY;
+		glfwGetCursorPos(m_window, &posX, &posY);
 	}
 	void SongScene::getScroll(double xoffset, double yoffset)
 	{

@@ -1,10 +1,11 @@
-#include "objects/include/Button.h"
 /*****************************************************************//**
  * \file   Button.cpp
  * \brief  Implementation of button
  * 
  * \date   February 2023
  *********************************************************************/
+#include "objects/include/Button.h"
+#include "Renderer.h"
 
 namespace SJ
 {
@@ -47,5 +48,25 @@ namespace SJ
 		m_VAO->~VAO();
 		m_VBO->~VBO();
 		m_EBO->~EBO();
+	}
+
+	void Button::Draw(Shader& shader, std::string uniformName)
+	{
+		shader.use();
+		m_VAO->Bind();
+		m_VBO->Bind();
+		m_EBO->Bind();
+		uint32_t unit;
+		if (Renderer::textureUnitManager.full()) Renderer::textureUnitManager.clear();
+		if (Renderer::textureUnitManager.getUnit(m_texture->getID(), unit))
+		{
+			m_texture->bind(unit);
+		}
+		shader.setInt(uniformName, unit);
+		glDrawElements(GL_TRIANGLES, m_EBO->GetCount(), GL_UNSIGNED_INT, 0);
+	}
+	bool Button::hasMouseOnTop(double posx, double posy)
+	{
+		return false;
 	}
 }

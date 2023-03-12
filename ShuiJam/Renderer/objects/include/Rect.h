@@ -45,7 +45,7 @@ namespace SJ
 		 */
 		Rect(const glm::vec2& pos, const glm::vec2& size, const int zIndex, Texture& image);
 		~Rect();
-		void Draw(Shader& shader);//!< Bind the buffer objects and texture slot and draw it to screen
+		void Draw(Shader& shader, std::string uniformName = "image");//!< Bind the buffer objects and texture slot and draw it to screen
 		[[nodiscard]] inline VAO& getVAO() { return *m_VAO; }//!< Access the vao for rendering
 		[[nodiscard]] inline EBO& getEBO() { return *m_EBO; }//!< Access the ebo for rendering
 		[[nodiscard]] inline glm::vec2 getPosition() { return m_position; }

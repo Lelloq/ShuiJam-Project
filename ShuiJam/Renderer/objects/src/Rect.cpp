@@ -41,7 +41,7 @@ namespace SJ
 		m_EBO->~EBO();
 	}
 
-	void Rect::Draw(Shader& shader)
+	void Rect::Draw(Shader& shader, std::string uniformName)
 	{
 		shader.use();
 		m_VAO->Bind();
@@ -53,7 +53,7 @@ namespace SJ
 		{
 			m_texture->bind(unit);
 		}
-		shader.setInt("image", unit);
+		shader.setInt(uniformName, unit);
 		glDrawElements(GL_TRIANGLES, m_EBO->GetCount(), GL_UNSIGNED_INT, 0);
 	}
 }

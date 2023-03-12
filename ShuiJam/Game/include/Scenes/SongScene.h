@@ -30,17 +30,22 @@ namespace SJ
 		std::unique_ptr<Music> m_music;//!< Music that plays during song select
 		//GRAPHICS
 		//Shader
-		std::unique_ptr<Shader> m_selectShader;
-		std::unique_ptr<Shader> m_songBGShader;
-		std::unique_ptr<Shader> m_wheelShader;
+		std::unique_ptr<Shader> m_shader;
 		//Textures
 		std::unique_ptr<Texture> m_songBGIm;
 		std::unique_ptr<Texture> m_songSelectIm;
 		std::shared_ptr<Texture> m_selectWheelIm;
+		//Buttons and images
+		std::unique_ptr<Texture> m_logoIm;
+		std::unique_ptr<Texture> m_settingsIm;
+		std::unique_ptr<Button> m_sButtonmIm;
+		std::unique_ptr<Button> m_logo;
 		//Objects
 		std::unique_ptr<Rect> m_songBG;
 		std::unique_ptr<Rect> m_songSelect;
 		std::unique_ptr<Rect> m_songWheelPart;
+
+		//GRAPHICS FOR SETTINGS SCREEN
 
 	public:
 		SongScene(GLFWwindow* window);
