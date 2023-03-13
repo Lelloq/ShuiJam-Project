@@ -15,7 +15,10 @@
 
 namespace SJ
 {
-
+	/*
+	* \class Text
+	* \brief the text class that uses opengl and freetype2
+	*/
 	class Text
 	{
 	private:
