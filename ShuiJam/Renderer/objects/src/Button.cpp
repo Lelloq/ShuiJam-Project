@@ -6,6 +6,7 @@
  *********************************************************************/
 #include "objects/include/Button.h"
 #include "Renderer.h"
+#include "Utils/Properties.h"
 
 namespace SJ
 {
@@ -13,6 +14,7 @@ namespace SJ
 	{
 		m_position = pos;
 		m_size = size;
+		m_z = zIndex;
 
 		m_clickBoundsX = glm::vec2(pos.x, pos.x + size.x);
 		m_clickBoundsY = glm::vec2(pos.y, pos.y + size.y);
@@ -67,6 +69,18 @@ namespace SJ
 	}
 	bool Button::hasMouseOnTop(double posx, double posy)
 	{
-		return false;
+		//change scr_height to something that can be changed in the future through settings
+		double y = VPORT_HEIGHT - (posy * (VPORT_HEIGHT / SCR_HEIGHT));//Inverts the position
+		//true if: lowerboundX < posx < upperBoundX and lowerboundY < posy < upperboundY
+		//inverted it so theres one less operation
+		if(m_clickBoundsX.x < posx && posx > m_clickBoundsX.y)
+		{
+			return false;
+		}
+		else if(m_clickBoundsY.x < y && y > m_clickBoundsY.y)
+		{
+			return false;
+		}
+		return true;
 	}
 }

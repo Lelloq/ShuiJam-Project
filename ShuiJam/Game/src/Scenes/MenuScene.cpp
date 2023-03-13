@@ -19,11 +19,11 @@ namespace SJ
 		m_title = std::make_unique<Rect>(glm::vec2(465.f, 250.f), glm::vec2(350.f, 350.f), 1, *m_titleIm);
 
 		m_startIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "starttext.png", GL_CLAMP_TO_EDGE);
-		m_start = std::make_unique<Rect>(glm::vec2(520.f, 100.f), glm::vec2(240.f, 25.f), 2, *m_startIm);
+		m_start = std::make_unique<Rect>(glm::vec2(520.f, 100.f), glm::vec2(240.f, 25.f), 1, *m_startIm);
 
 		glm::mat4 model{ 1.0f };
 		glm::mat4 view{ 1.0f };
-		glm::mat4 projection{ glm::ortho(0.f, VPORT_WIDTH, 0.f, VPORT_HEIGHT, -1000.f, 1000.f) };
+		glm::mat4 projection{ glm::ortho(0.f, VPORT_WIDTH, 0.f, VPORT_HEIGHT, -1000.f, 1.f) };
 		m_bgShader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
 		m_titleShader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
 		m_startShader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
@@ -108,8 +108,8 @@ namespace SJ
 		{
 			double x, y;
 			glfwGetCursorPos(m_window, &x, &y);
-			x = x * (VPORT_WIDTH / 1366.f);
-			y = y * (VPORT_HEIGHT / 768.f);
+			x = x * (VPORT_WIDTH / SCR_WIDTH);
+			y = VPORT_HEIGHT - (y * (VPORT_HEIGHT / SCR_HEIGHT));
 			std::cout << "x: " << x << "y: " << y << "\n";
 		}
 		*/
