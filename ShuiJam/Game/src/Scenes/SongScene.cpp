@@ -39,6 +39,7 @@ namespace SJ
 	}
 	void SongScene::Render()
 	{
+		glClearColor(0.5568f, 0.8f, 0.7764f, 0.f);
 		m_songSelect->Draw(*m_shader);
 		m_logo->Draw(*m_shader);
 	}

@@ -87,6 +87,7 @@ namespace SJ
 	//Draw static objects
 	void MenuScene::Render()
 	{
+		glClearColor(0, 0, 0, 0);
 		m_bg->Draw(*m_bgShader);
 		m_title->Draw(*m_titleShader);
 		m_start->Draw(*m_startShader);
