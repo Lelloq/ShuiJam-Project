@@ -2,8 +2,7 @@
 #include "Scenes/MenuScene.h"
 #include "Utils/Properties.h"
 #include <GLFW/glfw3.h>
-#include <chrono>
-#include <future>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace SJ
 {
@@ -30,17 +29,14 @@ namespace SJ
 
 		m_bgShader->use();
 		m_bgShader->setMat4("model", model);
-		m_bgShader->setMat4("view", view);
 		m_bgShader->setMat4("projection", projection);
 
 		m_titleShader->use();
 		m_titleShader->setMat4("model", model);
-		m_titleShader->setMat4("view", view);
 		m_titleShader->setMat4("projection", projection);
 
 		m_startShader->use();
 		m_startShader->setMat4("model", model);
-		m_startShader->setMat4("view", view);
 		m_startShader->setMat4("projection", projection);
 	}
 

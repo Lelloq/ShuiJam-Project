@@ -28,7 +28,6 @@ namespace SJ
 
 		m_shader->use();
 		m_shader->setMat4("model", model);
-		m_shader->setMat4("view", view);
 		m_shader->setMat4("projection", projection);
 
 		m_buttons.push_back(*m_logo);

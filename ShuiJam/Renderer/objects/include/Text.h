@@ -9,6 +9,7 @@
 #include FT_FREETYPE_H
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <array>
 #include "Texture.h"
 #include "VAO.h"
 #include "EBO.h"
@@ -22,14 +23,29 @@ namespace SJ
 	class Text
 	{
 	private:
+		std::array<float, 20> m_verts = //!<Default vertices
+			//POSITION    //UV_COORDS
+		{ 0.f, 0.f, 0, 0.0f, 0.0f,
+		 1.f, 0.f, 0, 1.0f, 0.0f,
+		 1.f, 1.f, 0, 1.0f, 1.0f,
+		 0.f, 1.f, 0, 0.0f, 1.0f, };
+
+		std::array<uint32_t, 6> m_indices = //!<Indices
+		{
+			0,1,3,
+			3,1,2,
+		};
+
 		VAO* m_VAO;
 		VBO* m_VBO;
 		EBO* m_EBO;
-		FT_Library m_library;
-		FT_Face m_fontFace;
+		std::wstring m_text;
+		Texture* m_texture;
+		FT_Library m_ft;
+		FT_Face m_face;
 	public:
-		Text();
+		Text(const glm::vec2& pos, std::wstring text, unsigned int size, unsigned int zIndex);
 		~Text();
-
+		void Draw(Shader& shader);
 	};
 }

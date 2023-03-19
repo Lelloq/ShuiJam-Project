@@ -27,6 +27,7 @@ namespace SJ
 		unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &channels, 0);
 		if (data)
 		{
+			m_channels = channels;
 			//Choose the right format based on the data gathered above
 			GLenum format;
 			switch (channels)
@@ -42,8 +43,6 @@ namespace SJ
 			glBindTexture(GL_TEXTURE_2D, m_ID);
 			//Create the texture image with the parameters
 			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-			//Generate mipmaps
-			glGenerateMipmap(GL_TEXTURE_2D);
 
 			//Texture parameter settings
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapping);
@@ -59,6 +58,24 @@ namespace SJ
 	Texture::~Texture()
 	{
 		glDeleteTextures(1, &m_ID);
+	}
+	Texture::Texture(uint32_t width, uint32_t height, uint32_t channels, unsigned char* data)
+	{
+		glGenTextures(1, &m_ID);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, m_ID);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		if (channels == 3) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		else if (channels == 4) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		else return;
+
+		m_channels = channels;
 	}
 	void Texture::bind(unsigned int slot)
 	{
@@ -83,6 +100,7 @@ namespace SJ
 		unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &channels, 0);
 		if (data)
 		{
+			m_channels = channels;
 			//Choose the right format based on the data gathered above
 			GLenum format;
 			switch (channels)
@@ -93,13 +111,8 @@ namespace SJ
 			default: format = GL_RGB;
 			}
 
-			//Set active texture to 0 and bind the texture
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, m_ID);
 			//Create the texture image with the parameters
 			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-			//Generate mipmaps
-			glGenerateMipmap(GL_TEXTURE_2D);
 
 			//Texture parameter settings
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapping);
@@ -109,5 +122,13 @@ namespace SJ
 		}
 		//Free data from memory so no memory leaks
 		stbi_image_free(data);
+	}
+	void Texture::edit(uint32_t xOffset, uint32_t yOffset, uint32_t width, uint32_t height, unsigned char* data)
+	{
+		if (data)
+		{
+			if (m_channels == 3) glTextureSubImage2D(m_ID, 0, xOffset, yOffset, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
+			else if (m_channels == 4) glTextureSubImage2D(m_ID, 0, xOffset, yOffset, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		}
 	}
 }

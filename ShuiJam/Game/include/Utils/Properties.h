@@ -6,6 +6,7 @@ const std::string IMAGES = "./Images/";
 const std::string SONGINPUT = "./Input/";
 const std::string SONGS = "./Songs/";
 const std::string SHADER = "./Shader/";
+const std::string FONTS = "./Fonts/";
 
 const float SCR_WIDTH = 1366.f;//Default screen width
 const float SCR_HEIGHT = 768.f;//Default screen height
