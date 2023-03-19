@@ -21,7 +21,7 @@ namespace SJ
 		if(FT_Set_Pixel_Sizes(m_face, 0, size)) { std::cout << "Failed to set font size." << "\n"; }
 
 		FT_Select_Charmap(m_face, FT_ENCODING_UNICODE);
-		m_texture = new Texture(256, 256, 4, nullptr);
+		m_texture = new Texture(size * text.size(), size, 4, nullptr);
 
 		m_VAO = new VAO();
 		m_VBO = new VBO(static_cast<void*>(m_verts.data()), sizeof(m_verts), GL_DYNAMIC_DRAW);
@@ -63,18 +63,23 @@ namespace SJ
 
 				/*TODO
 				Edit VBO so that vertices are positioned correctly on screen
-				Find the character size and advance it*/
+				Find the character size and advance it
+
+				APPROACH
+				Edit the VBO once (size of a character in pixels * number of characters in x axis)
+				Edit the texture using offsets and size for each character
+				Render the text at the end of the for loop
+				*/
 
 				m_texture->edit(0, 0, 256, 256, m_face->glyph->bitmap.buffer);
-
-				uint32_t unit;
-				if (Renderer::textureUnitManager.full()) Renderer::textureUnitManager.clear();
-				if (Renderer::textureUnitManager.getUnit(m_texture->getID(), unit))
-				{
-					m_texture->bind(unit);
-				}
-				glDrawElements(GL_TRIANGLES, m_EBO->GetCount(), GL_UNSIGNED_INT, 0);
 			}
+			uint32_t unit;
+			if (Renderer::textureUnitManager.full()) Renderer::textureUnitManager.clear();
+			if (Renderer::textureUnitManager.getUnit(m_texture->getID(), unit))
+			{
+				m_texture->bind(unit);
+			}
+			glDrawElements(GL_TRIANGLES, m_EBO->GetCount(), GL_UNSIGNED_INT, 0);
 		}
 	}
 }
