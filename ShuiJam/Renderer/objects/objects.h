@@ -7,3 +7,4 @@
 #pragma once
 #include "include/Rect.h"
 #include "include/Button.h"
+#include "include/Text.h"

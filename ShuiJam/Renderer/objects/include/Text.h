@@ -24,8 +24,8 @@ namespace SJ
 	{
 	private:
 		std::array<float, 20> m_verts = //!<Default vertices
-			//POSITION    //UV_COORDS
-		{ 0.f, 0.f, 0, 0.0f, 0.0f,
+		//POSITION    //UV_COORDS
+		{0.f, 0.f, 0, 0.0f, 0.0f,
 		 1.f, 0.f, 0, 1.0f, 0.0f,
 		 1.f, 1.f, 0, 1.0f, 1.0f,
 		 0.f, 1.f, 0, 0.0f, 1.0f, };
@@ -39,13 +39,16 @@ namespace SJ
 		VAO* m_VAO;
 		VBO* m_VBO;
 		EBO* m_EBO;
+
 		std::wstring m_text;
+		unsigned int m_size;
+
 		Texture* m_texture;
 		FT_Library m_ft;
 		FT_Face m_face;
 	public:
 		Text(const glm::vec2& pos, std::wstring text, unsigned int size, unsigned int zIndex);
 		~Text();
-		void Draw(Shader& shader);
+		void Draw(Shader& shader, std::wstring = L"");
 	};
 }
