@@ -51,6 +51,7 @@ namespace SJ
 		Button(const glm::vec2& pos, const glm::vec2& size, const int zIndex, Texture& image);
 		~Button();
 		void Draw(Shader& shader, std::string uniformName = "image");
+		void readjustBounds(glm::vec2 pos);
 		[[nodiscard]] bool hasMouseOnTop(double posx, double posy);
 		[[nodiscard]] inline VAO& getVAO() { return *m_VAO; }//!< Access the vao for rendering
 		[[nodiscard]] inline EBO& getEBO() { return *m_EBO; }//!< Access the ebo for rendering

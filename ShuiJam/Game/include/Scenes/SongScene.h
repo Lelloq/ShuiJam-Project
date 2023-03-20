@@ -30,8 +30,8 @@ namespace SJ
 		std::unique_ptr<Music> m_music;//!< Music that plays during song select
 		//GRAPHICS
 		//Buttons
-		std::vector<Button> m_buttons;//Buttons in song select 8 buttons
-		std::vector<Button> m_sbuttons;//Buttons in settings 2 buttons
+		std::vector<std::unique_ptr<Button>> m_buttons;//Buttons in song select 11 buttons
+		std::vector<std::unique_ptr<Button>> m_sbuttons;//Buttons in settings 2 buttons
 		//Shader
 		std::unique_ptr<Shader> m_shader;
 		//Textures
@@ -46,7 +46,9 @@ namespace SJ
 		//Objects
 		std::unique_ptr<Rect> m_songBG;
 		std::unique_ptr<Rect> m_songSelect;
-		std::unique_ptr<Rect> m_songWheelPart;
+
+		//Values
+		std::vector<int> m_positions;//positions of the song wheel
 
 		//GRAPHICS FOR SETTINGS SCREEN
 

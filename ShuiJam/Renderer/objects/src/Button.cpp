@@ -67,20 +67,24 @@ namespace SJ
 		shader.setInt(uniformName, unit);
 		glDrawElements(GL_TRIANGLES, m_EBO->GetCount(), GL_UNSIGNED_INT, 0);
 	}
+	void Button::readjustBounds(glm::vec2 pos)
+	{
+		m_clickBoundsX = glm::vec2(pos.x, pos.x + m_size.x);
+		m_clickBoundsY = glm::vec2(pos.y, pos.y + m_size.y);
+	}
+
 	bool Button::hasMouseOnTop(double posx, double posy)
 	{
 		//change scr_height to something that can be changed in the future through settings
 		double y = VPORT_HEIGHT - (posy * (VPORT_HEIGHT / SCR_HEIGHT));//Inverts the position
 		//true if: lowerboundX < posx < upperBoundX and lowerboundY < posy < upperboundY
-		//inverted it so theres one less operation
-		if(m_clickBoundsX.x < posx && posx > m_clickBoundsX.y)
+		if(m_clickBoundsX.x <= posx && posx <= m_clickBoundsX.y)
 		{
-			return false;
+			if(m_clickBoundsY.x <= y && y <= m_clickBoundsY.y)
+			{
+				return true;
+			}
 		}
-		else if(m_clickBoundsY.x < y && y > m_clickBoundsY.y)
-		{
-			return false;
-		}
-		return true;
+		return false;
 	}
 }

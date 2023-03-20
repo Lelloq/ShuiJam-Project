@@ -16,13 +16,23 @@ namespace SJ
 		m_SFXstart = std::make_unique<SFXSource>();
 
 		m_songSelectIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "songselectmenu.png", GL_CLAMP_TO_EDGE);
-		m_songSelect = std::make_unique<Rect>(glm::vec2(0.f,0.f), glm::vec2(VPORT_WIDTH, VPORT_HEIGHT), 0, *m_songSelectIm);
+		m_songSelect = std::make_unique<Rect>(glm::vec2(0.f,0.f), glm::vec2(VPORT_WIDTH, VPORT_HEIGHT), 1, *m_songSelectIm);
 
 		m_logoIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "title.png", GL_CLAMP_TO_EDGE);
-		m_logo = std::make_unique<Button>(glm::vec2(0.f, 0.f), glm::vec2(125.f, 125.f), 1, *m_logoIm);
+		m_logo = std::make_unique<Button>(glm::vec2(0.f, 0.f), glm::vec2(125.f, 125.f), 2, *m_logoIm);
+
+		m_selectWheelIm = std::make_shared<Texture>(SJFOLDER + IMAGES + "selectbar.png", GL_CLAMP_TO_EDGE);
+
+		int yPos = 0;
+		for (int i = 0; i < 12; i++)
+		{
+			m_positions.push_back(yPos);
+			m_buttons.push_back(std::make_unique<Button>(glm::vec2(829, 630), glm::vec2(451, 57), 0, *m_selectWheelIm));
+			m_buttons.at(i)->readjustBounds(glm::vec2(829, 630+yPos));
+			yPos -= 57;
+		}
 
 		glm::mat4 model{ 1.0f };
-		glm::mat4 view{ 1.0f };
 		glm::mat4 projection{ glm::ortho(0.f, VPORT_WIDTH, 0.f, VPORT_HEIGHT, -1000.f, 1.f) };
 		m_shader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
 
@@ -30,7 +40,6 @@ namespace SJ
 		m_shader->setMat4("model", model);
 		m_shader->setMat4("projection", projection);
 
-		m_buttons.push_back(*m_logo);
 	}
 	void SongScene::Update(float dt)
 	{
@@ -39,6 +48,14 @@ namespace SJ
 	void SongScene::Render()
 	{
 		glClearColor(0.5568f, 0.8f, 0.7764f, 0.f);
+
+		for(int i = 0; i < 12; i++)
+		{
+			m_buttons.at(i)->Draw(*m_shader);
+			m_shader->setMat4("model", glm::translate(glm::mat4{1.0f}, glm::vec3(0, m_positions.at(i), 0)));
+		}
+
+		m_shader->setMat4("model", glm::mat4{ 1.0f });
 		m_songSelect->Draw(*m_shader);
 		m_logo->Draw(*m_shader);
 	}
@@ -50,14 +67,26 @@ namespace SJ
 	{
 		double posX, posY;
 		glfwGetCursorPos(m_window, &posX, &posY);
-		if(m_buttons.at(0).hasMouseOnTop(posX,posY))
+		if(m_logo->hasMouseOnTop(posX,posY) && action == GLFW_PRESS)
 		{
-			std::cout << m_buttons.at(0).getZIndex() << "\n";
+			std::cout << m_logo->getZIndex() << "\n";
+		}
+		
+		//Need ability to readjust click bounds when moving the button
+		if(m_buttons.at(0)->hasMouseOnTop(posX, posY) && action == GLFW_PRESS)
+		{
+			std::cout << "a" << "\n";
+		}
+		
+		if(m_buttons.at(1)->hasMouseOnTop(posX, posY) && action == GLFW_PRESS)
+		{
+			std::cout << "b" << "\n";
 		}
 	}
 	void SongScene::getScroll(double xoffset, double yoffset)
 	{
-
+		//Lowest song wheel is at -627 relative to the song wheel part
+		std::cout << yoffset << "\n";
 	}
 	void SongScene::fileDrop(int count, const char** paths)
 	{
