@@ -8,6 +8,6 @@ uniform float transparency = 1;
 
 void main()
 {
-	FragColour = texture(text, uv) * transparency;
+	FragColour = vec4(1.0,1.0,1.0, texture(text, uv) * transparency);
 	if(FragColour.a == 0.0) discard;
 }

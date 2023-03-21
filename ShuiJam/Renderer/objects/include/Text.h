@@ -33,7 +33,7 @@ namespace SJ
 		std::array<uint32_t, 6> m_indices = //!<Indices
 		{
 			0,1,3,
-			3,1,2,
+			3,2,1,
 		};
 
 		VAO* m_VAO;
@@ -48,6 +48,8 @@ namespace SJ
 		FT_Library m_ft;
 		FT_Face m_face;
 
+		static bool FTBegan;
+		void InitFT();
 	public:
 		Text(const glm::vec2& pos, std::wstring text, unsigned int size, unsigned int zIndex);
 		~Text();

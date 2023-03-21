@@ -42,6 +42,7 @@ namespace SJ
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, m_ID);
 			//Create the texture image with the parameters
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 
 			//Texture parameter settings
@@ -71,8 +72,21 @@ namespace SJ
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		if (channels == 3) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		else if (channels == 4) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		if (channels == 1) 
+		{ 
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, data); 
+		}
+		else if (channels == 3) 
+		{ 
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data); 
+		}
+		else if (channels == 4) 
+		{ 
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data); 
+		}
 		else return;
 
 		m_channels = channels;
@@ -112,6 +126,7 @@ namespace SJ
 			}
 
 			//Create the texture image with the parameters
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 
 			//Texture parameter settings
@@ -125,19 +140,28 @@ namespace SJ
 	}
 	void Texture::resize(uint32_t width, uint32_t height, uint32_t channels)
 	{
+		if (channels == 1) glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
 		if (channels == 3) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 		else if (channels == 4) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	}
 	void Texture::edit(uint32_t xOffset, uint32_t yOffset, uint32_t width, uint32_t height, unsigned char* data)
 	{
+		//Change the pixel store alignment depending on the channel format
 		if (data)
 		{
+			if (m_channels == 1)
+			{
+				glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+				glTextureSubImage2D(m_ID, 0, xOffset, yOffset, width, height, GL_RED, GL_UNSIGNED_BYTE, data);
+			}
 			if (m_channels == 3)
 			{
+				glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 				glTextureSubImage2D(m_ID, 0, xOffset, yOffset, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
 			}
 			else if (m_channels == 4) 
 			{ 
+				glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 				glTextureSubImage2D(m_ID, 0, xOffset, yOffset, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data); 
 			}
 		}

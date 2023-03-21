@@ -5,6 +5,13 @@
 
 namespace SJ
 {
+	bool Text::FTBegan = false;
+	void Text::InitFT()
+	{
+		if (FT_Init_FreeType(&m_ft)) { std::cout << "Failed to init freetype library" << "\n"; }
+		if (FT_New_Face(m_ft, (SJFOLDER + FONTS + "NotoSerifJP-Regular.otf").c_str(), 0, &m_face)) { std::cout << "Failed to load font face" << "\n"; }
+	}
+
 	Text::Text(const glm::vec2& pos, std::wstring text, unsigned int size, unsigned int zIndex)
 	{
 		m_text = text;
@@ -17,15 +24,20 @@ namespace SJ
 		 pos.x + size * text.size(), pos.y + size, static_cast<float>(zIndex), 1.0f, 1.0f,
 		 pos.x, pos.y + size,					   static_cast<float>(zIndex), 0.0f, 1.0f, };
 
-		if(FT_Init_FreeType(&m_ft)){ std::cout << "Failed to init freetype library" << "\n"; }
-		if(FT_New_Face(m_ft, (SJFOLDER + FONTS + "NotoSerifJP-Regular.otf").c_str(), 0, &m_face)){ std::cout << "Failed to load font face" << "\n"; }
-		if(FT_Set_Pixel_Sizes(m_face, 0, size)) { std::cout << "Failed to set font size." << "\n"; }
+		if(!FTBegan)
+		{
+			InitFT();
+			FTBegan = true;
+		}
 
+		if(FT_Set_Pixel_Sizes(m_face, 0, size)) { std::cout << "Failed to set font size." << "\n"; }
 		FT_Select_Charmap(m_face, FT_ENCODING_UNICODE);
-		m_texture = new Texture(size * text.size(), size, 4, nullptr);
+
+		//Here we create a texture and fill the data with 0
+		m_texture = new Texture(size * text.size(), size, 1, nullptr);
 
 		m_VAO = new VAO();
-		m_VBO = new VBO(static_cast<void*>(m_verts.data()), sizeof(m_verts), GL_DYNAMIC_DRAW);
+		m_VBO = new VBO(static_cast<void*>(m_verts.data()), sizeof(m_verts), GL_STATIC_DRAW);
 		m_EBO = new EBO(static_cast<void*>(m_indices.data()), m_indices.size(), GL_STATIC_DRAW);
 
 		BufferLayout layout;
@@ -54,8 +66,11 @@ namespace SJ
 
 		if(text != L"" && text != m_text)
 		{
+			//Resize texture and reallocate space for the new text
 			m_text = text;
 			m_texture->resize(m_size * text.size(), m_size, 4);
+			m_texture->edit(0, 0, m_size * text.size(), m_size, 0);
+
 			needsUpdating = true;
 		}
 
@@ -67,17 +82,14 @@ namespace SJ
 		if(needsUpdating)
 		{
 			unsigned xOffset = 0;
-			unsigned advance = 0;
-			for (auto c : m_text)
+			float advance = 0.f;
+			for (int i = 0; i < m_text.size(); i++)
 			{
-				if (FT_Load_Char(m_face, c, FT_LOAD_RENDER)) std::cout << "Failed to load character " << c << "\n";
+				if (FT_Load_Char(m_face, m_text.at(i), FT_LOAD_RENDER)) std::cout << "Failed to load character " << m_text.at(i) << "\n";
 				else
 				{
-					glm::vec2 bearing(m_face->glyph->bitmap_left, -m_face->glyph->bitmap_top);
-
 					unsigned width = m_face->glyph->bitmap.width;
-					unsigned height = (m_face->glyph->bitmap.rows - bearing.y);
-
+					unsigned height = m_face->glyph->bitmap.rows;
 					/*TODO
 					Edit texture so that images are positioned correctly on screen
 					Find the character size and advance it
@@ -87,9 +99,10 @@ namespace SJ
 					Edit the texture using offsets and size for each character
 					Render the text at the end of the for loop
 					*/
-					m_texture->edit(xOffset,0 ,32, 32, m_face->glyph->bitmap.buffer);
+					advance = m_face->glyph->advance.x >> 6;
 
-					advance += m_face->glyph->advance.x >> 6;
+					m_texture->edit(xOffset, 0, width, height, m_face->glyph->bitmap.buffer);
+					xOffset += advance;
 				}
 			}
 		}
