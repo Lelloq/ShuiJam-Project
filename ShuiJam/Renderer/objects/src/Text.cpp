@@ -10,7 +10,7 @@ namespace SJ
 	void Text::InitFT()
 	{
 		if (FT_Init_FreeType(&m_ft)) { std::cout << "Failed to init freetype library" << "\n"; }
-		if (FT_New_Face(m_ft, (SJFOLDER + FONTS + "NotoSerifJP-Regular.otf").c_str(), 0, &m_face)) { std::cout << "Failed to load font face" << "\n"; }
+		if (FT_New_Face(m_ft, (SJFOLDER + FONTS + "NotoSansJP-Regular.otf").c_str(), 0, &m_face)) { std::cout << "Failed to load font face" << "\n"; }
 	}
 
 	Text::Text(const glm::vec2& pos, std::wstring text, unsigned int size, unsigned int zIndex)
