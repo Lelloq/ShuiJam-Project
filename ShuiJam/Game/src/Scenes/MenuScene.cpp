@@ -2,8 +2,7 @@
 #include "Scenes/MenuScene.h"
 #include "Utils/Properties.h"
 #include <GLFW/glfw3.h>
-#include <chrono>
-#include <future>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace SJ
 {
@@ -19,28 +18,25 @@ namespace SJ
 		m_title = std::make_unique<Rect>(glm::vec2(465.f, 250.f), glm::vec2(350.f, 350.f), 1, *m_titleIm);
 
 		m_startIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "starttext.png", GL_CLAMP_TO_EDGE);
-		m_start = std::make_unique<Rect>(glm::vec2(520.f, 100.f), glm::vec2(240.f, 25.f), 2, *m_startIm);
+		m_start = std::make_unique<Rect>(glm::vec2(520.f, 100.f), glm::vec2(240.f, 25.f), 1, *m_startIm);
 
 		glm::mat4 model{ 1.0f };
 		glm::mat4 view{ 1.0f };
-		glm::mat4 projection{ glm::ortho(0.f, VPORT_WIDTH, 0.f, VPORT_HEIGHT, -1000.f, 1000.f) };
+		glm::mat4 projection{ glm::ortho(0.f, VPORT_WIDTH, 0.f, VPORT_HEIGHT, -1000.f, 1.f) };
 		m_bgShader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
 		m_titleShader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
 		m_startShader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
 
 		m_bgShader->use();
 		m_bgShader->setMat4("model", model);
-		m_bgShader->setMat4("view", view);
 		m_bgShader->setMat4("projection", projection);
 
 		m_titleShader->use();
 		m_titleShader->setMat4("model", model);
-		m_titleShader->setMat4("view", view);
 		m_titleShader->setMat4("projection", projection);
 
 		m_startShader->use();
 		m_startShader->setMat4("model", model);
-		m_startShader->setMat4("view", view);
 		m_startShader->setMat4("projection", projection);
 	}
 
@@ -87,6 +83,7 @@ namespace SJ
 	//Draw static objects
 	void MenuScene::Render()
 	{
+		glClearColor(0, 0, 0, 0);
 		m_bg->Draw(*m_bgShader);
 		m_title->Draw(*m_titleShader);
 		m_start->Draw(*m_startShader);
@@ -108,8 +105,8 @@ namespace SJ
 		{
 			double x, y;
 			glfwGetCursorPos(m_window, &x, &y);
-			x = x * (VPORT_WIDTH / 1366.f);
-			y = y * (VPORT_HEIGHT / 768.f);
+			x = x * (VPORT_WIDTH / SCR_WIDTH);
+			y = VPORT_HEIGHT - (y * (VPORT_HEIGHT / SCR_HEIGHT));
 			std::cout << "x: " << x << "y: " << y << "\n";
 		}
 		*/

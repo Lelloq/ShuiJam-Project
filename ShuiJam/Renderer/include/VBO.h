@@ -14,6 +14,7 @@ namespace SJ
 		~VBO();//! Destructor deletes buffer
 
 		void Bind() const;//!< Bind vbo
+		void Edit(uint32_t size, const void* data);//!< Edit vbo
 		void Unbind() const;//!< Unbind vbo
 	};
 }

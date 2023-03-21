@@ -1,0 +1,116 @@
+#include "objects/include/Text.h"
+#include <glad/glad.h>
+#include "Utils/Properties.h"
+#include "Renderer.h"
+
+namespace SJ
+{
+	//There so freetype library doesn't initialise on construction again
+	bool Text::FTBegan = false;
+	void Text::InitFT()
+	{
+		if (FT_Init_FreeType(&m_ft)) { std::cout << "Failed to init freetype library" << "\n"; }
+		if (FT_New_Face(m_ft, (SJFOLDER + FONTS + "NotoSerifJP-Regular.otf").c_str(), 0, &m_face)) { std::cout << "Failed to load font face" << "\n"; }
+	}
+
+	Text::Text(const glm::vec2& pos, std::wstring text, unsigned int size, unsigned int zIndex)
+	{
+		m_text = text;
+		m_size = size;
+
+		//Reversed the positions so that the text renders the right way up
+		m_verts =
+		//POSITION								    //UV_COORDS
+		{pos.x, pos.y + size,						static_cast<float>(zIndex), 0.0f, 0.0f,
+		 pos.x + size * text.size(), pos.y + size,	static_cast<float>(zIndex), 1.0f, 0.0f,
+		 pos.x + size * text.size(), pos.y,			static_cast<float>(zIndex), 1.0f, 1.0f,
+		 pos.x, pos.y,								static_cast<float>(zIndex), 0.0f, 1.0f, };
+
+		if(!FTBegan)
+		{
+			InitFT();
+			FTBegan = true;
+		}
+
+		if(FT_Set_Pixel_Sizes(m_face, 0, size)) { std::cout << "Failed to set font size." << "\n"; }
+		FT_Select_Charmap(m_face, FT_ENCODING_UNICODE);
+
+		//Create an empty texture
+		m_texture = new Texture(size * text.size(), size, 1, nullptr);
+
+		m_VAO = new VAO();
+		m_VBO = new VBO(static_cast<void*>(m_verts.data()), sizeof(m_verts), GL_STATIC_DRAW);
+		m_EBO = new EBO(static_cast<void*>(m_indices.data()), m_indices.size(), GL_STATIC_DRAW);
+
+		BufferLayout layout;
+		layout.Push<float>(3);//Positions
+		layout.Push<float>(2);//UV coords
+
+		m_VAO->AddBuffer(*m_VBO, layout);
+	}
+
+	Text::~Text()
+	{
+		m_VAO->~VAO();
+		m_VBO->~VBO();
+		m_EBO->~EBO();
+		m_texture->~Texture();
+	}
+
+	void Text::Draw(Shader& shader, std::wstring text)
+	{
+		bool needsUpdating = false;
+		if (m_firstEdit) 
+		{ 
+			m_firstEdit = false;
+			needsUpdating = true;
+		}
+
+		if(text != L"" && text != m_text)
+		{
+			//Resize texture and reallocate space for the new text
+			m_text = text;
+			m_texture->resize(m_size * text.size(), m_size, 4);
+			m_texture->edit(0, 0, m_size * text.size(), m_size, 0);
+
+			needsUpdating = true;
+		}
+
+		//Bind buffers and shader
+		shader.use();
+		m_VAO->Bind();
+		m_VBO->Bind();
+		m_EBO->Bind();
+
+		/*
+		APPROACH
+		Edit the texture using offsets and size for each character
+		Render the text at the end of the for loop
+		*/
+		if(needsUpdating)
+		{
+			unsigned xOffset = 0;
+			for (int i = 0; i < m_text.size(); i++)
+			{
+				if (FT_Load_Char(m_face, m_text.at(i), FT_LOAD_RENDER)) std::cout << "Failed to load character " << m_text.at(i) << "\n";
+				else
+				{
+					unsigned width = m_face->glyph->bitmap.width;
+					unsigned height = m_face->glyph->bitmap.rows;
+					float advance = m_face->glyph->advance.x >> 6;
+					m_texture->edit(xOffset, m_size - height, width, height, m_face->glyph->bitmap.buffer);
+					xOffset += advance;
+				}
+			}
+		}
+
+		uint32_t unit;
+		if (Renderer::textureUnitManager.full()) Renderer::textureUnitManager.clear();
+		if (Renderer::textureUnitManager.getUnit(m_texture->getID(), unit))
+		{
+			m_texture->bind(unit);
+		}
+		shader.setInt("text", unit);
+		glDrawElements(GL_TRIANGLES, m_EBO->GetCount(), GL_UNSIGNED_INT, 0);
+	}
+}

@@ -34,8 +34,9 @@ namespace SJ
 		glfwSwapInterval(m_vsync);
 
 		glEnable(GL_BLEND);
-		glEnable(GL_DEPTH_TEST);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		glEnable(GL_DEPTH_TEST);
 	}
 
 	//Termines glfw and destroys window

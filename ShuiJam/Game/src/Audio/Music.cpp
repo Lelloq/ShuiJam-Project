@@ -159,6 +159,8 @@ namespace SJ
 		ALint processed, state;
 
 		alGetSourcei(m_source, AL_SOURCE_STATE, &state);
+		if (state != AL_PLAYING) return;
+
 		alGetSourcei(m_source, AL_BUFFERS_PROCESSED, &processed);
 		if(alGetError() != AL_NO_ERROR)
 		{
