@@ -21,6 +21,9 @@ namespace SJ
 		m_logoIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "title.png", GL_CLAMP_TO_EDGE);
 		m_logo = std::make_unique<Button>(glm::vec2(0.f, 0.f), glm::vec2(125.f, 125.f), 2, *m_logoIm);
 
+		m_songBGIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "selectbg.png", GL_CLAMP_TO_EDGE);
+		m_songBG = std::make_unique<Rect>(glm::vec2(0.f, 0.f), glm::vec2(VPORT_WIDTH, VPORT_HEIGHT), 0, *m_songBGIm);
+
 		m_selectWheelIm = std::make_shared<Texture>(SJFOLDER + IMAGES + "selectbar.png", GL_CLAMP_TO_EDGE);
 
 		int yPos = 0;
@@ -40,7 +43,7 @@ namespace SJ
 		m_shader->setMat4("model", model);
 		m_shader->setMat4("projection", projection);
 
-		m_text = std::make_unique<Text>(glm::vec2(200,200), L"hello あ", 32, 3);
+		m_text = std::make_unique<Text>(glm::vec2(5,690), L"hello あ", 32, 3);
 
 		m_textShader = std::make_unique<Shader>(SJFOLDER + SHADER + "text.vert", SJFOLDER + SHADER + "text.frag");
 
@@ -63,6 +66,7 @@ namespace SJ
 		}
 
 		m_shader->setMat4("model", glm::mat4{ 1.0f });
+		m_songBG->Draw(*m_shader);
 		m_songSelect->Draw(*m_shader);
 		m_logo->Draw(*m_shader);
 
