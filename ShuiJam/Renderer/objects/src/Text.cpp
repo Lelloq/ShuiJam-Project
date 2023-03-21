@@ -18,11 +18,11 @@ namespace SJ
 		m_size = size;
 
 		m_verts = //!<Default vertices
-		//POSITION								   //UV_COORDS
-		{pos.x, pos.y,							   static_cast<float>(zIndex), 0.0f, 0.0f,
-		 pos.x + size * text.size(), pos.y,		   static_cast<float>(zIndex), 1.0f, 0.0f,
-		 pos.x + size * text.size(), pos.y + size, static_cast<float>(zIndex), 1.0f, 1.0f,
-		 pos.x, pos.y + size,					   static_cast<float>(zIndex), 0.0f, 1.0f, };
+		//POSITION								    //UV_COORDS
+		{pos.x, pos.y + size,						static_cast<float>(zIndex), 0.0f, 0.0f,
+		 pos.x + size * text.size(), pos.y + size,	static_cast<float>(zIndex), 1.0f, 0.0f,
+		 pos.x + size * text.size(), pos.y,			static_cast<float>(zIndex), 1.0f, 1.0f,
+		 pos.x, pos.y,								static_cast<float>(zIndex), 0.0f, 1.0f, };
 
 		if(!FTBegan)
 		{
@@ -90,18 +90,17 @@ namespace SJ
 				{
 					unsigned width = m_face->glyph->bitmap.width;
 					unsigned height = m_face->glyph->bitmap.rows;
-					/*TODO
-					Edit texture so that images are positioned correctly on screen
-					Find the character size and advance it
 
+					/*
 					APPROACH
 					Edit the positions once (size of a character in pixels * number of characters in x axis)
 					Edit the texture using offsets and size for each character
 					Render the text at the end of the for loop
 					*/
-					advance = m_face->glyph->advance.x >> 6;
 
-					m_texture->edit(xOffset, 0, width, height, m_face->glyph->bitmap.buffer);
+					advance = m_face->glyph->advance.x >> 6;
+					m_texture->edit(xOffset, m_size - height, width, height, m_face->glyph->bitmap.buffer);
+
 					xOffset += advance;
 				}
 			}
