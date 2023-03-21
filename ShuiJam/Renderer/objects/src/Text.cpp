@@ -5,6 +5,7 @@
 
 namespace SJ
 {
+	//There so freetype library doesn't initialise on construction again
 	bool Text::FTBegan = false;
 	void Text::InitFT()
 	{
@@ -17,7 +18,8 @@ namespace SJ
 		m_text = text;
 		m_size = size;
 
-		m_verts = //!<Default vertices
+		//Reversed the positions so that the text renders the right way up
+		m_verts =
 		//POSITION								    //UV_COORDS
 		{pos.x, pos.y + size,						static_cast<float>(zIndex), 0.0f, 0.0f,
 		 pos.x + size * text.size(), pos.y + size,	static_cast<float>(zIndex), 1.0f, 0.0f,
@@ -33,7 +35,7 @@ namespace SJ
 		if(FT_Set_Pixel_Sizes(m_face, 0, size)) { std::cout << "Failed to set font size." << "\n"; }
 		FT_Select_Charmap(m_face, FT_ENCODING_UNICODE);
 
-		//Here we create a texture and fill the data with 0
+		//Create an empty texture
 		m_texture = new Texture(size * text.size(), size, 1, nullptr);
 
 		m_VAO = new VAO();
@@ -74,15 +76,20 @@ namespace SJ
 			needsUpdating = true;
 		}
 
+		//Bind buffers and shader
 		shader.use();
 		m_VAO->Bind();
 		m_VBO->Bind();
 		m_EBO->Bind();
 
+		/*
+		APPROACH
+		Edit the texture using offsets and size for each character
+		Render the text at the end of the for loop
+		*/
 		if(needsUpdating)
 		{
 			unsigned xOffset = 0;
-			float advance = 0.f;
 			for (int i = 0; i < m_text.size(); i++)
 			{
 				if (FT_Load_Char(m_face, m_text.at(i), FT_LOAD_RENDER)) std::cout << "Failed to load character " << m_text.at(i) << "\n";
@@ -90,17 +97,8 @@ namespace SJ
 				{
 					unsigned width = m_face->glyph->bitmap.width;
 					unsigned height = m_face->glyph->bitmap.rows;
-
-					/*
-					APPROACH
-					Edit the positions once (size of a character in pixels * number of characters in x axis)
-					Edit the texture using offsets and size for each character
-					Render the text at the end of the for loop
-					*/
-
-					advance = m_face->glyph->advance.x >> 6;
+					float advance = m_face->glyph->advance.x >> 6;
 					m_texture->edit(xOffset, m_size - height, width, height, m_face->glyph->bitmap.buffer);
-
 					xOffset += advance;
 				}
 			}
