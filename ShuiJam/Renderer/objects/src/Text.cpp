@@ -11,11 +11,11 @@ namespace SJ
 		m_size = size;
 
 		m_verts = //!<Default vertices
-		//POSITION												 //UV_COORDS
-		{pos.x, pos.y,			     static_cast<float>(zIndex), 0.0f, 0.0f,
-		 pos.x + size, pos.y,		 static_cast<float>(zIndex), 1.0f, 0.0f,
-		 pos.x + size, pos.y + size, static_cast<float>(zIndex), 1.0f, 1.0f,
-		 pos.x, pos.y + size,		 static_cast<float>(zIndex), 0.0f, 1.0f, };
+		//POSITION								   //UV_COORDS
+		{pos.x, pos.y,							   static_cast<float>(zIndex), 0.0f, 0.0f,
+		 pos.x + size * text.size(), pos.y,		   static_cast<float>(zIndex), 1.0f, 0.0f,
+		 pos.x + size * text.size(), pos.y + size, static_cast<float>(zIndex), 1.0f, 1.0f,
+		 pos.x, pos.y + size,					   static_cast<float>(zIndex), 0.0f, 1.0f, };
 
 		if(FT_Init_FreeType(&m_ft)){ std::cout << "Failed to init freetype library" << "\n"; }
 		if(FT_New_Face(m_ft, (SJFOLDER + FONTS + "NotoSerifJP-Regular.otf").c_str(), 0, &m_face)){ std::cout << "Failed to load font face" << "\n"; }
@@ -33,9 +33,6 @@ namespace SJ
 		layout.Push<float>(2);//UV coords
 
 		m_VAO->AddBuffer(*m_VBO, layout);
-
-		FT_Done_Face(m_face);
-		FT_Done_FreeType(m_ft);
 	}
 
 	Text::~Text()
@@ -49,10 +46,16 @@ namespace SJ
 	void Text::Draw(Shader& shader, std::wstring text)
 	{
 		bool needsUpdating = false;
-		if(text != L"" || text != m_text)
+		if (m_firstEdit) 
+		{ 
+			m_firstEdit = false;
+			needsUpdating = true;
+		}
+
+		if(text != L"" && text != m_text)
 		{
 			m_text = text;
-			m_texture->edit(0, 0, m_size * text.size(), m_size, nullptr);
+			m_texture->resize(m_size * text.size(), m_size, 4);
 			needsUpdating = true;
 		}
 
@@ -63,26 +66,30 @@ namespace SJ
 
 		if(needsUpdating)
 		{
+			unsigned xOffset = 0;
+			unsigned advance = 0;
 			for (auto c : m_text)
 			{
 				if (FT_Load_Char(m_face, c, FT_LOAD_RENDER)) std::cout << "Failed to load character " << c << "\n";
 				else
 				{
-					unsigned width = m_face->glyph->bitmap.width;
-					unsigned height = m_face->glyph->bitmap.rows;
 					glm::vec2 bearing(m_face->glyph->bitmap_left, -m_face->glyph->bitmap_top);
 
+					unsigned width = m_face->glyph->bitmap.width;
+					unsigned height = (m_face->glyph->bitmap.rows - bearing.y);
+
 					/*TODO
-					Edit VBO so that vertices are positioned correctly on screen
+					Edit texture so that images are positioned correctly on screen
 					Find the character size and advance it
 
 					APPROACH
-					Edit the VBO once (size of a character in pixels * number of characters in x axis)
+					Edit the positions once (size of a character in pixels * number of characters in x axis)
 					Edit the texture using offsets and size for each character
 					Render the text at the end of the for loop
 					*/
+					m_texture->edit(xOffset,0 ,32, 32, m_face->glyph->bitmap.buffer);
 
-					m_texture->edit(0, 0, 256, 256, m_face->glyph->bitmap.buffer);
+					advance += m_face->glyph->advance.x >> 6;
 				}
 			}
 		}
@@ -93,6 +100,7 @@ namespace SJ
 		{
 			m_texture->bind(unit);
 		}
+		shader.setInt("text", unit);
 		glDrawElements(GL_TRIANGLES, m_EBO->GetCount(), GL_UNSIGNED_INT, 0);
 	}
 }

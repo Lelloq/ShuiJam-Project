@@ -25,6 +25,12 @@ namespace SJ
 		glBindBuffer(GL_ARRAY_BUFFER, m_ID);
 	}
 
+	void VBO::Edit(uint32_t size, const void* data)
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, m_ID);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
+	}
+
 	//Unbinds vertex buffer
 	void VBO::Unbind() const
 	{

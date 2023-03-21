@@ -46,6 +46,9 @@ namespace SJ
 		//Objects
 		std::unique_ptr<Rect> m_songBG;
 		std::unique_ptr<Rect> m_songSelect;
+		//Text
+		std::unique_ptr<Shader> m_textShader;
+		std::unique_ptr<Text> m_text;
 
 		//Values
 		std::vector<int> m_positions;//positions of the song wheel

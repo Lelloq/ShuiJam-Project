@@ -42,10 +42,12 @@ namespace SJ
 
 		std::wstring m_text;
 		unsigned int m_size;
+		bool m_firstEdit = true;
 
 		Texture* m_texture;
 		FT_Library m_ft;
 		FT_Face m_face;
+
 	public:
 		Text(const glm::vec2& pos, std::wstring text, unsigned int size, unsigned int zIndex);
 		~Text();

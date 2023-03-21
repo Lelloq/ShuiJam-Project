@@ -123,12 +123,23 @@ namespace SJ
 		//Free data from memory so no memory leaks
 		stbi_image_free(data);
 	}
+	void Texture::resize(uint32_t width, uint32_t height, uint32_t channels)
+	{
+		if (channels == 3) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+		else if (channels == 4) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	}
 	void Texture::edit(uint32_t xOffset, uint32_t yOffset, uint32_t width, uint32_t height, unsigned char* data)
 	{
 		if (data)
 		{
-			if (m_channels == 3) glTextureSubImage2D(m_ID, 0, xOffset, yOffset, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
-			else if (m_channels == 4) glTextureSubImage2D(m_ID, 0, xOffset, yOffset, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
+			if (m_channels == 3)
+			{
+				glTextureSubImage2D(m_ID, 0, xOffset, yOffset, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
+			}
+			else if (m_channels == 4) 
+			{ 
+				glTextureSubImage2D(m_ID, 0, xOffset, yOffset, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data); 
+			}
 		}
 	}
 }

@@ -1,4 +1,4 @@
-/*****************************************************************//**
+﻿/*****************************************************************//**
  * \file   SongScene.cpp
  * \brief  Song select scene implementation
  * 
@@ -40,6 +40,13 @@ namespace SJ
 		m_shader->setMat4("model", model);
 		m_shader->setMat4("projection", projection);
 
+		m_text = std::make_unique<Text>(glm::vec2(200,200), L"hello あ", 32, 3);
+
+		m_textShader = std::make_unique<Shader>(SJFOLDER + SHADER + "text.vert", SJFOLDER + SHADER + "text.frag");
+
+		m_textShader->use();
+		m_textShader->setMat4("model", model);
+		m_textShader->setMat4("projection", projection);
 	}
 	void SongScene::Update(float dt)
 	{
@@ -58,6 +65,8 @@ namespace SJ
 		m_shader->setMat4("model", glm::mat4{ 1.0f });
 		m_songSelect->Draw(*m_shader);
 		m_logo->Draw(*m_shader);
+
+		m_text->Draw(*m_textShader);
 	}
 	void SongScene::getKey(int key, int scancode, int action, int mods)
 	{
@@ -72,7 +81,6 @@ namespace SJ
 			std::cout << m_logo->getZIndex() << "\n";
 		}
 		
-		//Need ability to readjust click bounds when moving the button
 		if(m_buttons.at(0)->hasMouseOnTop(posX, posY) && action == GLFW_PRESS)
 		{
 			std::cout << "a" << "\n";

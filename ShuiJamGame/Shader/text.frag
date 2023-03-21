@@ -9,4 +9,5 @@ uniform float transparency = 1;
 void main()
 {
 	FragColour = texture(text, uv) * transparency;
+	if(FragColour.a == 0.0) discard;
 }
