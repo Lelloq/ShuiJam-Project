@@ -13,18 +13,18 @@ namespace SJ
 		if (FT_New_Face(m_ft, (SJFOLDER + FONTS + "NotoSansJP-Regular.otf").c_str(), 0, &m_face)) { std::cout << "Failed to load font face" << "\n"; }
 	}
 
-	Text::Text(const glm::vec2& pos, std::wstring text, unsigned int size, unsigned int zIndex)
+	Text::Text(const glm::vec2& pos, std::wstring text, unsigned int width, unsigned int fontsize, unsigned int zIndex)
 	{
 		m_text = text;
-		m_size = size;
+		m_size = fontsize;
 
 		//Reversed the positions so that the text renders the right way up
 		m_verts =
-		//POSITION								    //UV_COORDS
-		{pos.x, pos.y + size,						static_cast<float>(zIndex), 0.0f, 0.0f,
-		 pos.x + size * text.size(), pos.y + size,	static_cast<float>(zIndex), 1.0f, 0.0f,
-		 pos.x + size * text.size(), pos.y,			static_cast<float>(zIndex), 1.0f, 1.0f,
-		 pos.x, pos.y,								static_cast<float>(zIndex), 0.0f, 1.0f, };
+		//POSITION											//UV_COORDS
+		{pos.x, pos.y + fontsize,							static_cast<float>(zIndex), 0.0f, 0.0f,
+		 pos.x + fontsize * text.size(), pos.y + fontsize,	static_cast<float>(zIndex), static_cast<float>(fontsize * text.size() / width), 0.0f,
+		 pos.x + fontsize * text.size(), pos.y,				static_cast<float>(zIndex), static_cast<float>(fontsize * text.size() / width), 1.0f,
+		 pos.x, pos.y,										static_cast<float>(zIndex), 0.0f, 1.0f, };
 
 		if(!FTBegan)
 		{
@@ -32,11 +32,11 @@ namespace SJ
 			FTBegan = true;
 		}
 
-		if(FT_Set_Pixel_Sizes(m_face, 0, size)) { std::cout << "Failed to set font size." << "\n"; }
+		if(FT_Set_Pixel_Sizes(m_face, 0, fontsize)) { std::cout << "Failed to set font size." << "\n"; }
 		FT_Select_Charmap(m_face, FT_ENCODING_UNICODE);
 
 		//Create an empty texture
-		m_texture = new Texture(size * text.size(), size, 1, nullptr);
+		m_texture = new Texture(fontsize * text.size(), fontsize, 1, nullptr);
 
 		m_VAO = new VAO();
 		m_VBO = new VBO(static_cast<void*>(m_verts.data()), sizeof(m_verts), GL_STATIC_DRAW);

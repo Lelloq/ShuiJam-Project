@@ -43,7 +43,7 @@ namespace SJ
 		m_shader->setMat4("model", model);
 		m_shader->setMat4("projection", projection);
 
-		m_text = std::make_unique<Text>(glm::vec2(5,690), L"hello あ", 32, 3);
+		m_text = std::make_unique<Text>(glm::vec2(5,690), L"hello あ",200 ,32, 3);
 
 		m_textShader = std::make_unique<Shader>(SJFOLDER + SHADER + "text.vert", SJFOLDER + SHADER + "text.frag");
 

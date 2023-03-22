@@ -51,7 +51,7 @@ namespace SJ
 		static bool FTBegan;
 		void InitFT();
 	public:
-		Text(const glm::vec2& pos, std::wstring text, unsigned int size, unsigned int zIndex);
+		Text(const glm::vec2& pos, std::wstring text,unsigned int width ,unsigned int fontsize, unsigned int zIndex);
 		~Text();
 		void Draw(Shader& shader, std::wstring = L"");
 	};
