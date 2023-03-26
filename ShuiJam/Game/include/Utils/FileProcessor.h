@@ -5,6 +5,8 @@
 #include <sqlite3.h>
 #include <filesystem>
 #include <string>
+#include <fstream>
+#include <iostream>
 
 /*TODO
 -Filter out non 7k maps which can be found through speicfic .osu file settings
@@ -18,6 +20,14 @@ namespace SJ
 	\brief Process files in the song list, removing non 7k maps and creating a filepath to the .osu file*/
 	class FileProcessor
 	{
-
+	private:
+		sqlite3* m_db;
+		sqlite3_stmt* m_stmt;
+		const std::wstring m_songsFolder = L"../ShuiJamGame/Songs/";//!< Location of the songs folder
+		const std::string m_dbLocation = "../ShuiJamGame/songs.db";
+	public:
+		FileProcessor();
+		~FileProcessor();
+		void ProcessFiles();
 	};
 }

@@ -9,6 +9,7 @@
 #include "Scene.h"
 #include "Audio/Audio.h"
 #include "objects/objects.h"
+#include "Utils/FileProcessor.h"
 #include <GLFW/glfw3.h>
 
 namespace SJ
@@ -20,6 +21,8 @@ namespace SJ
 	class SongScene : public Scene
 	{
 	private:
+		//Database
+		std::unique_ptr<FileProcessor> m_fileProcessor;
 		//WINDOW
 		GLFWwindow* m_window;
 		//AUDIO

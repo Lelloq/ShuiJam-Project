@@ -32,8 +32,7 @@ project "ShuiJam"
 		"%{prj.name}/Renderer/src/**.cpp",
 		"%{prj.name}/Renderer/objects/**.cpp",
 		"%{prj.name}/Renderer/objects/**.h",
-		"%{prj.name}/Renderer/shader/vert/**.vert",
-		"%{prj.name}/Renderer/shader/frag/**.frag",
+		"vendor/sqlite/**.c",
 	}
 
 	includedirs

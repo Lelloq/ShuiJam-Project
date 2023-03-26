@@ -12,6 +12,8 @@ namespace SJ
 {
 	SongScene::SongScene(GLFWwindow* window) : m_window(window), m_device(AudioDevice::get()), m_sfx(SoundEffect::get())
 	{
+		m_fileProcessor = std::make_unique<FileProcessor>();
+
 		m_SFXscroll = std::make_unique<SFXSource>();
 		m_SFXstart = std::make_unique<SFXSource>();
 
@@ -74,7 +76,10 @@ namespace SJ
 	}
 	void SongScene::getKey(int key, int scancode, int action, int mods)
 	{
-
+		if(action == GLFW_PRESS && key == GLFW_KEY_F5)
+		{
+			m_fileProcessor->ProcessFiles();
+		}
 	}
 	void SongScene::getMouseButton(int button, int action, int mods)
 	{
