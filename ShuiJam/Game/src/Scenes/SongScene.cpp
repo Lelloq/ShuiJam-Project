@@ -80,6 +80,10 @@ namespace SJ
 		{
 			m_fileProcessor->ProcessFiles();
 		}
+		if(action == GLFW_PRESS && key == GLFW_KEY_F6)
+		{
+
+		}
 	}
 	void SongScene::getMouseButton(int button, int action, int mods)
 	{

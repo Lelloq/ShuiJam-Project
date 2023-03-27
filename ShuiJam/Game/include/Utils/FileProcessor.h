@@ -24,10 +24,11 @@ namespace SJ
 		sqlite3* m_db;
 		sqlite3_stmt* m_stmt;
 		const std::wstring m_songsFolder = L"../ShuiJamGame/Songs/";//!< Location of the songs folder
-		const std::string m_dbLocation = "../ShuiJamGame/songs.db";
+		const std::string m_dbLocation = "../ShuiJamGame/shuijam.db";
 	public:
 		FileProcessor();
 		~FileProcessor();
 		void ProcessFiles();
+		void reloadSongs();
 	};
 }
