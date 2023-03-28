@@ -82,7 +82,7 @@ namespace SJ
 		}
 		if(action == GLFW_PRESS && key == GLFW_KEY_F6)
 		{
-
+			m_fileProcessor->reloadSongs();
 		}
 	}
 	void SongScene::getMouseButton(int button, int action, int mods)

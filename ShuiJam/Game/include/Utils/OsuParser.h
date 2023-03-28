@@ -10,5 +10,15 @@
 -Find a built in library that goes through the file line by line*/
 namespace SJ
 {
+	struct Note
+	{
+		int column;
+		int timingPoint;
+		int releasePoint = 0;
+	};
 
+	class OsuParser
+	{
+
+	};
 }

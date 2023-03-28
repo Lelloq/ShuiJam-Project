@@ -28,6 +28,8 @@ namespace SJ
 		if (data)
 		{
 			m_channels = channels;
+			m_width = width;
+			m_height = height;
 			//Choose the right format based on the data gathered above
 			GLenum format;
 			switch (channels)
@@ -90,6 +92,8 @@ namespace SJ
 		else return;
 
 		m_channels = channels;
+		m_width = width;
+		m_height = height;
 	}
 	void Texture::bind(unsigned int slot)
 	{
@@ -115,6 +119,8 @@ namespace SJ
 		if (data)
 		{
 			m_channels = channels;
+			m_width = width;
+			m_height = height;
 			//Choose the right format based on the data gathered above
 			GLenum format;
 			switch (channels)
@@ -140,6 +146,8 @@ namespace SJ
 	}
 	void Texture::resize(uint32_t width, uint32_t height, uint32_t channels)
 	{
+		m_width = width;
+		m_height = height;
 		if (channels == 1) glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
 		if (channels == 3) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 		else if (channels == 4) glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);

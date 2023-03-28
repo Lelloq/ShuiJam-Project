@@ -55,17 +55,44 @@ namespace SJ
 
 	void FileProcessor::reloadSongs()
 	{
+		std::string songsTable = "Songs";
+
+		std::string deleteCommand =
+			"DELETE FROM " + songsTable;
+
+		std::string createCommand = 
+			"CREATE TABLE IF NOT EXISTS Songs("
+			"ID Int NOT NULL,"
+			"Artist Text(65535),"
+			"Path Text(65535),"
+			"OSU Text(65535),"
+			"Background Text(65535),"
+			"Audio Text(65535) );";
+
+		int del = 0;
+		char* delErr;
+		del = sqlite3_exec(m_db, deleteCommand.c_str(), NULL, 0, &delErr);
+		if(del != SQLITE_OK)
+		{
+			std::cout << "Error deleting table" << "\n";
+		}
+
+		int create = 0;
+		char* createErr;
+		create = sqlite3_exec(m_db, createCommand.c_str(), NULL, 0, &createErr);
+		if(create != SQLITE_OK)
+		{
+			std::cout << "Error creating table" << "\n";
+		}
+
 		namespace fs = std::filesystem;
 		for (auto& entry : fs::directory_iterator(m_songsFolder))
 		{
-			if (entry.is_directory())
+			if (!entry.is_directory()) continue;
+			for (auto& osu : fs::directory_iterator(entry))
 			{
-				for (auto& osu : fs::directory_iterator(entry))
-				{
-					if (osu.path().extension() == ".osu")
-					{
-					}
-				}
+				if (osu.path().extension() != ".osu") continue;
+
 			}
 		}
 	}
