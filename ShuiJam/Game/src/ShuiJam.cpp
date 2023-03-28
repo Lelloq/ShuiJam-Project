@@ -12,6 +12,7 @@ void main()
 	SJ::WindowManager gameWindow = SJ::WindowManager(SCR_WIDTH, SCR_HEIGHT, 0, 0, "ShuiJam");
 	SJ::MenuScene menu = SJ::MenuScene(gameWindow.getWindow());
 	SJ::SongScene songSelect = SJ::SongScene(gameWindow.getWindow());
+	bool isPlaying = false;//There so that it creates the game scene once in the game loop scope
 
 	audioDevice = SJ::AudioDevice::get();
 	soundEffect = SJ::SoundEffect::get();
@@ -26,7 +27,7 @@ void main()
 	while(!glfwWindowShouldClose(gameWindow.getWindow()))
 	{
 		gameWindow.beginFrame();
-		if (glfwGetKey(gameWindow.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(gameWindow.getWindow(), true);
+		if (glfwGetKey(gameWindow.getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS && g_CurrentScene == "song_select") glfwSetWindowShouldClose(gameWindow.getWindow(), true);
 		//std::cout << m.getTimePosition() << "\n";
 		if(g_CurrentScene == "title")
 		{

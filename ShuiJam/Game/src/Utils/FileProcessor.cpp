@@ -20,6 +20,7 @@ namespace SJ
 		{
 			int mapCount = 0;
 			if (!entry.is_directory()) continue;
+			std::cout << fs::relative(entry, m_songsFolder) << "\n";
 			for (auto& osu : fs::directory_iterator(entry))
 			{
 				if (osu.path().extension() != ".osu") continue;
@@ -86,14 +87,81 @@ namespace SJ
 		}
 
 		namespace fs = std::filesystem;
+		std::wstring insertCommand =
+		L" INSERT INTO Songs (ID,Artist,Path,OSU,Background,Audio) "
+		"VALUES(?,?,?,?,?,?)";
+
+		int insert;
+		sqlite3_stmt* stmt;
+		insert = sqlite3_prepare16_v2(m_db, insertCommand.c_str(), -1, &stmt, nullptr);
+
 		for (auto& entry : fs::directory_iterator(m_songsFolder))
 		{
 			if (!entry.is_directory()) continue;
+			std::wstring dirPath = fs::relative(entry, m_songsFolder);
 			for (auto& osu : fs::directory_iterator(entry))
 			{
+				std::wstring beatmapID, artist, osuPath, bgPath, audioPath;
+				std::wfstream file;
 				if (osu.path().extension() != ".osu") continue;
 
+				osuPath = fs::relative(entry, m_songsFolder);
+				std::wcout << osuPath << "\n";
+
+				file.open(osu);
+				int bgCounter = 0;
+				for(std::wstring line; std::getline(file, line); )
+				{
+					if(line.find(L"BeatmapID:") != std::wstring::npos)
+					{
+						std::wstring temp = L"BeatmapID:";
+						line.erase(0, temp.size());
+						beatmapID = line;
+						std::wcout << beatmapID << "\n";
+					}
+					if(line.find(L"AudioFilename: ") != std::wstring::npos)
+					{
+						std::wstring temp = L"AudioFilename: ";
+						line.erase(0, temp.size());
+						audioPath = line;
+						std::wcout << audioPath << "\n";
+					}
+					if(line.find(L"Artist:") != std::wstring::npos)
+					{
+						std::wstring temp = L"Artist:";
+						line.erase(0, temp.size());
+						artist = line;
+						std::wcout << artist << "\n";
+					}
+					if(line.find(L"//Background and Video events") != std::wstring::npos)
+					{
+						bgCounter++;
+					}
+					else if(bgCounter == 1)
+					{
+						bgCounter = 0;
+						int start = line.find_first_of(L"\"");
+						int end = line.find_last_of(L"\"");
+						bgPath = line.substr(start+1, end-1 - start);
+						std::wcout << bgPath << "\n";
+					}
+				}
+				file.close();
+
+				sqlite3_bind_text16(stmt, 1, beatmapID.c_str(), -1, SQLITE_STATIC);
+				sqlite3_bind_text16(stmt, 2, artist.c_str(), -1, SQLITE_STATIC);
+				sqlite3_bind_text16(stmt, 3, dirPath.c_str(), -1, SQLITE_STATIC);
+				sqlite3_bind_text16(stmt, 4, osuPath.c_str(), -1, SQLITE_STATIC);
+				sqlite3_bind_text16(stmt, 5, bgPath.c_str(), -1, SQLITE_STATIC);
+				sqlite3_bind_text16(stmt, 6, audioPath.c_str(), -1, SQLITE_STATIC);
+
+				int val = sqlite3_step(stmt);
+				if(val != SQLITE_DONE)
+				{
+					std::cout << "Error inserting data" << "\n";
+				}
 			}
 		}
+		sqlite3_finalize(stmt);
 	}
 }
