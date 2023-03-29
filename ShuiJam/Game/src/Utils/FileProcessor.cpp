@@ -20,7 +20,6 @@ namespace SJ
 		{
 			int mapCount = 0;
 			if (!entry.is_directory()) continue;
-			std::cout << fs::relative(entry, m_songsFolder) << "\n";
 			for (auto& osu : fs::directory_iterator(entry))
 			{
 				if (osu.path().extension() != ".osu") continue;
@@ -65,6 +64,7 @@ namespace SJ
 			"CREATE TABLE IF NOT EXISTS Songs("
 			"ID Int NOT NULL,"
 			"Artist Text(65535),"
+			"Title Text(65535),"
 			"Path Text(65535),"
 			"OSU Text(65535),"
 			"Background Text(65535),"
@@ -75,7 +75,7 @@ namespace SJ
 		del = sqlite3_exec(m_db, deleteCommand.c_str(), NULL, 0, &delErr);
 		if(del != SQLITE_OK)
 		{
-			std::cout << "Error deleting table" << "\n";
+			std::cout << "Error clearing table" << "\n";
 		}
 
 		int create = 0;
@@ -88,8 +88,8 @@ namespace SJ
 
 		namespace fs = std::filesystem;
 		std::wstring insertCommand =
-		L" INSERT INTO Songs (ID,Artist,Path,OSU,Background,Audio) "
-		"VALUES(?,?,?,?,?,?)";
+		L" INSERT INTO Songs (ID,Artist,Title,Path,OSU,Background,Audio) "
+		"VALUES(?,?,?,?,?,?,?)";
 
 		int insert;
 		sqlite3_stmt* stmt;
@@ -101,11 +101,12 @@ namespace SJ
 			std::wstring dirPath = fs::relative(entry, m_songsFolder);
 			for (auto& osu : fs::directory_iterator(entry))
 			{
-				std::wstring beatmapID, artist, osuPath, bgPath, audioPath;
+				std::wstring beatmapID, artist, title, osuPath, bgPath, audioPath;
 				std::wfstream file;
 				if (osu.path().extension() != ".osu") continue;
 
-				osuPath = fs::relative(entry, m_songsFolder);
+				osuPath = fs::relative(osu, m_songsFolder);
+				osuPath.erase(0, osuPath.find_first_of(L"\\") + 1);
 				std::wcout << osuPath << "\n";
 
 				file.open(osu);
@@ -118,6 +119,13 @@ namespace SJ
 						line.erase(0, temp.size());
 						beatmapID = line;
 						std::wcout << beatmapID << "\n";
+					}
+					if(line.find(L"Title:") != std::wstring::npos)
+					{
+						std::wstring temp = L"Title:";
+						line.erase(0, temp.size());
+						title = line;
+						std::wcout << title << "\n";
 					}
 					if(line.find(L"AudioFilename: ") != std::wstring::npos)
 					{
@@ -150,10 +158,11 @@ namespace SJ
 
 				sqlite3_bind_text16(stmt, 1, beatmapID.c_str(), -1, SQLITE_STATIC);
 				sqlite3_bind_text16(stmt, 2, artist.c_str(), -1, SQLITE_STATIC);
-				sqlite3_bind_text16(stmt, 3, dirPath.c_str(), -1, SQLITE_STATIC);
-				sqlite3_bind_text16(stmt, 4, osuPath.c_str(), -1, SQLITE_STATIC);
-				sqlite3_bind_text16(stmt, 5, bgPath.c_str(), -1, SQLITE_STATIC);
-				sqlite3_bind_text16(stmt, 6, audioPath.c_str(), -1, SQLITE_STATIC);
+				sqlite3_bind_text16(stmt, 3, title.c_str(), -1, SQLITE_STATIC);
+				sqlite3_bind_text16(stmt, 4, dirPath.c_str(), -1, SQLITE_STATIC);
+				sqlite3_bind_text16(stmt, 5, osuPath.c_str(), -1, SQLITE_STATIC);
+				sqlite3_bind_text16(stmt, 6, bgPath.c_str(), -1, SQLITE_STATIC);
+				sqlite3_bind_text16(stmt, 7, audioPath.c_str(), -1, SQLITE_STATIC);
 
 				int val = sqlite3_step(stmt);
 				if(val != SQLITE_DONE)

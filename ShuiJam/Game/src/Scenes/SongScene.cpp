@@ -79,9 +79,6 @@ namespace SJ
 		if(action == GLFW_PRESS && key == GLFW_KEY_F5)
 		{
 			m_fileProcessor->ProcessFiles();
-		}
-		if(action == GLFW_PRESS && key == GLFW_KEY_F6)
-		{
 			m_fileProcessor->reloadSongs();
 		}
 	}
