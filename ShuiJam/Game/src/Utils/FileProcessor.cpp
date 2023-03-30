@@ -71,6 +71,7 @@ namespace SJ
 			"Background Text(65535),"
 			"Audio Text(65535) );";
 
+		//Creates a table for the sql database if it doesnt exist
 		int create = 0;
 		char* createErr;
 		create = sqlite3_exec(m_db, createCommand.c_str(), NULL, 0, &createErr);
@@ -78,7 +79,8 @@ namespace SJ
 		{
 			std::cout << "Error creating table" << "\n";
 		}
-
+		
+		//Clears the contents of the table if it does exist
 		int del = 0;
 		char* delErr;
 		del = sqlite3_exec(m_db, deleteCommand.c_str(), NULL, 0, &delErr);
@@ -87,6 +89,7 @@ namespace SJ
 			std::cout << "Error clearing table" << "\n";
 		}
 
+		//Preparing a statement that inserts new song data into the table
 		namespace fs = std::filesystem;
 		std::wstring insertCommand =
 		L" INSERT INTO Songs (ID,mapID,Artist,Title,Path,OSU,Background,Audio) "
@@ -95,10 +98,14 @@ namespace SJ
 		sqlite3_stmt* stmt;
 		sqlite3_prepare16_v2(m_db, insertCommand.c_str(), -1, &stmt, nullptr);
 
+		//Id is set to 0 for song data retrieval later on
 		int id = 0;
+		//Iterates through every folder inside the song folder
+		//Goes through every .osu file and finds the specific data required to put into the database
 		for (auto& entry : fs::directory_iterator(m_songsFolder))
 		{
 			if (!entry.is_directory()) continue;
+			//Strip the songs folder path from the folder itself
 			std::wstring dirPath = fs::relative(entry, m_songsFolder);
 			for (auto& osu : fs::directory_iterator(entry))
 			{
@@ -107,12 +114,13 @@ namespace SJ
 				std::wfstream file;
 				if (osu.path().extension() != ".osu") continue;
 
+				//Only include the .osu file name remove everything else
 				osuPath = fs::relative(osu, m_songsFolder);
 				osuPath.erase(0, osuPath.find_first_of(L"\\") + 1);
 				std::wcout << osuPath << "\n";
 
 				file.open(osu);
-				int bgCounter = 0;
+				int bgCounter = 0;//Counter is there since there is a line that is consistent with all .osu files and the one below is not
 				for(std::wstring line; std::getline(file, line); )
 				{
 					if(line.find(L"BeatmapID:") != std::wstring::npos)
@@ -149,6 +157,7 @@ namespace SJ
 					}
 					else if(bgCounter == 1)
 					{
+						//Removes the "" from the background file as well as the numbers and commas outside the filename
 						bgCounter = 0;
 						int start = line.find_first_of(L"\"");
 						int end = line.find_last_of(L"\"");
@@ -158,6 +167,7 @@ namespace SJ
 				}
 				file.close();
 
+				//Binds the values into the insert statement
 				sqlite3_bind_int(stmt, 1, id);
 				sqlite3_bind_int(stmt, 2, beatmapID);
 				sqlite3_bind_text16(stmt, 3, artist.c_str(), -1, SQLITE_STATIC);
@@ -180,6 +190,7 @@ namespace SJ
 	Songdata FileProcessor::retrieveSong(int row)
 	{
 		Songdata data;
+		//Retrieve the song data from the database based on the selected row
 		std::wstring selectCommand =
 			L"SELECT * FROM Songs WHERE ID = ?";
 
