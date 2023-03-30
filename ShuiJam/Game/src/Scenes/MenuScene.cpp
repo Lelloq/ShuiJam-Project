@@ -39,7 +39,6 @@ namespace SJ
 		m_startShader->setMat4("model", model);
 		m_startShader->setMat4("projection", projection);
 	}
-
 	//Animate objects
 	void MenuScene::Update(float dt)
 	{

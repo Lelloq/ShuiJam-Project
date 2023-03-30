@@ -1,6 +1,7 @@
 /*\file OsuParser.h
 \brief parses the .osu file*/
 #pragma once
+#include "Utils/Properties.h"
 
 /*TODO
 -Figure out the structure of the osu file

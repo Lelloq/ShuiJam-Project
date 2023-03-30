@@ -10,8 +10,9 @@ SJ::SoundEffect* soundEffect;
 void main()
 {
 	SJ::WindowManager gameWindow = SJ::WindowManager(SCR_WIDTH, SCR_HEIGHT, 0, 0, "ShuiJam");
-	SJ::MenuScene menu = SJ::MenuScene(gameWindow.getWindow());
-	SJ::SongScene songSelect = SJ::SongScene(gameWindow.getWindow());
+	std::unique_ptr<SJ::MenuScene> menu = std::make_unique<SJ::MenuScene>(gameWindow.getWindow());
+	std::unique_ptr<SJ::SongScene> songSelect;
+	std::unique_ptr<SJ::GameScene> game;
 	bool isPlaying = false;//There so that it creates the game scene once in the game loop scope
 
 	audioDevice = SJ::AudioDevice::get();
@@ -31,15 +32,31 @@ void main()
 		//std::cout << m.getTimePosition() << "\n";
 		if(g_CurrentScene == "title")
 		{
-			SJ::Scene::setInputCallbacks(menu);
-			menu.Update(gameWindow.getDeltatime());
-			menu.Render();
+			SJ::Scene::setInputCallbacks(menu.get());
+			menu->Update(gameWindow.getDeltatime());
+			menu->Render();
 		}
 		else if(g_CurrentScene == "song_select")
 		{
-			SJ::Scene::setInputCallbacks(songSelect);
-			songSelect.Update(gameWindow.getDeltatime());
-			songSelect.Render();
+			isPlaying = false;
+			if (songSelect == nullptr) songSelect = std::make_unique<SJ::SongScene>(gameWindow.getWindow());
+			SJ::Scene::setInputCallbacks(songSelect.get());
+			songSelect->Update(gameWindow.getDeltatime());
+			songSelect->Render();
+		}
+		else if(g_CurrentScene == "game")
+		{
+			if(!isPlaying)
+			{
+				isPlaying = true;
+				game = std::make_unique<SJ::GameScene>(gameWindow.getWindow());
+				SJ::Scene::setInputCallbacks(game.get());
+			}
+		}
+		else if(g_CurrentScene == "result")
+		{
+			isPlaying = false;
+			if (game != nullptr) { game.reset(); }
 		}
 		//std::cout << SJ::isFutureReady(isExtracted) << "\n";
 		//m.Update();

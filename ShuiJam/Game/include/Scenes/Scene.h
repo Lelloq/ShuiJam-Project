@@ -24,28 +24,28 @@ namespace SJ
 			Scene::s_window = window;
 		}
 
-		static void setInputCallbacks(Scene& scene)
+		static void setInputCallbacks(Scene* scene)
 		{
-			glfwSetWindowUserPointer(s_window, &scene);
+			glfwSetWindowUserPointer(s_window, scene);
 
 			glfwSetKeyCallback(s_window, [](GLFWwindow* win, int key, int scancode, int action, int mods)
 				{
-					static_cast<decltype(&scene)>(glfwGetWindowUserPointer(win))->getKey(key, scancode, action, mods);
+					static_cast<decltype(scene)>(glfwGetWindowUserPointer(win))->getKey(key, scancode, action, mods);
 				});
 
 			glfwSetMouseButtonCallback(s_window, [](GLFWwindow* win, int button, int action, int mods)
 				{
-					static_cast<decltype(&scene)>(glfwGetWindowUserPointer(win))->getMouseButton(button, action, mods);
+					static_cast<decltype(scene)>(glfwGetWindowUserPointer(win))->getMouseButton(button, action, mods);
 				});
 
 			glfwSetScrollCallback(s_window, [](GLFWwindow* win, double xoffset, double yoffset)
 				{
-					static_cast<decltype(&scene)>(glfwGetWindowUserPointer(win))->getScroll(xoffset, yoffset);
+					static_cast<decltype(scene)>(glfwGetWindowUserPointer(win))->getScroll(xoffset, yoffset);
 				});
 
 			glfwSetDropCallback(s_window, [](GLFWwindow* win, int count, const char** paths)
 				{
-					static_cast<decltype(&scene)>(glfwGetWindowUserPointer(win))->fileDrop(count, paths);
+					static_cast<decltype(scene)>(glfwGetWindowUserPointer(win))->fileDrop(count, paths);
 				});
 		}
 	};
