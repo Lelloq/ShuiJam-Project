@@ -24,7 +24,6 @@ namespace SJ
 			{
 				if (osu.path().extension() != ".osu") continue;
 				mapCount++;
-				//std::cout << osu << "\n";
 				std::fstream file;
 				file.open(osu);
 				std::string mode, keymode;
@@ -117,7 +116,6 @@ namespace SJ
 				//Only include the .osu file name remove everything else
 				osuPath = fs::relative(osu, m_songsFolder);
 				osuPath.erase(0, osuPath.find_first_of(L"\\") + 1);
-				std::wcout << osuPath << "\n";
 
 				file.open(osu);
 				int bgCounter = 0;//Counter is there since there is a line that is consistent with all .osu files and the one below is not
@@ -128,28 +126,24 @@ namespace SJ
 						std::wstring temp = L"BeatmapID:";
 						line.erase(0, temp.size());
 						beatmapID = std::stoi(line);
-						std::wcout << beatmapID << "\n";
 					}
 					if(line.find(L"TitleUnicode:") != std::wstring::npos)
 					{
 						std::wstring temp = L"TitleUnicode:";
 						line.erase(0, temp.size());
 						title = line;
-						std::wcout << title << "\n";
 					}
 					if(line.find(L"AudioFilename: ") != std::wstring::npos)
 					{
 						std::wstring temp = L"AudioFilename: ";
 						line.erase(0, temp.size());
 						audioPath = line;
-						std::wcout << audioPath << "\n";
 					}
 					if(line.find(L"ArtistUnicode:") != std::wstring::npos)
 					{
 						std::wstring temp = L"ArtistUnicode:";
 						line.erase(0, temp.size());
 						artist = line;
-						std::wcout << artist << "\n";
 					}
 					if(line.find(L"//Background and Video events") != std::wstring::npos)
 					{
@@ -162,7 +156,6 @@ namespace SJ
 						int start = line.find_first_of(L"\"");
 						int end = line.find_last_of(L"\"");
 						bgPath = line.substr(start+1, end-1 - start);
-						std::wcout << bgPath << "\n";
 					}
 				}
 				file.close();
