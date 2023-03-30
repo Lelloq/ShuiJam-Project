@@ -16,6 +16,14 @@
 -bg image path*/
 namespace SJ
 {
+	struct Songdata
+	{
+		std::wstring artist;
+		std::wstring title;
+		std::wstring dirPath, osuPath;
+		std::wstring background, audio;
+	};
+
 	/*\class FileProcessor.h
 	\brief Process files in the song list, removing non 7k maps and creating a filepath to the .osu file*/
 	class FileProcessor
@@ -30,5 +38,6 @@ namespace SJ
 		~FileProcessor();
 		void ProcessFiles();
 		void reloadSongs();
+		Songdata retrieveSong(int row);
 	};
 }

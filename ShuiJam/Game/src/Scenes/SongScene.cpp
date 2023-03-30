@@ -81,6 +81,15 @@ namespace SJ
 			m_fileProcessor->ProcessFiles();
 			m_fileProcessor->reloadSongs();
 		}
+		if(action == GLFW_PRESS && key == GLFW_KEY_F6)
+		{
+			std::wcout << m_fileProcessor->retrieveSong(0).artist << "\n";
+			std::wcout << m_fileProcessor->retrieveSong(0).title << "\n";
+			std::wcout << m_fileProcessor->retrieveSong(0).dirPath << "\n";
+			std::wcout << m_fileProcessor->retrieveSong(0).osuPath << "\n";
+			std::wcout << m_fileProcessor->retrieveSong(0).background << "\n";
+			std::wcout << m_fileProcessor->retrieveSong(0).audio << "\n";
+		}
 	}
 	void SongScene::getMouseButton(int button, int action, int mods)
 	{
