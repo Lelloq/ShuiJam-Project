@@ -31,7 +31,7 @@ namespace SJ
 	private:
 		sqlite3* m_db;
 		sqlite3_stmt* m_stmt;
-		const std::wstring m_songsFolder = L"../ShuiJamGame/Songs/";//!< Location of the songs folder
+		const std::wstring m_songsFolder = L"../ShuiJamGame/Songs/";
 		const std::string m_dbLocation = "../ShuiJamGame/shuijam.db";
 	public:
 		FileProcessor();//!<Constructor that init sqlite3 library
