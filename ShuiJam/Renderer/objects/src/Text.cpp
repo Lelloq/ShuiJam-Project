@@ -1,3 +1,7 @@
+/*****************************************************************//**
+ * \file   Text.cpp
+ * \date   March 2023
+ *********************************************************************/
 #include "objects/include/Text.h"
 #include <glad/glad.h>
 #include "Utils/Properties.h"
