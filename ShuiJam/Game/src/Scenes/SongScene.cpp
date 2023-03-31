@@ -33,7 +33,7 @@ namespace SJ
 		{
 			m_buttonPositions.push_back(yPos);
 			m_buttons.push_back(std::make_unique<Button>(glm::vec2(829, 630), glm::vec2(451, 57), 0, *m_selectWheelIm));
-			m_songWheelText.push_back(std::make_unique<Text>(glm::vec2(865, 625), L"^g[...^^^", 451, 24, 1));
+			m_songWheelText.push_back(std::make_unique<Text>(glm::vec2(865, 637), L"^g[...^^^", 451, 24, 1));
 			m_buttons.at(i)->readjustBounds(glm::vec2(829, 630+yPos));
 			yPos -= 57;
 		}
@@ -46,7 +46,7 @@ namespace SJ
 		m_shader->setMat4("model", model);
 		m_shader->setMat4("projection", projection);
 
-		m_text = std::make_unique<Text>(glm::vec2(5,660), L"hello あ",200 ,32, 3);
+		m_text = std::make_unique<Text>(glm::vec2(5,675), L"hello あ",200 ,32, 3);
 		m_text2 = std::make_unique<Text>(glm::vec2(5,390), L"...---",100 ,32, 3);
 
 		m_textShader = std::make_unique<Shader>(SJFOLDER + SHADER + "text.vert", SJFOLDER + SHADER + "text.frag");

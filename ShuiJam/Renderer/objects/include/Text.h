@@ -41,7 +41,9 @@ namespace SJ
 		std::unique_ptr<EBO> m_EBO;
 
 		std::wstring m_text;
-		unsigned int m_size;
+		unsigned int m_size;//This is the width of the entire text
+		unsigned int m_width;//This one is the width of the quad that stores the text
+		glm::vec2 m_pos;
 		bool m_firstEdit = true;
 		bool m_isTextDifferent = false;
 

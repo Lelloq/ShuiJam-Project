@@ -19,6 +19,8 @@ namespace SJ
 	{
 		m_text = text;
 		m_size = fontsize;
+		m_pos = pos;
+		m_width = width;
 
 		float x = 1.0f;
 		if(fontsize * text.size() > width)
@@ -28,8 +30,8 @@ namespace SJ
 		//Reversed the positions so that the text renders the right way up
 		m_verts =
 		//POSITION												//UV_COORDS
-		{pos.x, pos.y + fontsize * 3,							static_cast<float>(zIndex), 0.0f, 0.0f,
-		 pos.x + fontsize * text.size(), pos.y + fontsize * 3,	static_cast<float>(zIndex), x, 0.0f,
+		{pos.x, pos.y + fontsize * 2,							static_cast<float>(zIndex), 0.0f, 0.0f,
+		 pos.x + fontsize * text.size(), pos.y + fontsize * 2,	static_cast<float>(zIndex), x, 0.0f,
 		 pos.x + fontsize * text.size(), pos.y,					static_cast<float>(zIndex), x, 1.0f,
 		 pos.x, pos.y,											static_cast<float>(zIndex), 0.0f, 1.0f, };
 
@@ -39,10 +41,10 @@ namespace SJ
 		FT_Select_Charmap(m_face, FT_ENCODING_UNICODE);
 
 		//Create an empty texture
-		m_texture = std::make_unique<Texture>(fontsize * text.size(), fontsize * 3, 1, nullptr);
+		m_texture = std::make_unique<Texture>(fontsize * text.size(), fontsize * 2, 1, nullptr);
 
 		m_VAO = std::make_unique<VAO>();
-		m_VBO = std::make_unique<VBO>(static_cast<void*>(m_verts.data()), sizeof(m_verts), GL_STATIC_DRAW);
+		m_VBO = std::make_unique<VBO>(static_cast<void*>(m_verts.data()), sizeof(m_verts), GL_DYNAMIC_DRAW);
 		m_EBO = std::make_unique<EBO>(static_cast<void*>(m_indices.data()), m_indices.size(), GL_STATIC_DRAW);
 
 		BufferLayout layout;
@@ -76,9 +78,24 @@ namespace SJ
 
 		if(m_isTextDifferent)
 		{
+			//VBO needed to be edited in order to prevent stretching of the text, squishing is intentional
+			float x = 1.0f;
+			if (m_size * m_text.size() > m_width)
+			{
+				x = m_size * m_text.size() / m_width;
+			}
+
+			m_verts =
+				//POSITION												//UV_COORDS
+			{m_pos.x,  m_pos.y + m_size * 2,							m_verts[2], 0.0f, 0.0f,
+			 m_pos.x + m_size * m_text.size(), m_pos.y + m_size * 2,	m_verts[2], x, 0.0f,
+			 m_pos.x + m_size * m_text.size(), m_pos.y,					m_verts[2], x, 1.0f,
+			 m_pos.x,  m_pos.y,											m_verts[2], 0.0f, 1.0f, };
+			m_VBO->Edit(sizeof(m_verts), m_verts.data());
+			
 			//Resize texture and reallocate space for the new text
 			m_isTextDifferent = false;
-			m_texture->resize(m_size * m_text.size(), m_size * 3, 1);
+			m_texture->resize(m_size * m_text.size(), m_size * 2, 1);
 			needsUpdating = true;
 		}
 
@@ -100,7 +117,7 @@ namespace SJ
 					unsigned height = m_face->glyph->bitmap.rows;
 					unsigned bearing = m_face->glyph->bitmap_top;
 					float advance = m_face->glyph->advance.x >> 6;
-					m_texture->edit(xOffset, 2 * m_size - bearing, width, height, m_face->glyph->bitmap.buffer);
+					m_texture->edit(xOffset, 1.5 * m_size - bearing, width, height, m_face->glyph->bitmap.buffer);
 					xOffset += advance;
 				}
 			}
