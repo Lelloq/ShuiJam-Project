@@ -64,10 +64,10 @@ namespace SJ
 	}
 	Texture::Texture(uint32_t width, uint32_t height, uint32_t channels, unsigned char* data)
 	{
-		Renderer::textureUnitManager.clear();
 		glGenTextures(1, &m_ID);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_ID);
+		Renderer::textureUnitManager.clear();
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);

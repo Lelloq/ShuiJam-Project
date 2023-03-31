@@ -9,8 +9,6 @@
 
 namespace SJ
 {
-	//There so freetype library doesn't initialise on construction again
-	bool Text::FTBegan = false;
 	void Text::InitFT()
 	{
 		if (FT_Init_FreeType(&m_ft)) { std::cout << "Failed to init freetype library" << "\n"; }
@@ -30,11 +28,7 @@ namespace SJ
 		 pos.x + fontsize * text.size(), pos.y,				static_cast<float>(zIndex), static_cast<float>(fontsize * text.size() / width), 1.0f,
 		 pos.x, pos.y,										static_cast<float>(zIndex), 0.0f, 1.0f, };
 
-		if(!FTBegan)
-		{
-			InitFT();
-			FTBegan = true;
-		}
+		InitFT();
 
 		if(FT_Set_Pixel_Sizes(m_face, 0, fontsize)) { std::cout << "Failed to set font size." << "\n"; }
 		FT_Select_Charmap(m_face, FT_ENCODING_UNICODE);
@@ -56,7 +50,7 @@ namespace SJ
 	void Text::Draw(Shader& shader, std::wstring text)
 	{
 		bool needsUpdating = false;
-		if (m_firstEdit) 
+		if (m_firstEdit == true) 
 		{ 
 			m_firstEdit = false;
 			needsUpdating = true;
@@ -101,12 +95,16 @@ namespace SJ
 		}
 
 		uint32_t unit;
-		if (Renderer::textureUnitManager.full()) Renderer::textureUnitManager.clear();
 		if (Renderer::textureUnitManager.getUnit(m_texture->getID(), unit))
 		{
+			if(unit == -1)
+			{
+				Renderer::textureUnitManager.clear();
+				Renderer::textureUnitManager.getUnit(m_texture->getID(), unit);
+			}
 			m_texture->bind(unit);
 		}
-		shader.setInt("text", unit);
+		shader.setInt("image", unit);
 		glDrawElements(GL_TRIANGLES, m_EBO->GetCount(), GL_UNSIGNED_INT, 0);
 	}
 }

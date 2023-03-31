@@ -51,10 +51,13 @@ namespace SJ
 		std::unique_ptr<Rect> m_songSelect;
 		//Text
 		std::unique_ptr<Shader> m_textShader;
+		std::vector<std::unique_ptr<Text>> m_songWheelText;
 		std::unique_ptr<Text> m_text;
-
+		std::unique_ptr<Text> m_text2;
 		//Values
 		std::vector<int> m_positions;//positions of the song wheel
+		int upperLimit = 687;
+		int lowerLimit = 3;
 
 		//GRAPHICS FOR SETTINGS SCREEN
 

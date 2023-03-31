@@ -48,7 +48,6 @@ namespace SJ
 		FT_Library m_ft;
 		FT_Face m_face;
 
-		static bool FTBegan;
 		void InitFT();
 	public:
 		Text(const glm::vec2& pos, std::wstring text,unsigned int width ,unsigned int fontsize, unsigned int zIndex);

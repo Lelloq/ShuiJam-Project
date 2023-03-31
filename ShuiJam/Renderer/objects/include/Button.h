@@ -49,7 +49,7 @@ namespace SJ
 		 * \param image - Texture&, image is put in here and will be rendered on the rectangle
 		 */
 		Button(const glm::vec2& pos, const glm::vec2& size, const int zIndex, Texture& image);
-		void Draw(Shader& shader, std::string uniformName = "image");
+		void Draw(Shader& shader);
 		void readjustBounds(glm::vec2 pos);
 		[[nodiscard]] bool hasMouseOnTop(double posx, double posy);
 		[[nodiscard]] inline VAO& getVAO() { return *m_VAO; }//!< Access the vao for rendering

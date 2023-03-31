@@ -44,19 +44,23 @@ namespace SJ
 		m_VAO->AddBuffer(*m_VBO, layout);
 	}
 
-	void Button::Draw(Shader& shader, std::string uniformName)
+	void Button::Draw(Shader& shader)
 	{
 		shader.use();
 		m_VAO->Bind();
 		m_VBO->Bind();
 		m_EBO->Bind();
 		uint32_t unit;
-		if (Renderer::textureUnitManager.full()) Renderer::textureUnitManager.clear();
 		if (Renderer::textureUnitManager.getUnit(m_texture->getID(), unit))
 		{
+			if (unit == -1)
+			{
+				Renderer::textureUnitManager.clear();
+				Renderer::textureUnitManager.getUnit(m_texture->getID(), unit);
+			}
 			m_texture->bind(unit);
 		}
-		shader.setInt(uniformName, unit);
+		shader.setInt("image", unit);
 		glDrawElements(GL_TRIANGLES, m_EBO->GetCount(), GL_UNSIGNED_INT, 0);
 	}
 	void Button::readjustBounds(glm::vec2 pos)

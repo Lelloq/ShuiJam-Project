@@ -45,7 +45,8 @@ namespace SJ
 		m_shader->setMat4("model", model);
 		m_shader->setMat4("projection", projection);
 
-		m_text = std::make_unique<Text>(glm::vec2(5,690), L"hello あ",200 ,32, 3);
+		m_text = std::make_unique<Text>(glm::vec2(5,690), L"hello あ",200 ,32, 2);
+		m_text2 = std::make_unique<Text>(glm::vec2(5,390), L"hello ああああああああああ",400 ,32, 2);
 
 		m_textShader = std::make_unique<Shader>(SJFOLDER + SHADER + "text.vert", SJFOLDER + SHADER + "text.frag");
 
@@ -73,6 +74,7 @@ namespace SJ
 		m_logo->Draw(*m_shader);
 
 		m_text->Draw(*m_textShader);
+		m_text2->Draw(*m_textShader);
 	}
 	void SongScene::getKey(int key, int scancode, int action, int mods)
 	{
