@@ -39,6 +39,7 @@ void main()
 		else if(g_CurrentScene == "song_select")
 		{
 			isPlaying = false;
+			if (menu != nullptr) menu.reset();
 			if (songSelect == nullptr) songSelect = std::make_unique<SJ::SongScene>(gameWindow.getWindow());
 			SJ::Scene::setInputCallbacks(songSelect.get());
 			songSelect->Update(gameWindow.getDeltatime());

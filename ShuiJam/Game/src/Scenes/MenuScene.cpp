@@ -39,6 +39,12 @@ namespace SJ
 		m_startShader->setMat4("model", model);
 		m_startShader->setMat4("projection", projection);
 	}
+
+	MenuScene::~MenuScene()
+	{
+		m_sfx->removeSFX(m_anyKeySound);
+	}
+
 	//Animate objects
 	void MenuScene::Update(float dt)
 	{

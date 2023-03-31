@@ -15,7 +15,7 @@ const float VPORT_HEIGHT = 720.f;//Default viewport height (used for UI click po
 
 //Globals (identified with g_)
 inline std::string g_CurrentScene = "title";
-inline std::wstring g_CurrentOsuDir;
-inline std::wstring g_CurrentDifficulty;
-inline std::wstring g_CurrentSong;
-inline std::wstring g_CurrentBG;
+inline std::wstring g_CurrentOsuDir = L"";
+inline std::wstring g_CurrentDifficulty = L"";
+inline std::wstring g_CurrentSong = L"";
+inline std::wstring g_CurrentBG = L"";

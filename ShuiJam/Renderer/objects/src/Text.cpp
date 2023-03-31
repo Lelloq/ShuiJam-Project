@@ -40,25 +40,17 @@ namespace SJ
 		FT_Select_Charmap(m_face, FT_ENCODING_UNICODE);
 
 		//Create an empty texture
-		m_texture = new Texture(fontsize * text.size(), fontsize, 1, nullptr);
+		m_texture = std::make_unique<Texture>(fontsize * text.size(), fontsize, 1, nullptr);
 
-		m_VAO = new VAO();
-		m_VBO = new VBO(static_cast<void*>(m_verts.data()), sizeof(m_verts), GL_STATIC_DRAW);
-		m_EBO = new EBO(static_cast<void*>(m_indices.data()), m_indices.size(), GL_STATIC_DRAW);
+		m_VAO = std::make_unique<VAO>();
+		m_VBO = std::make_unique<VBO>(static_cast<void*>(m_verts.data()), sizeof(m_verts), GL_STATIC_DRAW);
+		m_EBO = std::make_unique<EBO>(static_cast<void*>(m_indices.data()), m_indices.size(), GL_STATIC_DRAW);
 
 		BufferLayout layout;
 		layout.Push<float>(3);//Positions
 		layout.Push<float>(2);//UV coords
 
 		m_VAO->AddBuffer(*m_VBO, layout);
-	}
-
-	Text::~Text()
-	{
-		m_VAO->~VAO();
-		m_VBO->~VBO();
-		m_EBO->~EBO();
-		m_texture->~Texture();
 	}
 
 	void Text::Draw(Shader& shader, std::wstring text)

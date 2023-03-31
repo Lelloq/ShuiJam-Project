@@ -21,24 +21,16 @@ namespace SJ
 		 posBR.x, posBR.y, static_cast<float>(zIndex), 1.0f, 1.0f,
 		 posBL.x, posBL.y, static_cast<float>(zIndex), 0.0f, 1.0f, };
 
-		m_texture = new Texture(image);//Reset is used to indicate that its now using the texture given by the constructor
-		m_VAO = new VAO();//Create a new VAO
-		m_VBO = new VBO(static_cast<void*>(m_verts.data()), sizeof(m_verts), GL_STATIC_DRAW);//Create a VBO with params for the constructor
-		m_EBO = new EBO(static_cast<void*>(m_indices.data()), m_indices.size(), GL_STATIC_DRAW);//Create an EBO with params for the constructor
+		m_texture = std::make_unique<Texture>(image);//Reset is used to indicate that its now using the texture given by the constructor
+		m_VAO = std::make_unique<VAO>();//Create a new VAO
+		m_VBO = std::make_unique<VBO>(static_cast<void*>(m_verts.data()), sizeof(m_verts), GL_STATIC_DRAW);//Create a VBO with params for the constructor
+		m_EBO = std::make_unique<EBO>(static_cast<void*>(m_indices.data()), m_indices.size(), GL_STATIC_DRAW);//Create an EBO with params for the constructor
 
 		BufferLayout layout;
 		layout.Push<float>(3);//Positions
 		layout.Push<float>(2);//UV coords
 
 		m_VAO->AddBuffer(*m_VBO, layout);
-	}
-
-	Rect::~Rect()
-	{
-		m_texture->~Texture();
-		m_VAO->~VAO();
-		m_VBO->~VBO();
-		m_EBO->~EBO();
 	}
 
 	void Rect::Draw(Shader& shader, std::string uniformName)

@@ -36,15 +36,15 @@ namespace SJ
 			3,2,1,
 		};
 
-		VAO* m_VAO;
-		VBO* m_VBO;
-		EBO* m_EBO;
+		std::unique_ptr<VAO> m_VAO;
+		std::unique_ptr<VBO> m_VBO;
+		std::unique_ptr<EBO> m_EBO;
 
 		std::wstring m_text;
 		unsigned int m_size;
 		bool m_firstEdit = true;
 
-		Texture* m_texture;
+		std::unique_ptr<Texture> m_texture;
 		FT_Library m_ft;
 		FT_Face m_face;
 
@@ -52,7 +52,6 @@ namespace SJ
 		void InitFT();
 	public:
 		Text(const glm::vec2& pos, std::wstring text,unsigned int width ,unsigned int fontsize, unsigned int zIndex);
-		~Text();
 		void Draw(Shader& shader, std::wstring = L"");
 	};
 }

@@ -39,7 +39,7 @@ namespace SJ
 			case 4: format = GL_RGBA; break;
 			default: format = GL_RGB;
 			}
-
+			Renderer::textureUnitManager.clear();
 			//Set active texture to 0 and bind the texture
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, m_ID);
@@ -64,6 +64,7 @@ namespace SJ
 	}
 	Texture::Texture(uint32_t width, uint32_t height, uint32_t channels, unsigned char* data)
 	{
+		Renderer::textureUnitManager.clear();
 		glGenTextures(1, &m_ID);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_ID);

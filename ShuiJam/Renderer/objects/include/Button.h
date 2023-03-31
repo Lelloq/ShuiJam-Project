@@ -36,10 +36,10 @@ namespace SJ
 		glm::vec2 m_clickBoundsY;//!<Where the button begins and ends y axis
 		float m_z;//!<Z index used for checking which object is on top when a mouse clicks
 		float m_angle = 0.f;//!<Angle of rotation in degrees (rotate on z axis (0,0,1) - 2D game)
-		VAO* m_VAO;//!< Vertex array object
-		VBO* m_VBO;//!< Vertex buffer object
-		EBO* m_EBO;//!< Element buffer object
-		Texture* m_texture;//!< Texture image
+		std::unique_ptr<VAO> m_VAO;//!< Vertex array object
+		std::unique_ptr<VBO> m_VBO;//!< Vertex buffer object
+		std::unique_ptr<EBO> m_EBO;//!< Element buffer object
+		std::unique_ptr<Texture> m_texture;//!< Texture image
 	public:
 		/**
 		 * Constructs a rectangle by taking in these parameters.
@@ -49,7 +49,6 @@ namespace SJ
 		 * \param image - Texture&, image is put in here and will be rendered on the rectangle
 		 */
 		Button(const glm::vec2& pos, const glm::vec2& size, const int zIndex, Texture& image);
-		~Button();
 		void Draw(Shader& shader, std::string uniformName = "image");
 		void readjustBounds(glm::vec2 pos);
 		[[nodiscard]] bool hasMouseOnTop(double posx, double posy);
