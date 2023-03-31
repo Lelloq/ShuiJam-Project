@@ -27,11 +27,11 @@ namespace SJ
 		}
 		//Reversed the positions so that the text renders the right way up
 		m_verts =
-		//POSITION											//UV_COORDS
-		{pos.x, pos.y + fontsize,							static_cast<float>(zIndex), 0.0f, 0.0f,
-		 pos.x + fontsize * text.size(), pos.y + fontsize,	static_cast<float>(zIndex), x, 0.0f,
-		 pos.x + fontsize * text.size(), pos.y,				static_cast<float>(zIndex), x, 1.0f,
-		 pos.x, pos.y,										static_cast<float>(zIndex), 0.0f, 1.0f, };
+		//POSITION												//UV_COORDS
+		{pos.x, pos.y + fontsize * 3,							static_cast<float>(zIndex), 0.0f, 0.0f,
+		 pos.x + fontsize * text.size(), pos.y + fontsize * 3,	static_cast<float>(zIndex), x, 0.0f,
+		 pos.x + fontsize * text.size(), pos.y,					static_cast<float>(zIndex), x, 1.0f,
+		 pos.x, pos.y,											static_cast<float>(zIndex), 0.0f, 1.0f, };
 
 		InitFT();
 
@@ -39,7 +39,7 @@ namespace SJ
 		FT_Select_Charmap(m_face, FT_ENCODING_UNICODE);
 
 		//Create an empty texture
-		m_texture = std::make_unique<Texture>(fontsize * text.size(), fontsize, 1, nullptr);
+		m_texture = std::make_unique<Texture>(fontsize * text.size(), fontsize * 3, 1, nullptr);
 
 		m_VAO = std::make_unique<VAO>();
 		m_VBO = std::make_unique<VBO>(static_cast<void*>(m_verts.data()), sizeof(m_verts), GL_STATIC_DRAW);
@@ -54,6 +54,19 @@ namespace SJ
 
 	void Text::Draw(Shader& shader)
 	{
+		uint32_t unit;
+		if (Renderer::textureUnitManager.full()) Renderer::textureUnitManager.clear();
+		if (Renderer::textureUnitManager.getUnit(m_texture->getID(), unit))
+		{
+			m_texture->bind(unit);
+		}
+
+		//Bind buffers and shader
+		shader.use();
+		m_VAO->Bind();
+		m_VBO->Bind();
+		m_EBO->Bind();
+
 		bool needsUpdating = false;
 		if (m_firstEdit) 
 		{ 
@@ -65,15 +78,9 @@ namespace SJ
 		{
 			//Resize texture and reallocate space for the new text
 			m_isTextDifferent = false;
-			m_texture->resize(m_size * m_text.size(), m_size, 1);
+			m_texture->resize(m_size * m_text.size(), m_size * 3, 1);
 			needsUpdating = true;
 		}
-
-		//Bind buffers and shader
-		shader.use();
-		m_VAO->Bind();
-		m_VBO->Bind();
-		m_EBO->Bind();
 
 		/*
 		APPROACH
@@ -93,25 +100,12 @@ namespace SJ
 					unsigned height = m_face->glyph->bitmap.rows;
 					unsigned bearing = m_face->glyph->bitmap_top;
 					float advance = m_face->glyph->advance.x >> 6;
-					if(m_text.at(i) < 128)
-					{
-						m_texture->edit(xOffset, m_size - bearing, width, height, m_face->glyph->bitmap.buffer);
-					}
-					else
-					{
-						m_texture->edit(xOffset, m_size - height, width, height, m_face->glyph->bitmap.buffer);
-					}
+					m_texture->edit(xOffset, 2 * m_size - bearing, width, height, m_face->glyph->bitmap.buffer);
 					xOffset += advance;
 				}
 			}
 		}
 
-		uint32_t unit;
-		if (Renderer::textureUnitManager.full()) Renderer::textureUnitManager.clear();
-		if (Renderer::textureUnitManager.getUnit(m_texture->getID(), unit))
-		{
-			m_texture->bind(unit);
-		}
 		shader.setInt("image", unit);
 		glDrawElements(GL_TRIANGLES, m_EBO->GetCount(), GL_UNSIGNED_INT, 0);
 	}

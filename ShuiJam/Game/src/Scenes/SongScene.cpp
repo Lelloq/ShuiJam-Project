@@ -33,7 +33,7 @@ namespace SJ
 		{
 			m_buttonPositions.push_back(yPos);
 			m_buttons.push_back(std::make_unique<Button>(glm::vec2(829, 630), glm::vec2(451, 57), 0, *m_selectWheelIm));
-			m_songWheelText.push_back(std::make_unique<Text>(glm::vec2(865, 645), L"...^^^", 451, 32, 1));
+			m_songWheelText.push_back(std::make_unique<Text>(glm::vec2(865, 625), L"^g[...^^^", 451, 24, 1));
 			m_buttons.at(i)->readjustBounds(glm::vec2(829, 630+yPos));
 			yPos -= 57;
 		}
@@ -46,7 +46,7 @@ namespace SJ
 		m_shader->setMat4("model", model);
 		m_shader->setMat4("projection", projection);
 
-		m_text = std::make_unique<Text>(glm::vec2(5,690), L"hello あ",200 ,32, 3);
+		m_text = std::make_unique<Text>(glm::vec2(5,660), L"hello あ",200 ,32, 3);
 		m_text2 = std::make_unique<Text>(glm::vec2(5,390), L"...---",100 ,32, 3);
 
 		m_textShader = std::make_unique<Shader>(SJFOLDER + SHADER + "text.vert", SJFOLDER + SHADER + "text.frag");
@@ -100,7 +100,7 @@ namespace SJ
 		}
 		if(action == GLFW_PRESS && key == GLFW_KEY_SPACE)
 		{
-			m_text2->changeText(L"a");
+			m_text2->changeText(L"ag");
 		}
 	}
 	void SongScene::getMouseButton(int button, int action, int mods)
