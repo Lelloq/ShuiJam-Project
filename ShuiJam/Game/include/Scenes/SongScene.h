@@ -56,11 +56,11 @@ namespace SJ
 		std::unique_ptr<Text> m_text2;
 		//Values
 		std::vector<int> m_buttonPositions;//positions of the song wheel
-		int upperLimit = 687;
-		int lowerLimit = 3;
+		int m_upperLimit = 687;
+		int m_lowerLimit = 3;
+		int m_scrollDirection = 0;
 
 		//GRAPHICS FOR SETTINGS SCREEN
-
 	public:
 		SongScene(GLFWwindow* window);
 		void Update(float dt);

@@ -57,7 +57,20 @@ namespace SJ
 	}
 	void SongScene::Update(float dt)
 	{
-
+		//Checking if a part of the song wheel gone past the upper limit or lower limit
+		for(int i = 0; i < m_buttonPositions.size(); i++)
+		{
+			if(m_buttonPositions.at(i) > 687)
+			{
+				m_buttonPositions.at(i) = 4;
+				m_buttons.at(i)->readjustBounds(glm::vec2(829, m_buttonPositions.at(i)));
+			}
+			else if(m_buttonPositions.at(i) < 3)
+			{
+				m_buttonPositions.at(i) = 686;
+				m_buttons.at(i)->readjustBounds(glm::vec2(829, m_buttonPositions.at(i)));
+			}
+		}
 	}
 	void SongScene::Render()
 	{
