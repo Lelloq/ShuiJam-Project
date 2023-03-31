@@ -91,8 +91,16 @@ namespace SJ
 				{
 					unsigned width = m_face->glyph->bitmap.width;
 					unsigned height = m_face->glyph->bitmap.rows;
+					unsigned bearing = m_face->glyph->bitmap_top;
 					float advance = m_face->glyph->advance.x >> 6;
-					m_texture->edit(xOffset, m_size - height, width, height, m_face->glyph->bitmap.buffer);
+					if(m_text.at(i) < 128)
+					{
+						m_texture->edit(xOffset, m_size - bearing, width, height, m_face->glyph->bitmap.buffer);
+					}
+					else
+					{
+						m_texture->edit(xOffset, m_size - height, width, height, m_face->glyph->bitmap.buffer);
+					}
 					xOffset += advance;
 				}
 			}

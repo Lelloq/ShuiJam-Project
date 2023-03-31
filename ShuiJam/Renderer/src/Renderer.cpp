@@ -4,7 +4,7 @@
 
 namespace SJ
 {
-	TextureUnitManager Renderer::textureUnitManager(31);//Giving it 31 slots since thats the minimum a gpu can have
+	TextureUnitManager Renderer::textureUnitManager(16);
 	//Draw objects on screen
 	void Renderer::Draw(VAO& vao, EBO& ebo, Shader& shader)
 	{
