@@ -44,6 +44,7 @@ namespace SJ
 		float m_sceneTransparency = 1.f;
 	public:
 		MenuScene(GLFWwindow* window);
+		~MenuScene();
 		void Update(float dt);
 		void Render();
 		void getKey(int key, int scancode, int action, int mods) override;

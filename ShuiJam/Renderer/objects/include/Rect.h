@@ -31,10 +31,10 @@ namespace SJ
 		glm::vec2 m_position;//!<Position of the rectangle
 		glm::vec2 m_size;//!<Size of the rectangle
 		float m_angle = 0.f;//!<Angle of rotation in degrees (rotate on z axis (0,0,1) - 2D game)
-		VAO* m_VAO;//!< Vertex array object
-		VBO* m_VBO;//!< Vertex buffer object
-		EBO* m_EBO;//!< Element buffer object
-		Texture* m_texture;//!< Texture image
+		std::unique_ptr<VAO> m_VAO;//!< Vertex array object
+		std::unique_ptr<VBO> m_VBO;//!< Vertex buffer object
+		std::unique_ptr<EBO> m_EBO;//!< Element buffer object
+		std::unique_ptr<Texture> m_texture;//!< Texture image
 	public:
 		/**
 		 * Constructs a rectangle by taking in these parameters.
@@ -44,8 +44,7 @@ namespace SJ
 		 * \param image - Texture&, image is put in here and will be rendered on the rectangle
 		 */
 		Rect(const glm::vec2& pos, const glm::vec2& size, const int zIndex, Texture& image);
-		~Rect();
-		void Draw(Shader& shader, std::string uniformName = "image");//!< Bind the buffer objects and texture slot and draw it to screen
+		void Draw(Shader& shader);//!< Bind the buffer objects and texture slot and draw it to screen
 		[[nodiscard]] inline VAO& getVAO() { return *m_VAO; }//!< Access the vao for rendering
 		[[nodiscard]] inline EBO& getEBO() { return *m_EBO; }//!< Access the ebo for rendering
 		[[nodiscard]] inline glm::vec2 getPosition() { return m_position; }

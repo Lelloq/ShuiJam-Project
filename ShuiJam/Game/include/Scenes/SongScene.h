@@ -9,6 +9,7 @@
 #include "Scene.h"
 #include "Audio/Audio.h"
 #include "objects/objects.h"
+#include "Utils/FileProcessor.h"
 #include <GLFW/glfw3.h>
 
 namespace SJ
@@ -20,6 +21,8 @@ namespace SJ
 	class SongScene : public Scene
 	{
 	private:
+		//Database
+		std::unique_ptr<FileProcessor> m_fileProcessor;
 		//WINDOW
 		GLFWwindow* m_window;
 		//AUDIO
@@ -48,13 +51,16 @@ namespace SJ
 		std::unique_ptr<Rect> m_songSelect;
 		//Text
 		std::unique_ptr<Shader> m_textShader;
+		std::vector<std::unique_ptr<Text>> m_songWheelText;
 		std::unique_ptr<Text> m_text;
-
+		std::unique_ptr<Text> m_text2;
 		//Values
-		std::vector<int> m_positions;//positions of the song wheel
+		std::vector<int> m_buttonPositions;//positions of the song wheel
+		int m_upperLimit = 687;
+		int m_lowerLimit = 3;
+		int m_scrollDirection = 0;
 
 		//GRAPHICS FOR SETTINGS SCREEN
-
 	public:
 		SongScene(GLFWwindow* window);
 		void Update(float dt);

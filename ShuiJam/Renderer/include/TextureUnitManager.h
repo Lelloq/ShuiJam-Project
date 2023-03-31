@@ -15,8 +15,8 @@ namespace SJ
 		size_t m_nextunit = 0;//!< Next position to bind to
 	public:
 		TextureUnitManager(size_t capacity); //!< Constructor that takes in a capacity
-		_NODISCARD inline bool full() { return m_nextunit == m_textureIDs.capacity(); } //!< Is the buffer full
+		[[nodiscard]] inline bool full() { return m_nextunit == m_textureIDs.capacity(); } //!< Is the buffer full
 		void clear(); //!< Clear and reset the buffer
-		_NODISCARD bool getUnit(uint32_t textureID, uint32_t& textureUnit); //!< Returns whether or not the texture ID is bound to that unit
+		[[nodiscard]] bool getUnit(uint32_t textureID, uint32_t& textureUnit); //!< Returns whether or not the texture ID is bound to that unit
 	};
 }

@@ -12,14 +12,16 @@ namespace SJ
 {
 	SongScene::SongScene(GLFWwindow* window) : m_window(window), m_device(AudioDevice::get()), m_sfx(SoundEffect::get())
 	{
+		m_fileProcessor = std::make_unique<FileProcessor>();
+
 		m_SFXscroll = std::make_unique<SFXSource>();
 		m_SFXstart = std::make_unique<SFXSource>();
 
 		m_songSelectIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "songselectmenu.png", GL_CLAMP_TO_EDGE);
-		m_songSelect = std::make_unique<Rect>(glm::vec2(0.f,0.f), glm::vec2(VPORT_WIDTH, VPORT_HEIGHT), 1, *m_songSelectIm);
+		m_songSelect = std::make_unique<Rect>(glm::vec2(0.f,0.f), glm::vec2(VPORT_WIDTH, VPORT_HEIGHT), 2, *m_songSelectIm);
 
 		m_logoIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "title.png", GL_CLAMP_TO_EDGE);
-		m_logo = std::make_unique<Button>(glm::vec2(0.f, 0.f), glm::vec2(125.f, 125.f), 2, *m_logoIm);
+		m_logo = std::make_unique<Button>(glm::vec2(0.f, 0.f), glm::vec2(125.f, 125.f), 3, *m_logoIm);
 
 		m_songBGIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "selectbg.png", GL_CLAMP_TO_EDGE);
 		m_songBG = std::make_unique<Rect>(glm::vec2(0.f, 0.f), glm::vec2(VPORT_WIDTH, VPORT_HEIGHT), 0, *m_songBGIm);
@@ -29,8 +31,9 @@ namespace SJ
 		int yPos = 0;
 		for (int i = 0; i < 12; i++)
 		{
-			m_positions.push_back(yPos);
+			m_buttonPositions.push_back(yPos);
 			m_buttons.push_back(std::make_unique<Button>(glm::vec2(829, 630), glm::vec2(451, 57), 0, *m_selectWheelIm));
+			m_songWheelText.push_back(std::make_unique<Text>(glm::vec2(865, 637), L"^g[...^^^", 451, 24, 1));
 			m_buttons.at(i)->readjustBounds(glm::vec2(829, 630+yPos));
 			yPos -= 57;
 		}
@@ -43,7 +46,8 @@ namespace SJ
 		m_shader->setMat4("model", model);
 		m_shader->setMat4("projection", projection);
 
-		m_text = std::make_unique<Text>(glm::vec2(5,690), L"hello あ",200 ,32, 3);
+		m_text = std::make_unique<Text>(glm::vec2(5,675), L"hello あ",200 ,32, 3);
+		m_text2 = std::make_unique<Text>(glm::vec2(5,390), L"...---",100 ,32, 3);
 
 		m_textShader = std::make_unique<Shader>(SJFOLDER + SHADER + "text.vert", SJFOLDER + SHADER + "text.frag");
 
@@ -53,7 +57,20 @@ namespace SJ
 	}
 	void SongScene::Update(float dt)
 	{
-
+		//Checking if a part of the song wheel gone past the upper limit or lower limit
+		for(int i = 0; i < m_buttonPositions.size(); i++)
+		{
+			if(m_buttonPositions.at(i) > 687)
+			{
+				m_buttonPositions.at(i) = 4;
+				m_buttons.at(i)->readjustBounds(glm::vec2(829, m_buttonPositions.at(i)));
+			}
+			else if(m_buttonPositions.at(i) < 3)
+			{
+				m_buttonPositions.at(i) = 686;
+				m_buttons.at(i)->readjustBounds(glm::vec2(829, m_buttonPositions.at(i)));
+			}
+		}
 	}
 	void SongScene::Render()
 	{
@@ -62,19 +79,42 @@ namespace SJ
 		for(int i = 0; i < 12; i++)
 		{
 			m_buttons.at(i)->Draw(*m_shader);
-			m_shader->setMat4("model", glm::translate(glm::mat4{1.0f}, glm::vec3(0, m_positions.at(i), 0)));
+			m_shader->setMat4("model", glm::translate(glm::mat4{1.0f}, glm::vec3(0, m_buttonPositions.at(i), 0)));
+			m_songWheelText.at(i)->Draw(*m_textShader);
+			m_textShader->setMat4("model", glm::translate(glm::mat4{ 1.0f }, glm::vec3(0, m_buttonPositions.at(i), 0)));
 		}
-
+		
+		m_shader->use();
 		m_shader->setMat4("model", glm::mat4{ 1.0f });
 		m_songBG->Draw(*m_shader);
 		m_songSelect->Draw(*m_shader);
 		m_logo->Draw(*m_shader);
 
+		m_textShader->use();
+		m_textShader->setMat4("model", glm::mat4{ 1.0f });
 		m_text->Draw(*m_textShader);
+		m_text2->Draw(*m_textShader);
 	}
 	void SongScene::getKey(int key, int scancode, int action, int mods)
 	{
-
+		if(action == GLFW_PRESS && key == GLFW_KEY_F5)
+		{
+			m_fileProcessor->ProcessFiles();
+			m_fileProcessor->reloadSongs();
+		}
+		if(action == GLFW_PRESS && key == GLFW_KEY_F6)
+		{
+			std::wcout << m_fileProcessor->retrieveSong(0).artist << "\n";
+			std::wcout << m_fileProcessor->retrieveSong(0).title << "\n";
+			std::wcout << m_fileProcessor->retrieveSong(0).dirPath << "\n";
+			std::wcout << m_fileProcessor->retrieveSong(0).osuPath << "\n";
+			std::wcout << m_fileProcessor->retrieveSong(0).background << "\n";
+			std::wcout << m_fileProcessor->retrieveSong(0).audio << "\n";
+		}
+		if(action == GLFW_PRESS && key == GLFW_KEY_SPACE)
+		{
+			m_text2->changeText(L"ag");
+		}
 	}
 	void SongScene::getMouseButton(int button, int action, int mods)
 	{

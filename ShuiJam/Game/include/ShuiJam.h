@@ -4,5 +4,6 @@
 #include "WindowManager.h"
 #include "Scenes/MenuScene.h"
 #include "Scenes/SongScene.h"
+#include "Scenes/GameScene.h"
 #include "Utils/FileExtractor.h"
 #include "Utils/Properties.h"
