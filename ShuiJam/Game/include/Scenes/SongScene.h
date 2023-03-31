@@ -55,7 +55,7 @@ namespace SJ
 		std::unique_ptr<Text> m_text;
 		std::unique_ptr<Text> m_text2;
 		//Values
-		std::vector<int> m_positions;//positions of the song wheel
+		std::vector<int> m_buttonPositions;//positions of the song wheel
 		int upperLimit = 687;
 		int lowerLimit = 3;
 

@@ -51,13 +51,9 @@ namespace SJ
 		m_VBO->Bind();
 		m_EBO->Bind();
 		uint32_t unit;
+		if (Renderer::textureUnitManager.full()) Renderer::textureUnitManager.clear();
 		if (Renderer::textureUnitManager.getUnit(m_texture->getID(), unit))
 		{
-			if (unit == -1)
-			{
-				Renderer::textureUnitManager.clear();
-				Renderer::textureUnitManager.getUnit(m_texture->getID(), unit);
-			}
 			m_texture->bind(unit);
 		}
 		shader.setInt("image", unit);

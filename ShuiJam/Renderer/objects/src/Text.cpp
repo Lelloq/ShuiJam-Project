@@ -20,12 +20,17 @@ namespace SJ
 		m_text = text;
 		m_size = fontsize;
 
+		float x = 1.0f;
+		if(fontsize * text.size() > width)
+		{
+			x = fontsize * text.size() / width;
+		}
 		//Reversed the positions so that the text renders the right way up
 		m_verts =
 		//POSITION											//UV_COORDS
 		{pos.x, pos.y + fontsize,							static_cast<float>(zIndex), 0.0f, 0.0f,
-		 pos.x + fontsize * text.size(), pos.y + fontsize,	static_cast<float>(zIndex), static_cast<float>(fontsize * text.size() / width), 0.0f,
-		 pos.x + fontsize * text.size(), pos.y,				static_cast<float>(zIndex), static_cast<float>(fontsize * text.size() / width), 1.0f,
+		 pos.x + fontsize * text.size(), pos.y + fontsize,	static_cast<float>(zIndex), x, 0.0f,
+		 pos.x + fontsize * text.size(), pos.y,				static_cast<float>(zIndex), x, 1.0f,
 		 pos.x, pos.y,										static_cast<float>(zIndex), 0.0f, 1.0f, };
 
 		InitFT();
@@ -47,22 +52,20 @@ namespace SJ
 		m_VAO->AddBuffer(*m_VBO, layout);
 	}
 
-	void Text::Draw(Shader& shader, std::wstring text)
+	void Text::Draw(Shader& shader)
 	{
 		bool needsUpdating = false;
-		if (m_firstEdit == true) 
+		if (m_firstEdit) 
 		{ 
 			m_firstEdit = false;
 			needsUpdating = true;
 		}
 
-		if(text != L"" && text != m_text)
+		if(m_isTextDifferent)
 		{
 			//Resize texture and reallocate space for the new text
-			m_text = text;
-			m_texture->resize(m_size * text.size(), m_size, 4);
-			m_texture->edit(0, 0, m_size * text.size(), m_size, 0);
-
+			m_isTextDifferent = false;
+			m_texture->resize(m_size * m_text.size(), m_size, 1);
 			needsUpdating = true;
 		}
 
@@ -80,6 +83,7 @@ namespace SJ
 		if(needsUpdating)
 		{
 			unsigned xOffset = 0;
+			glClearTexImage(m_texture->getID(), 0, GL_RED, GL_UNSIGNED_BYTE, 0);
 			for (int i = 0; i < m_text.size(); i++)
 			{
 				if (FT_Load_Char(m_face, m_text.at(i), FT_LOAD_RENDER)) std::cout << "Failed to load character " << m_text.at(i) << "\n";
@@ -95,16 +99,18 @@ namespace SJ
 		}
 
 		uint32_t unit;
+		if (Renderer::textureUnitManager.full()) Renderer::textureUnitManager.clear();
 		if (Renderer::textureUnitManager.getUnit(m_texture->getID(), unit))
 		{
-			if(unit == -1)
-			{
-				Renderer::textureUnitManager.clear();
-				Renderer::textureUnitManager.getUnit(m_texture->getID(), unit);
-			}
 			m_texture->bind(unit);
 		}
 		shader.setInt("image", unit);
 		glDrawElements(GL_TRIANGLES, m_EBO->GetCount(), GL_UNSIGNED_INT, 0);
+	}
+
+	void Text::changeText(std::wstring text)
+	{
+		m_text = text;
+		m_isTextDifferent = true;
 	}
 }

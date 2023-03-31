@@ -43,6 +43,7 @@ namespace SJ
 		std::wstring m_text;
 		unsigned int m_size;
 		bool m_firstEdit = true;
+		bool m_isTextDifferent = false;
 
 		std::unique_ptr<Texture> m_texture;
 		FT_Library m_ft;
@@ -51,6 +52,7 @@ namespace SJ
 		void InitFT();
 	public:
 		Text(const glm::vec2& pos, std::wstring text,unsigned int width ,unsigned int fontsize, unsigned int zIndex);
-		void Draw(Shader& shader, std::wstring = L"");
+		void changeText(std::wstring text);
+		void Draw(Shader& shader);
 	};
 }
