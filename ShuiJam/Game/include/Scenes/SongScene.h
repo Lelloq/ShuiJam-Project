@@ -52,8 +52,6 @@ namespace SJ
 		//Text
 		std::unique_ptr<Shader> m_textShader;
 		std::vector<std::unique_ptr<Text>> m_songWheelText;
-		std::unique_ptr<Text> m_text;
-		std::unique_ptr<Text> m_text2;
 		//Values
 		std::vector<int> m_buttonPositions;//positions of the song wheel
 		int m_upperLimit = 686;
