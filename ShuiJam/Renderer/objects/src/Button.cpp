@@ -34,7 +34,7 @@ namespace SJ
 
 		m_texture = std::make_unique<Texture>(image);//Reset is used to indicate that its now using the texture given by the constructor
 		m_VAO = std::make_unique<VAO>();//Create a new VAO
-		m_VBO = std::make_unique<VBO>(static_cast<void*>(m_verts.data()), sizeof(m_verts), GL_STATIC_DRAW);//Create a VBO with params for the constructor
+		m_VBO = std::make_unique<VBO>(static_cast<void*>(m_verts.data()), sizeof(m_verts), GL_DYNAMIC_DRAW);//Create a VBO with params for the constructor
 		m_EBO = std::make_unique<EBO>(static_cast<void*>(m_indices.data()), m_indices.size(), GL_STATIC_DRAW);//Create an EBO with params for the constructor
 
 		BufferLayout layout;
@@ -63,6 +63,17 @@ namespace SJ
 	{
 		m_clickBoundsX = glm::vec2(pos.x, pos.x + m_size.x);
 		m_clickBoundsY = glm::vec2(pos.y, pos.y + m_size.y);
+	}
+
+	void Button::repositionVerts(glm::vec2 pos)
+	{
+		m_verts = 
+		{pos.x,			   pos.y,			 m_verts[2],  0.0f, 0.0f,
+		 pos.x + m_size.x, pos.y,		     m_verts[2],  1.0f, 0.0f,
+		 pos.x + m_size.x, pos.y + m_size.y, m_verts[2],  1.0f, 1.0f,
+		 pos.x,			   pos.y + m_size.y, m_verts[2],  0.0f, 1.0f, };
+		m_position = pos;
+		m_VBO->Edit(sizeof(m_verts), m_verts.data());
 	}
 
 	bool Button::hasMouseOnTop(double posx, double posy)

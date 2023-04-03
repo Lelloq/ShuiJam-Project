@@ -14,8 +14,8 @@ namespace SJ
 	{
 		m_fileProcessor = std::make_unique<FileProcessor>();
 
-		m_SFXscroll = std::make_unique<SFXSource>();
 		m_SFXstart = std::make_unique<SFXSource>();
+		m_scrollSound = m_sfx->addSFX(SJFOLDER + SOUNDS + "scroll.wav");
 
 		m_songSelectIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "songselectmenu.png", GL_CLAMP_TO_EDGE);
 		m_songSelect = std::make_unique<Rect>(glm::vec2(0.f,0.f), glm::vec2(VPORT_WIDTH, VPORT_HEIGHT), 2, *m_songSelectIm);
@@ -31,9 +31,9 @@ namespace SJ
 		int yPos = 0;
 		for (int i = 0; i < 12; i++)
 		{
-			m_buttonPositions.push_back(yPos);
-			m_buttons.push_back(std::make_unique<Button>(glm::vec2(829, 630), glm::vec2(451, 57), 0, *m_selectWheelIm));
-			m_songWheelText.push_back(std::make_unique<Text>(glm::vec2(865, 637), L"^g[...^^^", 451, 24, 1));
+			m_buttonPositions.push_back(630+yPos);
+			m_buttons.push_back(std::make_unique<Button>(glm::vec2(829, 630+yPos), glm::vec2(451, 57), 0, *m_selectWheelIm));
+			m_songWheelText.push_back(std::make_unique<Text>(glm::vec2(865, 637+yPos), L"^g[...^^^", 451, 24, 1));
 			m_buttons.at(i)->readjustBounds(glm::vec2(829, 630+yPos));
 			yPos -= 57;
 		}
@@ -57,18 +57,50 @@ namespace SJ
 	}
 	void SongScene::Update(float dt)
 	{
+		//Checking if scroll reached 57 pixels up or down
+		if (m_pixels >= 57)
+		{
+			m_scrollDirection = 0;
+			m_pixels = 0;
+		}
+
+		//Scrolling the song wheel up or down by 57 pixels (height of a song wheel part)
+		m_slow += dt;
+		if(m_scrollDirection == 1 && m_slow > 0.001)
+		{
+			m_slow = 0;
+			m_pixels += 1;
+			for(int i = 0; i < m_buttonPositions.size(); i++)
+			{
+				m_buttonPositions.at(i) += 1;
+				m_buttons.at(i)->repositionVerts(glm::vec2(829, m_buttonPositions.at(i)));
+				m_buttons.at(i)->readjustBounds(glm::vec2(829, m_buttonPositions.at(i)));
+				m_songWheelText.at(i)->repositionVerts(glm::vec2(865, m_buttonPositions.at(i) + 7));
+			}
+		}
+		else if(m_scrollDirection == -1 && m_slow > 0.001)
+		{
+			m_slow = 0;
+			m_pixels += 1;
+			for (int i = 0; i < m_buttonPositions.size(); i++)
+			{
+				m_buttonPositions.at(i) -= 1;
+				m_buttons.at(i)->repositionVerts(glm::vec2(829, m_buttonPositions.at(i)));
+				m_buttons.at(i)->readjustBounds(glm::vec2(829, m_buttonPositions.at(i)));
+				m_songWheelText.at(i)->repositionVerts(glm::vec2(865, m_buttonPositions.at(i) + 7));
+			}
+		}
+
 		//Checking if a part of the song wheel gone past the upper limit or lower limit
 		for(int i = 0; i < m_buttonPositions.size(); i++)
 		{
-			if(m_buttonPositions.at(i) > 687)
+			if(m_buttonPositions.at(i) > m_upperLimit)
 			{
-				m_buttonPositions.at(i) = 4;
-				m_buttons.at(i)->readjustBounds(glm::vec2(829, m_buttonPositions.at(i)));
+				m_buttonPositions.at(i) = 3;
 			}
-			else if(m_buttonPositions.at(i) < 3)
+			else if(m_buttonPositions.at(i) < m_lowerLimit)
 			{
 				m_buttonPositions.at(i) = 686;
-				m_buttons.at(i)->readjustBounds(glm::vec2(829, m_buttonPositions.at(i)));
 			}
 		}
 	}
@@ -79,9 +111,7 @@ namespace SJ
 		for(int i = 0; i < 12; i++)
 		{
 			m_buttons.at(i)->Draw(*m_shader);
-			m_shader->setMat4("model", glm::translate(glm::mat4{1.0f}, glm::vec3(0, m_buttonPositions.at(i), 0)));
 			m_songWheelText.at(i)->Draw(*m_textShader);
-			m_textShader->setMat4("model", glm::translate(glm::mat4{ 1.0f }, glm::vec3(0, m_buttonPositions.at(i), 0)));
 		}
 		
 		m_shader->use();
@@ -114,6 +144,7 @@ namespace SJ
 		if(action == GLFW_PRESS && key == GLFW_KEY_SPACE)
 		{
 			m_text2->changeText(L"ag");
+			m_songWheelText.at(0)->changeText(L"click");
 		}
 	}
 	void SongScene::getMouseButton(int button, int action, int mods)
@@ -138,7 +169,15 @@ namespace SJ
 	void SongScene::getScroll(double xoffset, double yoffset)
 	{
 		//Lowest song wheel is at -627 relative to the song wheel part
-		std::cout << yoffset << "\n";
+		//std::cout << yoffset << "\n";
+		if(m_scrollDirection == 0)
+		{
+			m_scrollDirection = yoffset;
+			{
+				m_SFXscroll = std::make_unique<SFXSource>();
+				m_SFXscroll->Play(m_scrollSound);
+			}
+		}
 	}
 	void SongScene::fileDrop(int count, const char** paths)
 	{

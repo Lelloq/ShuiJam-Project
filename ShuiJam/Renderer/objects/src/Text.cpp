@@ -132,4 +132,22 @@ namespace SJ
 		m_text = text;
 		m_isTextDifferent = true;
 	}
+
+	void Text::repositionVerts(glm::vec2 pos)
+	{
+		float x = 1.0f;
+		if (m_size * m_text.size() > m_width)
+		{
+			x = m_size * m_text.size() / m_width;
+		}
+
+		m_verts =
+		//POSITION													//UV_COORDS
+		{pos.x,  pos.y + m_size * 2,							m_verts[2], 0.0f, 0.0f,
+		 pos.x + m_size * m_text.size(), pos.y + m_size * 2,	m_verts[2], x, 0.0f,
+		 pos.x + m_size * m_text.size(), pos.y,					m_verts[2], x, 1.0f,
+		 pos.x,  pos.y,											m_verts[2], 0.0f, 1.0f, };
+		m_pos = pos;
+		m_VBO->Edit(sizeof(m_verts), m_verts.data());
+	}
 }

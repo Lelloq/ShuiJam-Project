@@ -28,9 +28,9 @@ namespace SJ
 		//AUDIO
 		SJ::AudioDevice* m_device;//!< Audio device
 		SJ::SoundEffect* m_sfx;//!< Sound effect
-		std::unique_ptr<SFXSource> m_SFXscroll;//!< Sound effect source for scrolling
-		std::unique_ptr<SFXSource> m_SFXstart;//!< Sound effect source for scrolling
+		std::unique_ptr<SFXSource> m_SFXstart, m_SFXscroll;//!< Sound effect source for starting a song
 		std::unique_ptr<Music> m_music;//!< Music that plays during song select
+		ALuint m_scrollSound, m_startSound;
 		//GRAPHICS
 		//Buttons
 		std::vector<std::unique_ptr<Button>> m_buttons;//Buttons in song select 11 buttons
@@ -56,9 +56,12 @@ namespace SJ
 		std::unique_ptr<Text> m_text2;
 		//Values
 		std::vector<int> m_buttonPositions;//positions of the song wheel
-		int m_upperLimit = 687;
+		int m_upperLimit = 686;
 		int m_lowerLimit = 3;
 		int m_scrollDirection = 0;
+		bool m_scrollDebounce = false;
+		float m_slow = 0;
+		int m_pixels = 0;
 
 		//GRAPHICS FOR SETTINGS SCREEN
 	public:
