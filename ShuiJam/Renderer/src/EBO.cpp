@@ -14,7 +14,7 @@ namespace SJ
 	//Deletes the current buffer
 	EBO::~EBO()
 	{
-		glDeleteBuffers(GL_ELEMENT_ARRAY_BUFFER, &m_ID);
+		glDeleteBuffers(1, &m_ID); 
 	}
 
 	//Binds the index buffer

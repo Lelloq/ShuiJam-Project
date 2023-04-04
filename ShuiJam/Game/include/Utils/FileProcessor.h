@@ -33,6 +33,8 @@ namespace SJ
 		sqlite3_stmt* m_stmt;
 		const std::wstring m_songsFolder = L"../ShuiJamGame/Songs/";
 		const std::string m_dbLocation = "../ShuiJamGame/shuijam.db";
+		unsigned m_lastID = 0;
+		void setLastID();
 	public:
 		FileProcessor();//!<Constructor that init sqlite3 library
 		~FileProcessor();//!<Destructor that stops sqlite3 library

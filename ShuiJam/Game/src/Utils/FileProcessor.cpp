@@ -1,15 +1,35 @@
 #include "Utils/FileProcessor.h"
+#include "Utils/Properties.h"
 
 namespace SJ
 {
 	FileProcessor::FileProcessor()
 	{
 		sqlite3_open(m_dbLocation.c_str(), &m_db);
+		setLastID();
 	}
 
 	FileProcessor::~FileProcessor()
 	{
 		sqlite3_close(m_db);
+	}
+
+	void FileProcessor::setLastID()
+	{
+		if(!std::filesystem::exists(SJFOLDER + "shuijam.db"))
+		{
+			ProcessFiles();
+			reloadSongs();
+		}
+		else
+		{
+			std::wstring command = L"SELECT * FROM Songs WHERE ID=(SELECT max(ID) FROM Songs)";
+			sqlite3_stmt* stmt;
+			sqlite3_prepare16_v2(m_db, command.c_str(), -1, &stmt, nullptr);
+			sqlite3_step(stmt);
+			m_lastID = sqlite3_column_int(stmt, 0);
+			sqlite3_finalize(stmt);
+		}
 	}
 
 	void FileProcessor::ProcessFiles()
@@ -94,9 +114,6 @@ namespace SJ
 		L" INSERT INTO Songs (ID,mapID,Artist,Title,Path,OSU,Background,Audio) "
 		"VALUES(?,?,?,?,?,?,?,?)";
 
-		sqlite3_stmt* stmt;
-		sqlite3_prepare16_v2(m_db, insertCommand.c_str(), -1, &stmt, nullptr);
-
 		//Id is set to 0 for song data retrieval later on
 		int id = 0;
 		//Iterates through every folder inside the song folder
@@ -160,6 +177,9 @@ namespace SJ
 				}
 				file.close();
 
+				sqlite3_stmt* stmt;
+				sqlite3_prepare16_v2(m_db, insertCommand.c_str(), -1, &stmt, nullptr);
+
 				//Binds the values into the insert statement
 				sqlite3_bind_int(stmt, 1, id);
 				sqlite3_bind_int(stmt, 2, beatmapID);
@@ -175,13 +195,20 @@ namespace SJ
 				{
 					std::cout << "Error inserting data" << "\n";
 				}
+				else
+				{
+					id++;
+				}
+
+				sqlite3_finalize(stmt);
 			}
 		}
-		sqlite3_finalize(stmt);
+		setLastID();
 	}
 
 	Songdata FileProcessor::retrieveSong(int row)
 	{
+		if (m_lastID > row) std::cout << "row out of range from the database"; return Songdata();
 		Songdata data;
 		//Retrieve the song data from the database based on the selected row
 		std::wstring selectCommand =

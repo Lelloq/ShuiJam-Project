@@ -14,6 +14,17 @@
 
 namespace SJ
 {
+	/*
+	* \struct SongData
+	* \brief contains song data such as title, artist, background and audio
+	*/
+	struct SongData
+	{
+		std::wstring artist, title;
+		std::wstring osu, dirPath;
+		std::wstring bg, audio;
+	};
+
 	/**
 	 * \class SongScene
 	 * \brief The song select scene.
@@ -26,11 +37,11 @@ namespace SJ
 		//WINDOW
 		GLFWwindow* m_window;
 		//AUDIO
-		SJ::AudioDevice* m_device;//!< Audio device
-		SJ::SoundEffect* m_sfx;//!< Sound effect
-		std::unique_ptr<SFXSource> m_SFXstart, m_SFXscroll;//!< Sound effect source for starting a song
-		std::unique_ptr<Music> m_music;//!< Music that plays during song select
-		ALuint m_scrollSound, m_startSound;
+		SJ::AudioDevice* m_device;
+		SJ::SoundEffect* m_sfx;
+		std::unique_ptr<SFXSource> m_source;
+		std::unique_ptr<Music> m_music;
+		ALuint m_scrollSound, m_startSound, m_refreshSound;
 		//GRAPHICS
 		//Buttons
 		std::vector<std::unique_ptr<Button>> m_buttons;//Buttons in song select 11 buttons
@@ -41,11 +52,9 @@ namespace SJ
 		std::unique_ptr<Texture> m_songBGIm;
 		std::unique_ptr<Texture> m_songSelectIm;
 		std::shared_ptr<Texture> m_selectWheelIm;
-		//Buttons and images
 		std::unique_ptr<Texture> m_logoIm;
-		std::unique_ptr<Texture> m_settingsIm;
-		std::unique_ptr<Button> m_sButtonmIm;
-		std::unique_ptr<Button> m_logo;
+		//Buttons
+		std::unique_ptr<Button> m_logoBtn;
 		//Objects
 		std::unique_ptr<Rect> m_songBG;
 		std::unique_ptr<Rect> m_songSelect;
@@ -60,8 +69,16 @@ namespace SJ
 		bool m_scrollDebounce = false;
 		float m_slow = 0;
 		int m_pixels = 0;
+		//Song data storage for the scene
+		std::array<Songdata, 12> m_songData;
+		unsigned m_head = 0;
+		unsigned m_tail = 11;
 
 		//GRAPHICS FOR SETTINGS SCREEN
+		std::unique_ptr<Texture> m_settingsIm;
+		std::unique_ptr<Texture> m_keybindIm;
+		std::unique_ptr<Button> m_keybindBtn;
+		std::unique_ptr<Button> m_sButtonmBtn;
 	public:
 		SongScene(GLFWwindow* window);
 		void Update(float dt);
