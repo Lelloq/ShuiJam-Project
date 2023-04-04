@@ -19,7 +19,7 @@ namespace SJ
 	struct Songdata
 	{
 		std::wstring artist;
-		std::wstring title;
+		std::wstring title, version;
 		std::wstring dirPath, osuPath;
 		std::wstring background, audio;
 	};

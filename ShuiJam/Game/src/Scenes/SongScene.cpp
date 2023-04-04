@@ -7,6 +7,7 @@
 #include "Scenes/SongScene.h"
 #include "Utils/Properties.h"
 #include <GLFW/glfw3.h>
+#include <future>
 
 namespace SJ
 {
@@ -55,7 +56,12 @@ namespace SJ
 	#pragma endregion
 
 	#pragma region song data processing
-		updateSongWheel();
+		if(std::filesystem::file_size(SJFOLDER + "shuijam.db") <= 0)
+		{
+			std::async(std::launch::async , &FileProcessor::ProcessFiles, &*m_fileProcessor);
+			std::async(std::launch::async , &FileProcessor::reloadSongs, &*m_fileProcessor);
+		}
+		std::async(std::launch::async, &SongScene::updateSongWheel, this);
 	#pragma endregion
 	}
 	void SongScene::Update(float dt)
@@ -138,12 +144,8 @@ namespace SJ
 				m_source = std::make_unique<SFXSource>();
 				m_source->Play(m_refreshSound);
 			}
-			m_fileProcessor->ProcessFiles();
-			m_fileProcessor->reloadSongs();
-			for(int i = 0; i < m_songWheelText.size(); i++)
-			{
-				m_songWheelText.at(i)->changeText(m_songData.at(i).title);
-			}
+			std::async(std::launch::async, &FileProcessor::ProcessFiles, &*m_fileProcessor);
+			std::async(std::launch::async, &FileProcessor::reloadSongs, &*m_fileProcessor);
 		}
 		//An alternative way to scroll up or down the song wheel
 		if((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_UP && m_scrollDirection == 0)
@@ -154,7 +156,7 @@ namespace SJ
 				m_source = std::make_unique<SFXSource>();
 				m_source->Play(m_scrollSound);
 			}
-			updateSongWheel();
+			std::async(std::launch::async, &SongScene::updateSongWheel, this);
 		}
 		else if ((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_DOWN && m_scrollDirection == 0)
 		{
@@ -164,7 +166,7 @@ namespace SJ
 				m_source = std::make_unique<SFXSource>();
 				m_source->Play(m_scrollSound);
 			}
-			updateSongWheel();
+			std::async(std::launch::async, &SongScene::updateSongWheel, this);
 		}
 	}
 	void SongScene::getMouseButton(int button, int action, int mods)
@@ -196,16 +198,12 @@ namespace SJ
 				m_source = std::make_unique<SFXSource>();
 				m_source->Play(m_scrollSound);
 			}
-			for (int i = 0; i < m_songWheelText.size(); i++)
-			{
-				m_songWheelText.at(i)->changeText(m_songData.at(i).title);
-			}
 		}
 
 		//Wrap the head around the array as the player scrolls up or down
 		if (m_head > m_tail) m_head = 0;
 		else if (m_head < 0) m_head = m_tail;
-		updateSongWheel();
+		std::async(std::launch::async, &SongScene::updateSongWheel, this);
 	}
 	void SongScene::fileDrop(int count, const char** paths)
 	{
@@ -223,7 +221,14 @@ namespace SJ
 			if (ptr > m_tail) ptr = 0;
 			m_songData.at(i) = m_fileProcessor->retrieveSong(ptr);
 			ptr++;
-			m_songWheelText.at(i)->changeText(m_songData.at(i).title);
+			if(m_songData.at(i).title.size() > 30)
+			{
+				m_songWheelText.at(i)->changeText(m_songData.at(i).title.substr(0,30) + L"...");
+			}
+			else
+			{
+				m_songWheelText.at(i)->changeText(m_songData.at(i).title);
+			}
 		}
 	}
 }
