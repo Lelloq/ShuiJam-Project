@@ -14,17 +14,6 @@
 
 namespace SJ
 {
-	/*
-	* \struct SongData
-	* \brief contains song data such as title, artist, background and audio
-	*/
-	struct SongData
-	{
-		std::wstring artist, title;
-		std::wstring osu, dirPath;
-		std::wstring bg, audio;
-	};
-
 	/**
 	 * \class SongScene
 	 * \brief The song select scene.
@@ -73,6 +62,7 @@ namespace SJ
 		std::array<Songdata, 12> m_songData;
 		unsigned m_head = 0;
 		unsigned m_tail = 11;
+		void updateSongWheel();
 
 		//GRAPHICS FOR SETTINGS SCREEN
 		std::unique_ptr<Texture> m_settingsIm;

@@ -41,5 +41,6 @@ namespace SJ
 		void ProcessFiles();//!<Filters out non 7key mode .osu files
 		void reloadSongs();//!<Loads the .osu files into the database created
 		Songdata retrieveSong(int row);//!<Retrieves the song data for a specific row
+		[[nodiscard]] unsigned getLastID() { return m_lastID; }
 	};
 }

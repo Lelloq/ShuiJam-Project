@@ -34,7 +34,7 @@ namespace SJ
 		{
 			m_buttonPositions.push_back(630+yPos);
 			m_buttons.push_back(std::make_unique<Button>(glm::vec2(829, 630+yPos), glm::vec2(451, 57), 0, *m_selectWheelIm));
-			m_songWheelText.push_back(std::make_unique<Text>(glm::vec2(865, 637+yPos), L"^g[...^^^", 415, 24, 1));
+			m_songWheelText.push_back(std::make_unique<Text>(glm::vec2(865, 637+yPos), L"...", 415, 24, 1));
 			m_buttons.at(i)->readjustBounds(glm::vec2(829, 630+yPos));
 			yPos -= 57;
 		}
@@ -55,7 +55,7 @@ namespace SJ
 	#pragma endregion
 
 	#pragma region song data processing
-		
+		updateSongWheel();
 	#pragma endregion
 	}
 	void SongScene::Update(float dt)
@@ -131,6 +131,7 @@ namespace SJ
 	}
 	void SongScene::getKey(int key, int scancode, int action, int mods)
 	{
+		//Refresh the song list when the player presses F5
 		if(action == GLFW_PRESS && key == GLFW_KEY_F5)
 		{
 			{
@@ -139,35 +140,31 @@ namespace SJ
 			}
 			m_fileProcessor->ProcessFiles();
 			m_fileProcessor->reloadSongs();
+			for(int i = 0; i < m_songWheelText.size(); i++)
+			{
+				m_songWheelText.at(i)->changeText(m_songData.at(i).title);
+			}
 		}
-		if(action == GLFW_PRESS && key == GLFW_KEY_F6)
-		{
-			std::wcout << m_fileProcessor->retrieveSong(0).artist << "\n";
-			std::wcout << m_fileProcessor->retrieveSong(0).title << "\n";
-			std::wcout << m_fileProcessor->retrieveSong(0).dirPath << "\n";
-			std::wcout << m_fileProcessor->retrieveSong(0).osuPath << "\n";
-			std::wcout << m_fileProcessor->retrieveSong(0).background << "\n";
-			std::wcout << m_fileProcessor->retrieveSong(0).audio << "\n";
-		}
-		if(action == GLFW_PRESS && key == GLFW_KEY_SPACE)
-		{
-			m_songWheelText.at(0)->changeText(L"click");
-		}
+		//An alternative way to scroll up or down the song wheel
 		if((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_UP && m_scrollDirection == 0)
 		{
+			m_head++;
 			m_scrollDirection = 1;
 			{
 				m_source = std::make_unique<SFXSource>();
 				m_source->Play(m_scrollSound);
 			}
+			updateSongWheel();
 		}
 		else if ((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_DOWN && m_scrollDirection == 0)
 		{
+			m_head--;
 			m_scrollDirection = -1;
 			{
 				m_source = std::make_unique<SFXSource>();
 				m_source->Play(m_scrollSound);
 			}
+			updateSongWheel();
 		}
 	}
 	void SongScene::getMouseButton(int button, int action, int mods)
@@ -178,15 +175,13 @@ namespace SJ
 		{
 			glfwSetWindowShouldClose(m_window, true);
 		}
-		
-		if(m_buttons.at(0)->hasMouseOnTop(posX, posY) && action == GLFW_PRESS)
+
+		for(int i = 0; i < m_buttons.size(); i++)
 		{
-			std::cout << "a" << "\n";
-		}
-		
-		if(m_buttons.at(1)->hasMouseOnTop(posX, posY) && action == GLFW_PRESS)
-		{
-			std::cout << "b" << "\n";
+			if (m_buttons.at(i)->hasMouseOnTop(posX, posY) && action == GLFW_PRESS) 
+			{
+				std::cout << i << "\n";
+			}
 		}
 	}
 	void SongScene::getScroll(double xoffset, double yoffset)
@@ -194,16 +189,41 @@ namespace SJ
 		//Lowest song wheel is at -627 relative to the song wheel part
 		//std::cout << yoffset << "\n";
 		if(m_scrollDirection == 0)
-		{
+		{	
+			m_head += yoffset;//Change the head position
 			m_scrollDirection = yoffset;
 			{
 				m_source = std::make_unique<SFXSource>();
 				m_source->Play(m_scrollSound);
 			}
+			for (int i = 0; i < m_songWheelText.size(); i++)
+			{
+				m_songWheelText.at(i)->changeText(m_songData.at(i).title);
+			}
 		}
+
+		//Wrap the head around the array as the player scrolls up or down
+		if (m_head > m_tail) m_head = 0;
+		else if (m_head < 0) m_head = m_tail;
+		updateSongWheel();
 	}
 	void SongScene::fileDrop(int count, const char** paths)
 	{
 
+	}
+
+	void SongScene::updateSongWheel()
+	{
+		//A walker that goes through each empty song data in the array and fills it with song data
+		//Ptr goes back to zero as a way to wrap around if there isnt enough song data within the database
+		m_tail = m_fileProcessor->getLastID();
+		int ptr = m_head;
+		for (int i = m_head; i < m_songData.size(); i++)
+		{
+			if (ptr > m_tail) ptr = 0;
+			m_songData.at(i) = m_fileProcessor->retrieveSong(ptr);
+			ptr++;
+			m_songWheelText.at(i)->changeText(m_songData.at(i).title);
+		}
 	}
 }

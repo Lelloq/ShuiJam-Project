@@ -150,6 +150,12 @@ namespace SJ
 						line.erase(0, temp.size());
 						title = line;
 					}
+					if(line.find(L"Version:") != std::wstring::npos)
+					{
+						std::wstring temp = L"Version:";
+						line.erase(0, temp.size());
+						title = title + L" [" + line + L"]";
+					}
 					if(line.find(L"AudioFilename: ") != std::wstring::npos)
 					{
 						std::wstring temp = L"AudioFilename: ";
@@ -208,7 +214,7 @@ namespace SJ
 
 	Songdata FileProcessor::retrieveSong(int row)
 	{
-		if (m_lastID > row) std::cout << "row out of range from the database"; return Songdata();
+		if (row > m_lastID) return Songdata();
 		Songdata data;
 		//Retrieve the song data from the database based on the selected row
 		std::wstring selectCommand =
