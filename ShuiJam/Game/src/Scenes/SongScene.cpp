@@ -18,6 +18,7 @@ namespace SJ
 	#pragma region Main graphics and audio
 		m_scrollSound = m_sfx->addSFX(SJFOLDER + SOUNDS + "scroll.wav");
 		m_refreshSound = m_sfx->addSFX(SJFOLDER + SOUNDS + "refresh.wav");
+		m_startSound = m_sfx->addSFX(SJFOLDER + SOUNDS + "begin.wav");
 
 		m_songSelectIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "songselectmenu.png", GL_CLAMP_TO_EDGE);
 		m_songSelect = std::make_unique<Rect>(glm::vec2(0.f,0.f), glm::vec2(VPORT_WIDTH, VPORT_HEIGHT), 2, *m_songSelectIm);
@@ -26,7 +27,7 @@ namespace SJ
 		m_logoBtn = std::make_unique<Button>(glm::vec2(0.f, 0.f), glm::vec2(125.f, 125.f), 3, *m_logoIm);
 
 		m_songBGIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "selectbg.png", GL_CLAMP_TO_EDGE);
-		m_songBG = std::make_unique<Rect>(glm::vec2(0.f, 0.f), glm::vec2(VPORT_WIDTH, VPORT_HEIGHT), 0, *m_songBGIm);
+		m_songBg = std::make_unique<Rect>(glm::vec2(0.f, 0.f), glm::vec2(VPORT_WIDTH, VPORT_HEIGHT), 0, *m_songBGIm);
 
 		m_selectWheelIm = std::make_shared<Texture>(SJFOLDER + IMAGES + "selectbar.png", GL_CLAMP_TO_EDGE);
 
@@ -53,6 +54,22 @@ namespace SJ
 		m_textShader->use();
 		m_textShader->setMat4("model", model);
 		m_textShader->setMat4("projection", projection);
+	#pragma endregion
+
+	#pragma region settings UI
+
+	#pragma endregion
+
+	#pragma region exit UI
+		m_exitBgIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "exitbg.png", GL_CLAMP_TO_EDGE);
+		m_exitBg = std::make_unique<Rect>(glm::vec2(500.f,300.f), glm::vec2(300.f, 200.f), 4, *m_exitBgIm);
+
+		m_exitYesIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "yes.png", GL_CLAMP_TO_EDGE);
+		m_exitNoIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "no.png", GL_CLAMP_TO_EDGE);
+		m_exitYesBtn = std::make_unique<Button>(glm::vec2(515.f, 315.f), glm::vec2(121.f, 51.f), 5, *m_exitYesIm);
+		m_exitNoBtn = std::make_unique<Button>(glm::vec2(663.f, 315.f), glm::vec2(121.f, 51.f), 5, *m_exitNoIm);
+
+		m_exitText = std::make_unique<Text>(glm::vec2(573.f, 380.f), L"Quit?", 200, 64, 5);
 	#pragma endregion
 
 	#pragma region song data processing
@@ -114,26 +131,46 @@ namespace SJ
 			}
 		}
 		#pragma endregion
-
 	}
 	void SongScene::Render()
 	{
+		double posX, posY;
+		glfwGetCursorPos(m_window, &posX, &posY);
 		glClearColor(0.5568f, 0.8f, 0.7764f, 0.f);
 
 		for(int i = 0; i < 12; i++)
 		{
+			//Highlight the selected song wheel
+			if(m_confirmation == i)
+			{
+				m_shader->use();
+				m_shader->setFloat("transparency", 1.2f);
+			}
+			else
+			{
+				m_shader->use();
+				m_shader->setFloat("transparency", 1.f);
+			}
 			m_buttons.at(i)->Draw(*m_shader);
 			m_songWheelText.at(i)->Draw(*m_textShader);
 		}
 		
 		m_shader->use();
 		m_shader->setMat4("model", glm::mat4{ 1.0f });
-		m_songBG->Draw(*m_shader);
+		m_songBg->Draw(*m_shader);
 		m_songSelect->Draw(*m_shader);
 		m_logoBtn->Draw(*m_shader);
 
 		m_textShader->use();
 		m_textShader->setMat4("model", glm::mat4{ 1.0f });
+
+		if(m_exitOpen)
+		{
+			m_exitBg->Draw(*m_shader);
+			m_exitNoBtn->Draw(*m_shader);
+			m_exitYesBtn->Draw(*m_shader);
+			m_exitText->Draw(*m_textShader);
+		}
 	}
 	void SongScene::getKey(int key, int scancode, int action, int mods)
 	{
@@ -171,20 +208,54 @@ namespace SJ
 	}
 	void SongScene::getMouseButton(int button, int action, int mods)
 	{
+		if (!m_canClick) return;
+	#pragma region exit buttons
 		double posX, posY;
 		glfwGetCursorPos(m_window, &posX, &posY);
 		if(m_logoBtn->hasMouseOnTop(posX,posY) && action == GLFW_PRESS)
 		{
-			glfwSetWindowShouldClose(m_window, true);
+			if(!m_exitOpen)
+			{
+				m_source = std::make_unique<SFXSource>();
+				m_source->Play(m_refreshSound);
+			}
+			m_exitOpen = true;
 		}
+		else if(m_exitOpen == true)
+		{
+			if(m_exitYesBtn->hasMouseOnTop(posX,posY) && action == GLFW_PRESS)
+			{
+				glfwSetWindowShouldClose(m_window, true);
+			}
+			else if(m_exitNoBtn->hasMouseOnTop(posX,posY) && action == GLFW_PRESS)
+			{
+				m_exitOpen = false;
+			}
+		}
+	#pragma endregion
 
+	#pragma region songwheel buttons
 		for(int i = 0; i < m_buttons.size(); i++)
 		{
 			if (m_buttons.at(i)->hasMouseOnTop(posX, posY) && action == GLFW_PRESS) 
 			{
-				std::cout << i << "\n";
+				if (m_confirmation != i) m_confirmation = i;
+				else if (m_confirmation == i)
+				{
+					//Swap scenes here
+					m_canClick = false;
+					g_CurrentBG = m_songData.at(i).background;
+					g_CurrentSong = m_songData.at(i).audio;
+					g_CurrentDifficulty = m_songData.at(i).osuPath;
+					g_CurrentOsuDir = m_songData.at(i).dirPath;
+					{
+						m_source = std::make_unique<SFXSource>();
+						m_source->Play(m_startSound);
+					}
+				}
 			}
 		}
+	#pragma endregion
 	}
 	void SongScene::getScroll(double xoffset, double yoffset)
 	{

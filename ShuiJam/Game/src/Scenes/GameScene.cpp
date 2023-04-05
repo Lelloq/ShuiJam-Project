@@ -3,6 +3,7 @@
  * \date   March 2023
  *********************************************************************/
 #include "Scenes/GameScene.h"
+#include "Utils/Properties.h"
 
 namespace SJ
 {

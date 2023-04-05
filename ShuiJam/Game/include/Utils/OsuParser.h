@@ -1,7 +1,9 @@
 /*\file OsuParser.h
 \brief parses the .osu file*/
 #pragma once
-#include "Utils/Properties.h"
+#include <vector>
+#include <filesystem>
+#include <fstream>
 
 /*TODO
 -Figure out the structure of the osu file
@@ -20,6 +22,10 @@ namespace SJ
 
 	class OsuParser
 	{
-
+	private:
+		const std::wstring m_songsFolder = L"../ShuiJamGame/Songs/";
+		std::vector<Note> m_notes;
+	public:
+		static std::vector<Note> parse();
 	};
 }

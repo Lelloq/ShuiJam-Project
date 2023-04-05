@@ -23,6 +23,7 @@ namespace SJ
 		void setInt(const std::string &name, int val);//!< Set int uniform
 		void setBool(const std::string &name, bool val);//!< Set bool uniform
 		void setMat4(const std::string& name, const glm::mat4& mat) const;
+		void setVec3(const std::string& name, const glm::vec3& vec) const;
 		void checkCompileErrors(unsigned int shader, std::string type);
 	};
 }

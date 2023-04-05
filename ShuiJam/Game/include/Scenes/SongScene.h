@@ -26,8 +26,8 @@ namespace SJ
 		//WINDOW
 		GLFWwindow* m_window;
 		//AUDIO
-		SJ::AudioDevice* m_device;
-		SJ::SoundEffect* m_sfx;
+		AudioDevice* m_device;
+		SoundEffect* m_sfx;
 		std::unique_ptr<SFXSource> m_source;
 		std::unique_ptr<Music> m_music;
 		ALuint m_scrollSound, m_startSound, m_refreshSound;
@@ -38,14 +38,12 @@ namespace SJ
 		//Shader
 		std::unique_ptr<Shader> m_shader;
 		//Textures
-		std::unique_ptr<Texture> m_songBGIm;
-		std::unique_ptr<Texture> m_songSelectIm;
+		std::unique_ptr<Texture> m_songBGIm, m_songSelectIm, m_logoIm;
 		std::shared_ptr<Texture> m_selectWheelIm;
-		std::unique_ptr<Texture> m_logoIm;
 		//Buttons
 		std::unique_ptr<Button> m_logoBtn;
 		//Objects
-		std::unique_ptr<Rect> m_songBG;
+		std::unique_ptr<Rect> m_songBg;
 		std::unique_ptr<Rect> m_songSelect;
 		//Text
 		std::unique_ptr<Shader> m_textShader;
@@ -53,23 +51,34 @@ namespace SJ
 		std::unique_ptr<Text> m_songText, m_artistText, m_diffText;
 		//Values
 		std::vector<int> m_buttonPositions;//positions of the song wheel
-		int m_upperLimit = 686;
+		bool m_canClick = true;
+		int m_upperLimit = 686;//Highest point for the image before wrapping around
 		int m_lowerLimit = 3;
 		int m_scrollDirection = 0;
-		bool m_scrollDebounce = false;
+		bool m_scrollDebounce = false;//Prevents extremely fast scrolling
+		int m_confirmation;//Highlighting the selected song
 		float m_slow = 0;
 		int m_pixels = 0;
+		double m_cursorPosX, m_cursorPosY;
 		//Song data storage for the scene
 		std::array<Songdata, 12> m_songData;
 		unsigned m_head = 0;
 		unsigned m_tail = 11;
 		void updateSongWheel();
 
+		//GRAPHICS FOR EXITING THE GAME
+		bool m_exitOpen = false;//Whether or no the logo button has been pressed (shows the exit button)
+		std::unique_ptr<Texture> m_exitBgIm;
+		std::unique_ptr<Rect> m_exitBg;
+		std::unique_ptr<Texture> m_exitYesIm, m_exitNoIm;
+		std::unique_ptr<Button> m_exitYesBtn, m_exitNoBtn;
+		std::unique_ptr<Text> m_exitText;
+
 		//GRAPHICS FOR SETTINGS SCREEN
-		std::unique_ptr<Texture> m_settingsIm;
-		std::unique_ptr<Texture> m_keybindIm;
-		std::unique_ptr<Button> m_keybindBtn;
-		std::unique_ptr<Button> m_sButtonmBtn;
+		bool m_settingsOpen = false;//Settings ui open or not
+		bool m_keybindsOpen = false;//Keybinds ui open or not
+		std::unique_ptr<Texture> m_settingsIm, m_keybindIm;
+		std::unique_ptr<Button> m_keybindBtn, m_sButtonmBtn;
 	public:
 		SongScene(GLFWwindow* window);
 		void Update(float dt);
