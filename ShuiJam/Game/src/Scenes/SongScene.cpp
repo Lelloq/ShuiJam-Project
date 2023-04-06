@@ -248,6 +248,7 @@ namespace SJ
 						m_source = std::make_unique<SFXSource>();
 						m_source->Play(m_startSound);
 					}
+					g_CurrentScene = "game";
 				}
 			}
 		}

@@ -25,6 +25,8 @@ namespace SJ
 		std::unique_ptr<Music> m_music;
 		//GRAPHICS
 
+		//OTHER DATA
+		std::array<std::vector<Note>, 7> m_notes;
 	public:
 		GameScene(GLFWwindow* window);
 		void Update(float dt);
