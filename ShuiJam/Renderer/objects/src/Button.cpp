@@ -80,8 +80,9 @@ namespace SJ
 	{
 		//change scr_height to something that can be changed in the future through settings
 		double y = VPORT_HEIGHT - (posy * (VPORT_HEIGHT / SCR_HEIGHT));//Inverts the position
+		double x = posx * (VPORT_WIDTH / SCR_WIDTH);//Scale down the width down to the viewport width
 		//true if: lowerboundX < posx < upperBoundX and lowerboundY < posy < upperboundY
-		if(m_clickBoundsX.x <= posx && posx <= m_clickBoundsX.y)
+		if(m_clickBoundsX.x <= x && x <= m_clickBoundsX.y)
 		{
 			if(m_clickBoundsY.x <= y && y <= m_clickBoundsY.y)
 			{

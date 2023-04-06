@@ -5,6 +5,7 @@
 
 namespace SJ
 {
+	unsigned Shader::shaderInUse = 0;
 	Shader::Shader(std::string& vertexPath, std::string& fragPath)
 	{
 		//Setup of shader code and shader file stream
@@ -85,31 +86,40 @@ namespace SJ
 
 	void Shader::use()
 	{
-		glUseProgram(m_ID);
+		if(shaderInUse != m_ID)
+		{
+			shaderInUse = m_ID;
+			glUseProgram(m_ID);
+		}
 	}
 
 	void Shader::setFloat(const std::string& name, float val)
 	{
+		use();
 		glUniform1f(glGetUniformLocation(m_ID, name.c_str()),val);
 	}
 
 	void Shader::setInt(const std::string& name, int val)
 	{
+		use();
 		glUniform1i(glGetUniformLocation(m_ID, name.c_str()),val);
 	}
 
 	void Shader::setBool(const std::string& name, bool val)
 	{
+		use();
 		glUniform1i(glGetUniformLocation(m_ID, name.c_str()),val);
 	}
 
-	void Shader::setMat4(const std::string& name, const glm::mat4& mat) const
+	void Shader::setMat4(const std::string& name, const glm::mat4& mat)
 	{
+		use();
 		glUniformMatrix4fv(glGetUniformLocation(m_ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 	}
 	
-	void Shader::setVec3(const std::string& name, const glm::vec3& vec) const
+	void Shader::setVec3(const std::string& name, const glm::vec3& vec)
 	{
+		use();
 		glUniform3f(glGetUniformLocation(m_ID, name.c_str()), vec.x, vec.y, vec.z);
 	}
 

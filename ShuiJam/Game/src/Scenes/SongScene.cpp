@@ -68,8 +68,6 @@ namespace SJ
 		m_exitNoIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "no.png", GL_CLAMP_TO_EDGE);
 		m_exitYesBtn = std::make_unique<Button>(glm::vec2(515.f, 315.f), glm::vec2(121.f, 51.f), 5, *m_exitYesIm);
 		m_exitNoBtn = std::make_unique<Button>(glm::vec2(663.f, 315.f), glm::vec2(121.f, 51.f), 5, *m_exitNoIm);
-
-		m_exitText = std::make_unique<Text>(glm::vec2(573.f, 380.f), L"Quit?", 200, 64, 5);
 	#pragma endregion
 
 	#pragma region song data processing
@@ -136,32 +134,31 @@ namespace SJ
 	{
 		double posX, posY;
 		glfwGetCursorPos(m_window, &posX, &posY);
+		m_cursorPosX = posX * (VPORT_WIDTH / SCR_WIDTH);
+		m_cursorPosY = posY * (VPORT_HEIGHT / SCR_HEIGHT);
+
 		glClearColor(0.5568f, 0.8f, 0.7764f, 0.f);
 
-		for(int i = 0; i < 12; i++)
+		for(int i = 0; i < m_buttons.size(); i++)
 		{
+			//Highlight the cursor hovering over the wheel
 			//Highlight the selected song wheel
-			if(m_confirmation == i)
-			{
-				m_shader->use();
-				m_shader->setFloat("transparency", 1.2f);
-			}
-			else
-			{
-				m_shader->use();
-				m_shader->setFloat("transparency", 1.f);
-			}
+			if (m_confirmation == i) { m_shader->setFloat("transparency", 1.2f); }
+			else if(m_buttons.at(i)->hasMouseOnTop(m_cursorPosX,m_cursorPosY)) { m_shader->setFloat("transparency", 1.1f); }
+			else {m_shader->setFloat("transparency", 1.f); }
 			m_buttons.at(i)->Draw(*m_shader);
 			m_songWheelText.at(i)->Draw(*m_textShader);
 		}
 		
-		m_shader->use();
 		m_shader->setMat4("model", glm::mat4{ 1.0f });
 		m_songBg->Draw(*m_shader);
 		m_songSelect->Draw(*m_shader);
-		m_logoBtn->Draw(*m_shader);
 
-		m_textShader->use();
+		if (m_logoBtn->hasMouseOnTop(m_cursorPosX, m_cursorPosY)) { m_shader->setFloat("transparency", 2.0f); }
+		else m_shader->setFloat("transparency", 1.0f);
+		m_logoBtn->Draw(*m_shader);
+		m_shader->setFloat("transparency", 1.0f);
+
 		m_textShader->setMat4("model", glm::mat4{ 1.0f });
 
 		if(m_exitOpen)
@@ -169,7 +166,6 @@ namespace SJ
 			m_exitBg->Draw(*m_shader);
 			m_exitNoBtn->Draw(*m_shader);
 			m_exitYesBtn->Draw(*m_shader);
-			m_exitText->Draw(*m_textShader);
 		}
 	}
 	void SongScene::getKey(int key, int scancode, int action, int mods)

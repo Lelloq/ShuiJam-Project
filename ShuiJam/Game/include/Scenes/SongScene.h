@@ -72,7 +72,6 @@ namespace SJ
 		std::unique_ptr<Rect> m_exitBg;
 		std::unique_ptr<Texture> m_exitYesIm, m_exitNoIm;
 		std::unique_ptr<Button> m_exitYesBtn, m_exitNoBtn;
-		std::unique_ptr<Text> m_exitText;
 
 		//GRAPHICS FOR SETTINGS SCREEN
 		bool m_settingsOpen = false;//Settings ui open or not

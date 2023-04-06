@@ -27,15 +27,15 @@ namespace SJ
 		m_titleShader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
 		m_startShader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
 
-		m_bgShader->use();
+		//m_bgShader->use();
 		m_bgShader->setMat4("model", model);
 		m_bgShader->setMat4("projection", projection);
 
-		m_titleShader->use();
+		//m_titleShader->use();
 		m_titleShader->setMat4("model", model);
 		m_titleShader->setMat4("projection", projection);
 
-		m_startShader->use();
+		//m_startShader->use();
 		m_startShader->setMat4("model", model);
 		m_startShader->setMat4("projection", projection);
 	}
@@ -48,14 +48,12 @@ namespace SJ
 	//Animate objects
 	void MenuScene::Update(float dt)
 	{
-		m_titleShader->use();
 		m_titleShader->setFloat("transparency", m_intermediate);
 		if(m_intermediate < 1.f)
 		{
 			m_intermediate += dt;
 		}
 
-		m_startShader->use();
 		m_startShader->setFloat("transparency", m_toggle);
 		m_toggleValue += dt;
 		if(m_toggleValue > m_toggleThreshold)
@@ -70,12 +68,9 @@ namespace SJ
 			if(m_timer > 1)
 			{
 				m_sceneTransparency -= dt * 7;
-				m_bgShader->use();
 				m_bgShader->setFloat("transparency", m_sceneTransparency);
-				m_titleShader->use();
-				m_bgShader->setFloat("transparency", m_sceneTransparency);
-				m_startShader->use();
-				m_bgShader->setFloat("transparency", m_sceneTransparency);
+				m_titleShader->setFloat("transparency", m_sceneTransparency);
+				m_startShader->setFloat("transparency", m_sceneTransparency);
 			}
 			if(m_sceneTransparency <= -3)
 			{

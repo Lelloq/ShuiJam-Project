@@ -4,6 +4,7 @@
 
 namespace SJ
 {
+	unsigned VBO::currentlyBoundID = 0;
 	//Creates the vbo with the changeable draw type
 	//Need to be done since at some point dynamic geometry will be drawn
 	VBO::VBO(const void* data, uint32_t size, unsigned int drawtype)
@@ -16,24 +17,30 @@ namespace SJ
 	//Deletes vertex buffers
 	VBO::~VBO()
 	{
+		VBO::currentlyBoundID = 0;
 		glDeleteBuffers(1, &m_ID);
 	}
 
 	//Binds vertex buffer
 	void VBO::Bind() const
 	{
-		glBindBuffer(GL_ARRAY_BUFFER, m_ID);
+		if(VBO::currentlyBoundID != m_ID)
+		{
+			VBO::currentlyBoundID = m_ID;
+			glBindBuffer(GL_ARRAY_BUFFER, m_ID);
+		}
 	}
 
 	void VBO::Edit(uint32_t size, const void* data)
 	{
-		glBindBuffer(GL_ARRAY_BUFFER, m_ID);
+		Bind();
 		glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
 	}
 
 	//Unbinds vertex buffer
 	void VBO::Unbind() const
 	{
+		VBO::currentlyBoundID = 0;
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 }

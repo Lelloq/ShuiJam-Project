@@ -11,6 +11,7 @@ namespace SJ
 	{
 	private:
 		uint32_t m_ID;//!< Renderer ID
+		static unsigned currentlyBoundID;
 	public:
 		VAO();//!< Default constructor
 		~VAO();//!< Destructor deletes vertex array

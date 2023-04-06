@@ -3,6 +3,7 @@
 
 namespace SJ
 {
+	unsigned VAO::currentlyBoundID = 0;
 	//Generate 1 vertex array assigned to the id
 	VAO::VAO()
 	{
@@ -13,6 +14,7 @@ namespace SJ
 	//Delete the created vertex array
 	VAO::~VAO()
 	{
+		VAO::currentlyBoundID = 0;
 		glDeleteVertexArrays(1, &m_ID);
 	}
 
@@ -35,12 +37,17 @@ namespace SJ
 	//Binds vertex array
 	void VAO::Bind() const
 	{
-		glBindVertexArray(m_ID);
+		if(VAO::currentlyBoundID != m_ID)
+		{
+			VAO::currentlyBoundID = m_ID;
+			glBindVertexArray(m_ID);
+		}
 	}
 
 	//Unbinds vertex array
 	void VAO::Unbind() const
 	{
+		VAO::currentlyBoundID = 0;
 		glBindVertexArray(0);
 	}
 }
