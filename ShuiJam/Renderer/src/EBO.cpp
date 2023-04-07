@@ -8,7 +8,7 @@ namespace SJ
 	EBO::EBO(const void* data, uint32_t count, unsigned int drawtype) : m_count(count)
 	{
 		glGenBuffers(1, &m_ID);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ID);
+		Bind();
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned int), data, drawtype);
 	}
 

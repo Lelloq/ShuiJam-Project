@@ -10,7 +10,7 @@ namespace SJ
 	VBO::VBO(const void* data, uint32_t size, unsigned int drawtype)
 	{
 		glGenBuffers(1, &m_ID);
-		glBindBuffer(GL_ARRAY_BUFFER, m_ID);
+		Bind();
 		glBufferData(GL_ARRAY_BUFFER, size, data, drawtype);
 	}
 

@@ -65,7 +65,6 @@ namespace SJ
 		std::array<Songdata, 11> m_songData;
 		int m_top = 0;
 		void updateSongWheel();
-		void fillSongWheel();
 
 		//GRAPHICS FOR EXITING THE GAME
 		bool m_exitOpen = false;//Whether or no the logo button has been pressed (shows the exit button)

@@ -8,7 +8,7 @@ namespace SJ
 	VAO::VAO()
 	{
 		glGenVertexArrays(1, &m_ID);
-		glBindVertexArray(m_ID);
+		Bind();
 	}
 
 	//Delete the created vertex array

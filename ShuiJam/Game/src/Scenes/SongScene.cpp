@@ -72,8 +72,8 @@ namespace SJ
 
 	#pragma region song data processing
 		m_fileProcessor->ProcessFiles();
-		std::async(std::launch::async , &FileProcessor::reloadSongs, &*m_fileProcessor);
-		std::async(std::launch::async, &SongScene::fillSongWheel, this);
+		m_fileProcessor->reloadSongs();
+		std::async(std::launch::async, &SongScene::updateSongWheel, this);
 	#pragma endregion
 	}
 	void SongScene::Update(float dt)
@@ -181,27 +181,25 @@ namespace SJ
 		//An alternative way to scroll up or down the song wheel
 		if((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_UP && m_scrollDirection == 0)
 		{
+			m_top++;
 			m_scrollDirection = 1;
 			m_confirmation = -1;
 			{
 				m_source = std::make_unique<SFXSource>();
 				m_source->Play(m_scrollSound);
 			}
-			std::async(std::launch::async, &SongScene::updateSongWheel, this);
+			updateSongWheel();
 		}
 		else if ((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_DOWN && m_scrollDirection == 0)
 		{
+			m_top--;
 			m_scrollDirection = -1;
 			m_confirmation = -1;
 			{
 				m_source = std::make_unique<SFXSource>();
 				m_source->Play(m_scrollSound);
 			}
-			std::async(std::launch::async, &SongScene::updateSongWheel, this);
-		}
-		for(int i = 0; i < m_buttonPositions.size(); i++)
-		{
-			std::cout << i << ": " << m_buttonPositions.at(i) << "\n";
+			updateSongWheel();
 		}
 	}
 	void SongScene::getMouseButton(int button, int action, int mods)
@@ -270,7 +268,7 @@ namespace SJ
 				m_source = std::make_unique<SFXSource>();
 				m_source->Play(m_scrollSound);
 			}
-			std::async(std::launch::async, &SongScene::updateSongWheel, this);
+			updateSongWheel();
 		}
 	}
 	void SongScene::fileDrop(int count, const char** paths)
@@ -278,68 +276,26 @@ namespace SJ
 
 	}
 
-	//void SongScene::updateSongWheel()
-	//{
-	//	m_tail = m_fileProcessor->getLastID();
-	//	//Wrap the head around the array as the player scrolls up or down
-	//	if (m_head > m_fileProcessor->getLastID()) m_head = 0;
-	//	else if (m_tail > m_fileProcessor->getLastID()) m_tail = 0;
-	//	//A walker that goes through each empty song data in the array and fills it with song data
-	//	//Ptr goes back to zero as a way to wrap around if there isnt enough song data within the database
-	//	int ptr = m_head;
-	//	for (int i = 0; i < m_songData.size(); i++)
-	//	{
-	//		if (ptr > m_fileProcessor->getLastID()) ptr = 0;
-	//		std::cout << ptr << "\n";
-	//		m_songData.at(i) = m_fileProcessor->retrieveSong(ptr);
-	//		ptr++;
-	//		if(m_songData.at(i).title.size() > 30)
-	//		{
-	//			m_songWheelText.at(i)->changeText(m_songData.at(i).title.substr(0,30) + L"...");
-	//		}
-	//		else
-	//		{
-	//			m_songWheelText.at(i)->changeText(m_songData.at(i).title);
-	//		}
-	//	}
-	//}
-
 	void SongScene::updateSongWheel()
 	{
 		std::vector<int> dbIndices;
-		if (m_top > 11) m_top = 0;
-		else if (m_top < 0) m_top = 11;
+		if (m_top > 10) m_top = 0;
+		else if (m_top < 0) m_top = 10;
 
 		int ptr = m_top;
 		for(int i = m_top; i < m_top + 11; i++)
 		{
-			dbIndices.push_back(i & m_fileProcessor->getLastID());
-			ptr++;
-			ptr = ptr % 11;
-			m_songData.at(ptr) = m_fileProcessor->retrieveSong(dbIndices.at(ptr));
-			if (m_songData.at(ptr).title.size() > 30)
+			std::wcout << m_fileProcessor->retrieveSong(i % (m_fileProcessor->getLastID() + 1)).title << ": " << i % 11 << "\n";
+			dbIndices.push_back(i % m_fileProcessor->getLastID());
+			int index = i % 11;
+			m_songData.at(index) = m_fileProcessor->retrieveSong(i % (m_fileProcessor->getLastID() + 1));
+			if (m_songData.at(index).title.size() > 30)
 			{
-				m_songWheelText.at(ptr)->changeText(m_songData.at(ptr).title.substr(0, 30) + L"...");
+				m_songWheelText.at(index)->changeText(m_songData.at(index).title.substr(0, 30) + L"...");
 			}
 			else
 			{
-				m_songWheelText.at(ptr)->changeText(m_songData.at(ptr).title);
-			}
-		}
-	}
-
-	void SongScene::fillSongWheel()
-	{
-		for (int i = 0; i < m_songData.size(); i++)
-		{
-			m_songData.at(i) = m_fileProcessor->retrieveSong(i);
-			if (m_songData.at(i).title.size() > 30)
-			{
-				m_songWheelText.at(i)->changeText(m_songData.at(i).title.substr(0, 30) + L"...");
-			}
-			else
-			{
-				m_songWheelText.at(i)->changeText(m_songData.at(i).title);
+				m_songWheelText.at(index)->changeText(m_songData.at(index).title);
 			}
 		}
 	}
