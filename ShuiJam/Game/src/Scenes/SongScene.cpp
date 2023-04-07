@@ -202,10 +202,6 @@ namespace SJ
 			}
 			std::async(std::launch::async, &SongScene::updateSongWheel, this);
 		}
-		for(int i = 0; i < m_buttonPositions.size(); i++)
-		{
-			std::cout << i << ": " << m_buttonPositions.at(i) << "\n";
-		}
 	}
 	void SongScene::getMouseButton(int button, int action, int mods)
 	{
@@ -289,29 +285,12 @@ namespace SJ
 
 		for(int i = m_top; i < m_top + 12; i++)
 		{
-			dbIndices.push_back(i & m_fileProcessor->getLastID());
-			ptr++;
-			ptr = ptr % 11;
-			m_songData.at(ptr) = m_fileProcessor->retrieveSong(dbIndices.at(ptr));
-			if (m_songData.at(ptr).title.size() > 30)
+			//std::wcout << m_fileProcessor->retrieveSong(i % (m_fileProcessor->getLastID() + 1)).title << ": " << i % 11 << "\n";
+			int index = i % 12;
+			m_songData.at(index) = m_fileProcessor->retrieveSong(i % (m_fileProcessor->getLastID() + 1));
+			if (m_songData.at(index).title.size() > 30)
 			{
-				m_songWheelText.at(ptr)->changeText(m_songData.at(ptr).title.substr(0, 30) + L"...");
-			}
-			else
-			{
-				m_songWheelText.at(ptr)->changeText(m_songData.at(ptr).title);
-			}
-		}
-	}
-
-	void SongScene::fillSongWheel()
-	{
-		for (int i = 0; i < m_songData.size(); i++)
-		{
-			m_songData.at(i) = m_fileProcessor->retrieveSong(i);
-			if (m_songData.at(i).title.size() > 30)
-			{
-				m_songWheelText.at(i)->changeText(m_songData.at(i).title.substr(0, 30) + L"...");
+				m_songWheelText.at(index)->changeText(m_songData.at(index).title.substr(0, 30) + L"...");
 			}
 			else
 			{
