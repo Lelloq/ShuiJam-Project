@@ -11,6 +11,7 @@
 #include "objects/objects.h"
 #include "Utils/FileProcessor.h"
 #include <GLFW/glfw3.h>
+#include <map>
 
 namespace SJ
 {
@@ -62,9 +63,9 @@ namespace SJ
 		double m_cursorPosX, m_cursorPosY;
 		//Song data storage for the scene
 		std::array<Songdata, 12> m_songData;
-		unsigned m_head = 0;
-		unsigned m_tail = 11;
+		int m_top = 0;
 		void updateSongWheel();
+		void fillSongWheel();
 
 		//GRAPHICS FOR EXITING THE GAME
 		bool m_exitOpen = false;//Whether or no the logo button has been pressed (shows the exit button)

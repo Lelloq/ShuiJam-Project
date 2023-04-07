@@ -71,19 +71,16 @@ namespace SJ
 	#pragma endregion
 
 	#pragma region song data processing
-		if(std::filesystem::file_size(SJFOLDER + "shuijam.db") <= 0)
-		{
-			std::async(std::launch::async , &FileProcessor::ProcessFiles, &*m_fileProcessor);
-			std::async(std::launch::async , &FileProcessor::reloadSongs, &*m_fileProcessor);
-		}
-		std::async(std::launch::async, &SongScene::updateSongWheel, this);
+		m_fileProcessor->ProcessFiles();
+		std::async(std::launch::async , &FileProcessor::reloadSongs, &*m_fileProcessor);
+		std::async(std::launch::async, &SongScene::fillSongWheel, this);
 	#pragma endregion
 	}
 	void SongScene::Update(float dt)
 	{
 		#pragma region song wheel scrolling
 		//Checking if scroll reached 57 pixels up or down
-		if (m_pixels >= 114)
+		if (m_pixels >= 57)
 		{
 			m_scrollDirection = 0;
 			m_pixels = 0;
@@ -150,7 +147,7 @@ namespace SJ
 			m_songWheelText.at(i)->Draw(*m_textShader);
 		}
 		
-		m_shader->setMat4("model", glm::mat4{ 1.0f });
+		m_shader->setFloat("transparency", 1.f);
 		m_songBg->Draw(*m_shader);
 		m_songSelect->Draw(*m_shader);
 
@@ -158,8 +155,6 @@ namespace SJ
 		else m_shader->setFloat("transparency", 1.0f);
 		m_logoBtn->Draw(*m_shader);
 		m_shader->setFloat("transparency", 1.0f);
-
-		m_textShader->setMat4("model", glm::mat4{ 1.0f });
 
 		if(m_exitOpen)
 		{
@@ -177,14 +172,14 @@ namespace SJ
 				m_source = std::make_unique<SFXSource>();
 				m_source->Play(m_refreshSound);
 			}
-			std::async(std::launch::async, &FileProcessor::ProcessFiles, &*m_fileProcessor);
+			m_fileProcessor->ProcessFiles();
 			std::async(std::launch::async, &FileProcessor::reloadSongs, &*m_fileProcessor);
 		}
 		//An alternative way to scroll up or down the song wheel
 		if((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_UP && m_scrollDirection == 0)
 		{
-			m_head++;
 			m_scrollDirection = 1;
+			m_confirmation = -1;
 			{
 				m_source = std::make_unique<SFXSource>();
 				m_source->Play(m_scrollSound);
@@ -193,8 +188,8 @@ namespace SJ
 		}
 		else if ((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_DOWN && m_scrollDirection == 0)
 		{
-			m_head--;
 			m_scrollDirection = -1;
+			m_confirmation = -1;
 			{
 				m_source = std::make_unique<SFXSource>();
 				m_source->Play(m_scrollSound);
@@ -235,6 +230,7 @@ namespace SJ
 		{
 			if (m_buttons.at(i)->hasMouseOnTop(posX, posY) && action == GLFW_PRESS) 
 			{
+				std::cout << i << "\n";
 				if (m_confirmation != i) m_confirmation = i;
 				else if (m_confirmation == i)
 				{
@@ -260,38 +256,79 @@ namespace SJ
 		//std::cout << yoffset << "\n";
 		if(m_scrollDirection == 0)
 		{	
-			m_head += yoffset;//Change the head position
+			m_top += yoffset;//Change the head position
+			m_confirmation = -1;
 			m_scrollDirection = yoffset;
 			{
 				m_source = std::make_unique<SFXSource>();
 				m_source->Play(m_scrollSound);
 			}
+			std::async(std::launch::async, &SongScene::updateSongWheel, this);
 		}
-
-		//Wrap the head around the array as the player scrolls up or down
-		if (m_head > m_tail) m_head = 0;
-		else if (m_head < 0) m_head = m_tail;
-		std::async(std::launch::async, &SongScene::updateSongWheel, this);
 	}
 	void SongScene::fileDrop(int count, const char** paths)
 	{
 
 	}
 
+	//void SongScene::updateSongWheel()
+	//{
+	//	m_tail = m_fileProcessor->getLastID();
+	//	//Wrap the head around the array as the player scrolls up or down
+	//	if (m_head > m_fileProcessor->getLastID()) m_head = 0;
+	//	else if (m_tail > m_fileProcessor->getLastID()) m_tail = 0;
+	//	//A walker that goes through each empty song data in the array and fills it with song data
+	//	//Ptr goes back to zero as a way to wrap around if there isnt enough song data within the database
+	//	int ptr = m_head;
+	//	for (int i = 0; i < m_songData.size(); i++)
+	//	{
+	//		if (ptr > m_fileProcessor->getLastID()) ptr = 0;
+	//		std::cout << ptr << "\n";
+	//		m_songData.at(i) = m_fileProcessor->retrieveSong(ptr);
+	//		ptr++;
+	//		if(m_songData.at(i).title.size() > 30)
+	//		{
+	//			m_songWheelText.at(i)->changeText(m_songData.at(i).title.substr(0,30) + L"...");
+	//		}
+	//		else
+	//		{
+	//			m_songWheelText.at(i)->changeText(m_songData.at(i).title);
+	//		}
+	//	}
+	//}
+
 	void SongScene::updateSongWheel()
 	{
-		//A walker that goes through each empty song data in the array and fills it with song data
-		//Ptr goes back to zero as a way to wrap around if there isnt enough song data within the database
-		m_tail = m_fileProcessor->getLastID();
-		int ptr = m_head;
-		for (int i = m_head; i < m_songData.size(); i++)
+		std::vector<int> dbIndices;
+		if (m_top > 11) m_top = 0;
+		else if (m_top < 0) m_top = 11;
+
+		int ptr = m_top;
+		for(int i = m_top; i < m_top + 12; i++)
 		{
-			if (ptr > m_tail) ptr = 0;
-			m_songData.at(i) = m_fileProcessor->retrieveSong(ptr);
+			dbIndices.push_back(i & m_fileProcessor->getLastID());
 			ptr++;
-			if(m_songData.at(i).title.size() > 30)
+			ptr = ptr % 12;
+			m_songData.at(ptr) = m_fileProcessor->retrieveSong(dbIndices.at(ptr));
+			if (m_songData.at(ptr).title.size() > 30)
 			{
-				m_songWheelText.at(i)->changeText(m_songData.at(i).title.substr(0,30) + L"...");
+				m_songWheelText.at(ptr)->changeText(m_songData.at(ptr).title.substr(0, 30) + L"...");
+			}
+			else
+			{
+				m_songWheelText.at(ptr)->changeText(m_songData.at(ptr).title);
+			}
+		}
+	}
+
+	void SongScene::fillSongWheel()
+	{
+		for (int i = 0; i < m_songData.size(); i++)
+		{
+			m_songData.at(i) = m_fileProcessor->retrieveSong(i);
+			if (m_songData.at(i).title.size() > 30)
+			{
+				m_songWheelText.at(i)->changeText(m_songData.at(i).title.substr(0, 30) + L"...");
 			}
 			else
 			{
