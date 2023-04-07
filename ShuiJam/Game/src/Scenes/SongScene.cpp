@@ -32,7 +32,7 @@ namespace SJ
 		m_selectWheelIm = std::make_shared<Texture>(SJFOLDER + IMAGES + "selectbar.png", GL_CLAMP_TO_EDGE);
 
 		int yPos = 0;
-		for (int i = 0; i < 11; i++)
+		for (int i = 0; i < 12; i++)
 		{
 			m_buttonPositions.push_back(630+yPos);
 			m_buttons.push_back(std::make_unique<Button>(glm::vec2(829, 630+yPos), glm::vec2(451, 57), 0, *m_selectWheelIm));
@@ -73,7 +73,7 @@ namespace SJ
 	#pragma region song data processing
 		m_fileProcessor->ProcessFiles();
 		m_fileProcessor->reloadSongs();
-		std::async(std::launch::async, &SongScene::updateSongWheel, this);
+		updateSongWheel();
 	#pragma endregion
 	}
 	void SongScene::Update(float dt)
@@ -90,7 +90,7 @@ namespace SJ
 		//The higher number the higher up on the screen
 		for (int i = 0; i < m_buttonPositions.size(); i++)
 		{
-			if (m_buttonPositions.at(i) + 57 >= m_upperLimit && m_scrollDirection == 1)
+			if (m_buttonPositions.at(i) > m_upperLimit && m_scrollDirection == 1)
 			{
 				m_buttonPositions.at(i) = 3;
 			}
@@ -171,6 +171,7 @@ namespace SJ
 		//Refresh the song list when the player presses F5
 		if(action == GLFW_PRESS && key == GLFW_KEY_F5)
 		{
+			m_top--;
 			{
 				m_source = std::make_unique<SFXSource>();
 				m_source->Play(m_refreshSound);
@@ -199,7 +200,11 @@ namespace SJ
 				m_source = std::make_unique<SFXSource>();
 				m_source->Play(m_scrollSound);
 			}
-			updateSongWheel();
+			std::async(std::launch::async, &SongScene::updateSongWheel, this);
+		}
+		for(int i = 0; i < m_buttonPositions.size(); i++)
+		{
+			std::cout << i << ": " << m_buttonPositions.at(i) << "\n";
 		}
 	}
 	void SongScene::getMouseButton(int button, int action, int mods)
@@ -279,19 +284,34 @@ namespace SJ
 	void SongScene::updateSongWheel()
 	{
 		std::vector<int> dbIndices;
-		if (m_top > 10) m_top = 0;
-		else if (m_top < 0) m_top = 10;
+		if (m_top > 11) m_top = 0;
+		else if (m_top < 0) m_top = 11;
 
-		int ptr = m_top;
-		for(int i = m_top; i < m_top + 11; i++)
+		for(int i = m_top; i < m_top + 12; i++)
 		{
-			std::wcout << m_fileProcessor->retrieveSong(i % (m_fileProcessor->getLastID() + 1)).title << ": " << i % 11 << "\n";
-			dbIndices.push_back(i % m_fileProcessor->getLastID());
-			int index = i % 11;
-			m_songData.at(index) = m_fileProcessor->retrieveSong(i % (m_fileProcessor->getLastID() + 1));
-			if (m_songData.at(index).title.size() > 30)
+			dbIndices.push_back(i & m_fileProcessor->getLastID());
+			ptr++;
+			ptr = ptr % 11;
+			m_songData.at(ptr) = m_fileProcessor->retrieveSong(dbIndices.at(ptr));
+			if (m_songData.at(ptr).title.size() > 30)
 			{
-				m_songWheelText.at(index)->changeText(m_songData.at(index).title.substr(0, 30) + L"...");
+				m_songWheelText.at(ptr)->changeText(m_songData.at(ptr).title.substr(0, 30) + L"...");
+			}
+			else
+			{
+				m_songWheelText.at(ptr)->changeText(m_songData.at(ptr).title);
+			}
+		}
+	}
+
+	void SongScene::fillSongWheel()
+	{
+		for (int i = 0; i < m_songData.size(); i++)
+		{
+			m_songData.at(i) = m_fileProcessor->retrieveSong(i);
+			if (m_songData.at(i).title.size() > 30)
+			{
+				m_songWheelText.at(i)->changeText(m_songData.at(i).title.substr(0, 30) + L"...");
 			}
 			else
 			{
