@@ -90,11 +90,11 @@ namespace SJ
 		//The higher number the higher up on the screen
 		for (int i = 0; i < m_buttonPositions.size(); i++)
 		{
-			if (m_buttonPositions.at(i) > m_upperLimit && m_scrollDirection == 1)
+			if (m_buttonPositions.at(i) > m_upperLimit)
 			{
 				m_buttonPositions.at(i) = 3;
 			}
-			else if (m_buttonPositions.at(i) <= m_lowerLimit && m_scrollDirection == -1)
+			else if (m_buttonPositions.at(i) < m_lowerLimit)
 			{
 				m_buttonPositions.at(i) = 687;
 			}
@@ -171,7 +171,6 @@ namespace SJ
 		//Refresh the song list when the player presses F5
 		if(action == GLFW_PRESS && key == GLFW_KEY_F5)
 		{
-			m_top--;
 			{
 				m_source = std::make_unique<SFXSource>();
 				m_source->Play(m_refreshSound);
@@ -200,7 +199,7 @@ namespace SJ
 				m_source = std::make_unique<SFXSource>();
 				m_source->Play(m_scrollSound);
 			}
-			std::async(std::launch::async, &SongScene::updateSongWheel, this);
+			updateSongWheel();
 		}
 	}
 	void SongScene::getMouseButton(int button, int action, int mods)
@@ -283,9 +282,9 @@ namespace SJ
 		if (m_top > 11) m_top = 0;
 		else if (m_top < 0) m_top = 11;
 
-		for(int i = m_top; i < m_top + 12; i++)
+		for(int i = m_top; i < m_top + 11; i++)
 		{
-			//std::wcout << m_fileProcessor->retrieveSong(i % (m_fileProcessor->getLastID() + 1)).title << ": " << i % 11 << "\n";
+			std::wcout << m_fileProcessor->retrieveSong(i % (m_fileProcessor->getLastID() + 1)).title << ": " << i % 12 << "\n";
 			int index = i % 12;
 			m_songData.at(index) = m_fileProcessor->retrieveSong(i % (m_fileProcessor->getLastID() + 1));
 			if (m_songData.at(index).title.size() > 30)
