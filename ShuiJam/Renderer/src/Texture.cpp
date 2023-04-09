@@ -97,13 +97,14 @@ namespace SJ
 	}
 	void Texture::bind(unsigned int slot)
 	{
+		m_slot = slot;
 		glActiveTexture(GL_TEXTURE0 + slot);
 		glBindTexture(GL_TEXTURE_2D, m_ID);
 	}
 	void Texture::reloadTexture(std::string& filepath, int wrapping)
 	{
+		glActiveTexture(GL_TEXTURE0 + m_slot);
 		glBindTexture(GL_TEXTURE_2D, m_ID);
-
 		if (filepath.find(".png") != std::string::npos)
 		{
 			stbi_set_flip_vertically_on_load(true);
@@ -149,6 +150,8 @@ namespace SJ
 		m_height = height;
 		m_channels = channels;
 
+		glActiveTexture(GL_TEXTURE0 + m_slot);
+		glBindTexture(GL_TEXTURE_2D, m_ID);
 		if (channels == 1) 
 		{ 
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -167,6 +170,8 @@ namespace SJ
 	}
 	void Texture::edit(uint32_t xOffset, uint32_t yOffset, uint32_t width, uint32_t height, unsigned char* data)
 	{
+		glActiveTexture(GL_TEXTURE0 + m_slot);
+		glBindTexture(GL_TEXTURE_2D, m_ID);
 		//Change the pixel store alignment depending on the channel format
 		if (data)
 		{

@@ -54,16 +54,20 @@ namespace SJ
 		std::vector<int> m_buttonPositions;//positions of the song wheel
 		bool m_canClick = true;
 		int m_upperLimit = 687;//Highest point for the image before wrapping around
-		int m_lowerLimit = 3;
+		int m_lowerLimit = 60;
 		int m_scrollDirection = 0;
 		bool m_scrollDebounce = false;//Prevents extremely fast scrolling
 		int m_confirmation;//Highlighting the selected song
 		float m_slow = 0;
 		int m_pixels = 0;
 		double m_cursorPosX, m_cursorPosY;
+		bool m_canScrollDown = true;
+		bool m_canScrollUp = false;
 		//Song data storage for the scene
-		std::array<Songdata, 12> m_songData;
-		int m_top = 0;
+		std::array<Songdata, 11> m_songData;
+		int m_head = 0;
+		int m_tail = 11;
+		int m_lastSong = 0;
 		void updateSongWheel();
 
 		//GRAPHICS FOR EXITING THE GAME

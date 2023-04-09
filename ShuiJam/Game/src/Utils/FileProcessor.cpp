@@ -74,13 +74,13 @@ namespace SJ
 		std::wstring createCommand = 
 			L"CREATE TABLE IF NOT EXISTS Songs("
 			"ID Int NOT NULL,"
-			"Version Text(128),"
-			"Artist Text(128),"
-			"Title Text(128),"
-			"Path Text(128),"
-			"OSU Text(128),"
-			"Background Text(128),"
-			"Audio Text(128) );";
+			"Version Text(65535),"
+			"Artist Text(65535),"
+			"Title Text(65535),"
+			"Path Text(65535),"
+			"OSU Text(65535),"
+			"Background Text(65535),"
+			"Audio Text(65535) );";
 
 		//Creates a table for the sql database if it doesnt exist
 		sqlite3_stmt* cstmt;
@@ -126,9 +126,9 @@ namespace SJ
 				int bgCounter = 0;//Counter is there since there is a line that is consistent with all .osu files and the one below is not
 				for(std::wstring line; std::getline(file, line); )
 				{
-					if(line.find(L"TitleUnicode:") != std::wstring::npos)
+					if(line.find(L"Title:") != std::wstring::npos)
 					{
-						std::wstring temp = L"TitleUnicode:";
+						std::wstring temp = L"Title:";
 						line.erase(0, temp.size());
 						title = line;
 					}
@@ -145,9 +145,9 @@ namespace SJ
 						line.erase(0, temp.size());
 						audioPath = line;
 					}
-					else if(line.find(L"ArtistUnicode:") != std::wstring::npos)
+					else if(line.find(L"Artist:") != std::wstring::npos)
 					{
-						std::wstring temp = L"ArtistUnicode:";
+						std::wstring temp = L"Artist:";
 						line.erase(0, temp.size());
 						artist = line;
 					}

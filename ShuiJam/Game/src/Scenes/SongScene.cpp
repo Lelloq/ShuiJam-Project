@@ -32,7 +32,7 @@ namespace SJ
 		m_selectWheelIm = std::make_shared<Texture>(SJFOLDER + IMAGES + "selectbar.png", GL_CLAMP_TO_EDGE);
 
 		int yPos = 0;
-		for (int i = 0; i < 12; i++)
+		for (int i = 0; i < 11; i++)
 		{
 			m_buttonPositions.push_back(630+yPos);
 			m_buttons.push_back(std::make_unique<Button>(glm::vec2(829, 630+yPos), glm::vec2(451, 57), 0, *m_selectWheelIm));
@@ -73,6 +73,7 @@ namespace SJ
 	#pragma region song data processing
 		m_fileProcessor->ProcessFiles();
 		m_fileProcessor->reloadSongs();
+		m_lastSong = m_fileProcessor->getLastID();
 		updateSongWheel();
 	#pragma endregion
 	}
@@ -90,11 +91,11 @@ namespace SJ
 		//The higher number the higher up on the screen
 		for (int i = 0; i < m_buttonPositions.size(); i++)
 		{
-			if (m_buttonPositions.at(i) > m_upperLimit)
+			if (m_buttonPositions.at(i) + 57 >= m_upperLimit && m_scrollDirection == 1)
 			{
 				m_buttonPositions.at(i) = 3;
 			}
-			else if (m_buttonPositions.at(i) < m_lowerLimit)
+			else if (m_buttonPositions.at(i) <= m_lowerLimit && m_scrollDirection == -1)
 			{
 				m_buttonPositions.at(i) = 687;
 			}
@@ -127,7 +128,6 @@ namespace SJ
 			}
 		}
 
-	
 		#pragma endregion
 	}
 	void SongScene::Render()
@@ -139,7 +139,7 @@ namespace SJ
 
 		glClearColor(0.5568f, 0.8f, 0.7764f, 0.f);
 
-		for(int i = 0; i < m_buttons.size(); i++)
+		for(int i = 0; i < m_buttonPositions.size(); i++)
 		{
 			//Highlight the cursor hovering over the wheel
 			//Highlight the selected song wheel
@@ -149,7 +149,7 @@ namespace SJ
 			m_buttons.at(i)->Draw(*m_shader);
 			m_songWheelText.at(i)->Draw(*m_textShader);
 		}
-		
+
 		m_shader->setFloat("transparency", 1.f);
 		m_songBg->Draw(*m_shader);
 		m_songSelect->Draw(*m_shader);
@@ -179,9 +179,10 @@ namespace SJ
 			std::async(std::launch::async, &FileProcessor::reloadSongs, &*m_fileProcessor);
 		}
 		//An alternative way to scroll up or down the song wheel
-		if((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_UP && m_scrollDirection == 0)
+		if((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_UP && m_scrollDirection == 0 && m_canScrollDown)
 		{
-			m_top++;
+			m_head++;
+			m_tail++;
 			m_scrollDirection = 1;
 			m_confirmation = -1;
 			{
@@ -190,9 +191,10 @@ namespace SJ
 			}
 			updateSongWheel();
 		}
-		else if ((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_DOWN && m_scrollDirection == 0)
+		else if ((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_DOWN && m_scrollDirection == 0 && m_canScrollUp)
 		{
-			m_top--;
+			m_head--;
+			m_tail--;
 			m_scrollDirection = -1;
 			m_confirmation = -1;
 			{
@@ -258,15 +260,29 @@ namespace SJ
 	void SongScene::getScroll(double xoffset, double yoffset)
 	{
 		//Lowest song wheel is at -627 relative to the song wheel part
-		//std::cout << yoffset << "\n";
 		if(m_scrollDirection == 0)
 		{	
-			m_top += yoffset;//Change the head position
-			m_confirmation = -1;
-			m_scrollDirection = yoffset;
+			if(yoffset == 1 && m_canScrollDown)
 			{
-				m_source = std::make_unique<SFXSource>();
-				m_source->Play(m_scrollSound);
+				m_head++;//increment the head position
+				m_tail++;//increment the tail position
+				m_confirmation = -1;
+				m_scrollDirection = yoffset;
+				{
+					m_source = std::make_unique<SFXSource>();
+					m_source->Play(m_scrollSound);
+				}
+			}
+			else if(yoffset == -1 && m_canScrollUp)
+			{
+				m_head--;//decrement the head position
+				m_tail--;//decrement the tail position
+				m_confirmation = -1;
+				m_scrollDirection = yoffset;
+				{
+					m_source = std::make_unique<SFXSource>();
+					m_source->Play(m_scrollSound);
+				}
 			}
 			updateSongWheel();
 		}
@@ -278,15 +294,30 @@ namespace SJ
 
 	void SongScene::updateSongWheel()
 	{
-		std::vector<int> dbIndices;
-		if (m_top > 11) m_top = 0;
-		else if (m_top < 0) m_top = 11;
-
-		for(int i = m_top; i < m_top + 11; i++)
+		//A walker that goes through each empty song data in the array and fills it with song data
+		//Ptr goes back to zero as a way to wrap around if there isnt enough song data within the database
+		if (m_head <= 0) 
+		{ 
+			m_canScrollDown = true;
+			m_canScrollUp = false;
+		}
+		else m_canScrollUp = true;
+		if (m_tail > m_lastSong)
 		{
-			std::wcout << m_fileProcessor->retrieveSong(i % (m_fileProcessor->getLastID() + 1)).title << ": " << i % 12 << "\n";
-			int index = i % 12;
-			m_songData.at(index) = m_fileProcessor->retrieveSong(i % (m_fileProcessor->getLastID() + 1));
+			m_canScrollDown = false;
+			m_canScrollUp = true;
+		}
+		else m_canScrollDown = true;
+
+		int ptr = m_head;
+		for (int i = 0; i < 11; i++)
+		{
+			if (ptr > m_lastSong) ptr = 0;
+			int index = (m_head + i) % 11;
+			m_songData.at(index) = m_fileProcessor->retrieveSong(ptr);
+			//std::wcout << index << ": " << m_songData.at(index).title << "\n";
+			m_songWheelText.at(index)->changeText(m_fileProcessor->retrieveSong(ptr).title);
+			ptr++;
 			if (m_songData.at(index).title.size() > 30)
 			{
 				m_songWheelText.at(index)->changeText(m_songData.at(index).title.substr(0, 30) + L"...");

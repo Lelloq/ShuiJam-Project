@@ -6,15 +6,15 @@ namespace SJ
 	TextureUnitManager::TextureUnitManager(size_t capacity)
 	{
 		m_textureIDs.resize(capacity);
-		std::fill(m_textureIDs.begin(), m_textureIDs.end(), 0xFFFFFFFF);
+		std::fill(m_textureIDs.begin(), m_textureIDs.end(), std::numeric_limits<uint32_t>::max());
 		m_units.reserve(capacity * 2);
 	}
 
 	void TextureUnitManager::clear()
 	{
-		std::fill(m_textureIDs.begin(), m_textureIDs.end(), 0xFFFFFFFF);
+		std::fill(m_textureIDs.begin(), m_textureIDs.end(), std::numeric_limits<uint32_t>::max());
 		m_units.clear();
-		m_nextunit = 0;
+		m_nextunit = 0;	
 	}
 	bool TextureUnitManager::getUnit(uint32_t textureID, uint32_t& textureUnit)
 	{
