@@ -1,16 +1,19 @@
 /*\file OsuParser.h
 \brief parses the .osu file*/
 #pragma once
-#include "Utils/Properties.h"
+#include <vector>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <array>
 
-/*TODO
--Figure out the structure of the osu file
--Separate the metadata from the timing data
--Convert timing points into note positions
--Filter out unnecessary options in the osu file
--Find a built in library that goes through the file line by line*/
 namespace SJ
 {
+	/*
+	* \struct Note
+	* \brief Note data for a note object to be used in the game
+	*/
 	struct Note
 	{
 		int column;
@@ -18,8 +21,15 @@ namespace SJ
 		int releasePoint = 0;
 	};
 
+	/**
+	 * \class OsuParser.
+	 * \brief Parses the osu file when given the mapset and the map difficulty
+	 */
 	class OsuParser
 	{
-
+	private:
+		inline static const std::wstring m_songsFolder = L"../ShuiJamGame/Songs/";
+	public:
+		static std::array<std::vector<Note>, 7> parse(std::wstring& dirName, std::wstring& osuName);
 	};
 }

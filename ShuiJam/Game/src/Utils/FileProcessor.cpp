@@ -1,15 +1,27 @@
 #include "Utils/FileProcessor.h"
+#include "Utils/Properties.h"
 
 namespace SJ
 {
 	FileProcessor::FileProcessor()
 	{
 		sqlite3_open(m_dbLocation.c_str(), &m_db);
+		setLastID();
 	}
 
 	FileProcessor::~FileProcessor()
 	{
 		sqlite3_close(m_db);
+	}
+
+	void FileProcessor::setLastID()
+	{
+		std::wstring command = L"SELECT * FROM Songs WHERE ID=(SELECT max(ID) FROM Songs)";
+		sqlite3_stmt* stmt;
+		sqlite3_prepare16_v2(m_db, command.c_str(), -1, &stmt, nullptr);
+		sqlite3_step(stmt);
+		m_lastID = sqlite3_column_int(stmt, 0);
+		sqlite3_finalize(stmt);
 	}
 
 	void FileProcessor::ProcessFiles()
@@ -59,10 +71,10 @@ namespace SJ
 		std::string deleteCommand =
 			"DELETE FROM " + songsTable;
 
-		std::string createCommand = 
-			"CREATE TABLE IF NOT EXISTS Songs("
+		std::wstring createCommand = 
+			L"CREATE TABLE IF NOT EXISTS Songs("
 			"ID Int NOT NULL,"
-			"mapID Int NOT NULL,"
+			"Version Text(65535),"
 			"Artist Text(65535),"
 			"Title Text(65535),"
 			"Path Text(65535),"
@@ -71,14 +83,11 @@ namespace SJ
 			"Audio Text(65535) );";
 
 		//Creates a table for the sql database if it doesnt exist
-		int create = 0;
-		char* createErr;
-		create = sqlite3_exec(m_db, createCommand.c_str(), NULL, 0, &createErr);
-		if(create != SQLITE_OK)
-		{
-			std::cout << "Error creating table" << "\n";
-		}
-		
+		sqlite3_stmt* cstmt;
+		sqlite3_prepare16_v2(m_db, createCommand.c_str(), -1, &cstmt, nullptr);
+		sqlite3_step(cstmt);
+		sqlite3_finalize(cstmt);
+
 		//Clears the contents of the table if it does exist
 		int del = 0;
 		char* delErr;
@@ -91,11 +100,8 @@ namespace SJ
 		//Preparing a statement that inserts new song data into the table
 		namespace fs = std::filesystem;
 		std::wstring insertCommand =
-		L" INSERT INTO Songs (ID,mapID,Artist,Title,Path,OSU,Background,Audio) "
+		L" INSERT INTO Songs (ID,Version,Artist,Title,Path,OSU,Background,Audio) "
 		"VALUES(?,?,?,?,?,?,?,?)";
-
-		sqlite3_stmt* stmt;
-		sqlite3_prepare16_v2(m_db, insertCommand.c_str(), -1, &stmt, nullptr);
 
 		//Id is set to 0 for song data retrieval later on
 		int id = 0;
@@ -108,8 +114,7 @@ namespace SJ
 			std::wstring dirPath = fs::relative(entry, m_songsFolder);
 			for (auto& osu : fs::directory_iterator(entry))
 			{
-				int beatmapID = -1;
-				std::wstring artist, title, osuPath, bgPath, audioPath;
+				std::wstring artist, version, title, osuPath, bgPath, audioPath;
 				std::wfstream file;
 				if (osu.path().extension() != ".osu") continue;
 
@@ -121,31 +126,32 @@ namespace SJ
 				int bgCounter = 0;//Counter is there since there is a line that is consistent with all .osu files and the one below is not
 				for(std::wstring line; std::getline(file, line); )
 				{
-					if(line.find(L"BeatmapID:") != std::wstring::npos)
+					if(line.find(L"Title:") != std::wstring::npos)
 					{
-						std::wstring temp = L"BeatmapID:";
-						line.erase(0, temp.size());
-						beatmapID = std::stoi(line);
-					}
-					if(line.find(L"TitleUnicode:") != std::wstring::npos)
-					{
-						std::wstring temp = L"TitleUnicode:";
+						std::wstring temp = L"Title:";
 						line.erase(0, temp.size());
 						title = line;
 					}
-					if(line.find(L"AudioFilename: ") != std::wstring::npos)
+					else if(line.find(L"Version:") != std::wstring::npos)
+					{
+						std::wstring temp = L"Version:";
+						line.erase(0, temp.size());
+						title = title + L" [" + line + L"]";
+						version = line;
+					}
+					else if(line.find(L"AudioFilename: ") != std::wstring::npos)
 					{
 						std::wstring temp = L"AudioFilename: ";
 						line.erase(0, temp.size());
 						audioPath = line;
 					}
-					if(line.find(L"ArtistUnicode:") != std::wstring::npos)
+					else if(line.find(L"Artist:") != std::wstring::npos)
 					{
-						std::wstring temp = L"ArtistUnicode:";
+						std::wstring temp = L"Artist:";
 						line.erase(0, temp.size());
 						artist = line;
 					}
-					if(line.find(L"//Background and Video events") != std::wstring::npos)
+					else if(line.find(L"//Background and Video events") != std::wstring::npos)
 					{
 						bgCounter++;
 					}
@@ -156,13 +162,17 @@ namespace SJ
 						int start = line.find_first_of(L"\"");
 						int end = line.find_last_of(L"\"");
 						bgPath = line.substr(start+1, end-1 - start);
+						break;
 					}
 				}
 				file.close();
 
+				sqlite3_stmt* stmt;
+				sqlite3_prepare16_v2(m_db, insertCommand.c_str(), -1, &stmt, nullptr);
+
 				//Binds the values into the insert statement
 				sqlite3_bind_int(stmt, 1, id);
-				sqlite3_bind_int(stmt, 2, beatmapID);
+				sqlite3_bind_text16(stmt, 2, version.c_str(), -1, SQLITE_STATIC);
 				sqlite3_bind_text16(stmt, 3, artist.c_str(), -1, SQLITE_STATIC);
 				sqlite3_bind_text16(stmt, 4, title.c_str(), -1, SQLITE_STATIC);
 				sqlite3_bind_text16(stmt, 5, dirPath.c_str(), -1, SQLITE_STATIC);
@@ -175,13 +185,20 @@ namespace SJ
 				{
 					std::cout << "Error inserting data" << "\n";
 				}
+				else
+				{
+					id++;
+				}
+
+				sqlite3_finalize(stmt);
 			}
 		}
-		sqlite3_finalize(stmt);
+		setLastID();
 	}
 
 	Songdata FileProcessor::retrieveSong(int row)
 	{
+		if (row > m_lastID) return Songdata();
 		Songdata data;
 		//Retrieve the song data from the database based on the selected row
 		std::wstring selectCommand =
@@ -192,6 +209,7 @@ namespace SJ
 		sqlite3_bind_int(stmt, 1, row);
 		sqlite3_step(stmt);
 
+		data.version = (wchar_t*)sqlite3_column_text16(stmt, 1);
 		data.artist = (wchar_t*)sqlite3_column_text16(stmt, 2);
 		data.title = (wchar_t*)sqlite3_column_text16(stmt, 3);
 		data.dirPath = (wchar_t*)sqlite3_column_text16(stmt, 4);

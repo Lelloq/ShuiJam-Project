@@ -9,6 +9,7 @@ namespace SJ
 	{
 	private:
 		uint32_t m_ID;//!< Renderer ID
+		static unsigned currentlyBoundID;
 	public:
 		VBO(const void* data, uint32_t size, unsigned int drawtype);//!< Create buffer with specified data and size
 		~VBO();//! Destructor deletes buffer

@@ -10,6 +10,7 @@ namespace SJ
 	private:
 		uint32_t m_ID;//!< Renderer ID
 		uint32_t m_count;//!< Indices count
+		static unsigned currentlyBoundID;
 	public:
 		EBO(const void* data, uint32_t count, unsigned int drawtype);//!< Create EBO with specified data
 		~EBO();//!< Delete ebo

@@ -20,8 +20,13 @@ namespace SJ
 		//WINDOW
 		GLFWwindow* m_window;
 		//AUDIO
-		SJ::AudioDevice* m_device;//!< Audio device
-		SJ::SoundEffect* m_sfx;//!< Sound effect
+		AudioDevice* m_device;//!< Audio device
+		SoundEffect* m_sfx;//!< Sound effect
+		std::unique_ptr<Music> m_music;
+		//GRAPHICS
+
+		//OTHER DATA
+		std::array<std::vector<Note>, 7> m_notes;
 	public:
 		GameScene(GLFWwindow* window);
 		void Update(float dt);

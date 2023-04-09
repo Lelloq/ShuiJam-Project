@@ -34,7 +34,7 @@ namespace SJ
 
 		m_texture = std::make_unique<Texture>(image);//Reset is used to indicate that its now using the texture given by the constructor
 		m_VAO = std::make_unique<VAO>();//Create a new VAO
-		m_VBO = std::make_unique<VBO>(static_cast<void*>(m_verts.data()), sizeof(m_verts), GL_STATIC_DRAW);//Create a VBO with params for the constructor
+		m_VBO = std::make_unique<VBO>(static_cast<void*>(m_verts.data()), sizeof(m_verts), GL_DYNAMIC_DRAW);//Create a VBO with params for the constructor
 		m_EBO = std::make_unique<EBO>(static_cast<void*>(m_indices.data()), m_indices.size(), GL_STATIC_DRAW);//Create an EBO with params for the constructor
 
 		BufferLayout layout;
@@ -65,12 +65,24 @@ namespace SJ
 		m_clickBoundsY = glm::vec2(pos.y, pos.y + m_size.y);
 	}
 
+	void Button::repositionVerts(glm::vec2 pos)
+	{
+		m_verts = 
+		{pos.x,			   pos.y,			 m_verts[2],  0.0f, 0.0f,
+		 pos.x + m_size.x, pos.y,		     m_verts[2],  1.0f, 0.0f,
+		 pos.x + m_size.x, pos.y + m_size.y, m_verts[2],  1.0f, 1.0f,
+		 pos.x,			   pos.y + m_size.y, m_verts[2],  0.0f, 1.0f, };
+		m_position = pos;
+		m_VBO->Edit(sizeof(m_verts), m_verts.data());
+	}
+
 	bool Button::hasMouseOnTop(double posx, double posy)
 	{
 		//change scr_height to something that can be changed in the future through settings
 		double y = VPORT_HEIGHT - (posy * (VPORT_HEIGHT / SCR_HEIGHT));//Inverts the position
+		double x = posx * (VPORT_WIDTH / SCR_WIDTH);//Scale down the width down to the viewport width
 		//true if: lowerboundX < posx < upperBoundX and lowerboundY < posy < upperboundY
-		if(m_clickBoundsX.x <= posx && posx <= m_clickBoundsX.y)
+		if(m_clickBoundsX.x <= x && x <= m_clickBoundsX.y)
 		{
 			if(m_clickBoundsY.x <= y && y <= m_clickBoundsY.y)
 			{

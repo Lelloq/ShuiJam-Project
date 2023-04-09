@@ -13,7 +13,6 @@ void main()
 	std::unique_ptr<SJ::MenuScene> menu = std::make_unique<SJ::MenuScene>(gameWindow.getWindow());
 	std::unique_ptr<SJ::SongScene> songSelect;
 	std::unique_ptr<SJ::GameScene> game;
-	bool isPlaying = false;//There so that it creates the game scene once in the game loop scope
 
 	audioDevice = SJ::AudioDevice::get();
 	soundEffect = SJ::SoundEffect::get();
@@ -25,6 +24,7 @@ void main()
 	//m.Play();
 
 	SJ::Scene::setWindow(gameWindow.getWindow());
+	SJ::Scene::setInputCallbacks(menu.get());
 	while(!glfwWindowShouldClose(gameWindow.getWindow()))
 	{
 		gameWindow.beginFrame();
@@ -32,31 +32,38 @@ void main()
 		//std::cout << m.getTimePosition() << "\n";
 		if(g_CurrentScene == "title")
 		{
-			SJ::Scene::setInputCallbacks(menu.get());
 			menu->Update(gameWindow.getDeltatime());
 			menu->Render();
 		}
 		else if(g_CurrentScene == "song_select")
 		{
-			isPlaying = false;
 			if (menu != nullptr) menu.reset();
-			if (songSelect == nullptr) songSelect = std::make_unique<SJ::SongScene>(gameWindow.getWindow());
-			SJ::Scene::setInputCallbacks(songSelect.get());
-			songSelect->Update(gameWindow.getDeltatime());
-			songSelect->Render();
+			if (songSelect == nullptr) 
+			{ 
+				songSelect = std::make_unique<SJ::SongScene>(gameWindow.getWindow()); 
+				SJ::Scene::setInputCallbacks(songSelect.get());
+			}
+			else
+			{
+				songSelect->Update(gameWindow.getDeltatime());
+				songSelect->Render();
+			}
 		}
 		else if(g_CurrentScene == "game")
 		{
-			if(!isPlaying)
+			if(game == nullptr)
 			{
-				isPlaying = true;
 				game = std::make_unique<SJ::GameScene>(gameWindow.getWindow());
 				SJ::Scene::setInputCallbacks(game.get());
+			}
+			else
+			{
+				game->Update(gameWindow.getDeltatime());
+				game->Render();
 			}
 		}
 		else if(g_CurrentScene == "result")
 		{
-			isPlaying = false;
 			if (game != nullptr) { game.reset(); }
 		}
 		//std::cout << SJ::isFutureReady(isExtracted) << "\n";

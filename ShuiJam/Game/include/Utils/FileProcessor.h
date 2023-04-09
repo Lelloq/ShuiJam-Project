@@ -19,7 +19,7 @@ namespace SJ
 	struct Songdata
 	{
 		std::wstring artist;
-		std::wstring title;
+		std::wstring title, version;
 		std::wstring dirPath, osuPath;
 		std::wstring background, audio;
 	};
@@ -33,11 +33,14 @@ namespace SJ
 		sqlite3_stmt* m_stmt;
 		const std::wstring m_songsFolder = L"../ShuiJamGame/Songs/";
 		const std::string m_dbLocation = "../ShuiJamGame/shuijam.db";
+		unsigned m_lastID = 0;
+		void setLastID();
 	public:
 		FileProcessor();//!<Constructor that init sqlite3 library
 		~FileProcessor();//!<Destructor that stops sqlite3 library
 		void ProcessFiles();//!<Filters out non 7key mode .osu files
 		void reloadSongs();//!<Loads the .osu files into the database created
 		Songdata retrieveSong(int row);//!<Retrieves the song data for a specific row
+		[[nodiscard]] unsigned getLastID() { return m_lastID; }
 	};
 }

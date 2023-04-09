@@ -11,6 +11,7 @@
 #include "objects/objects.h"
 #include "Utils/FileProcessor.h"
 #include <GLFW/glfw3.h>
+#include <map>
 
 namespace SJ
 {
@@ -26,11 +27,11 @@ namespace SJ
 		//WINDOW
 		GLFWwindow* m_window;
 		//AUDIO
-		SJ::AudioDevice* m_device;//!< Audio device
-		SJ::SoundEffect* m_sfx;//!< Sound effect
-		std::unique_ptr<SFXSource> m_SFXscroll;//!< Sound effect source for scrolling
-		std::unique_ptr<SFXSource> m_SFXstart;//!< Sound effect source for scrolling
-		std::unique_ptr<Music> m_music;//!< Music that plays during song select
+		AudioDevice* m_device;
+		SoundEffect* m_sfx;
+		std::unique_ptr<SFXSource> m_source;
+		std::unique_ptr<Music> m_music;
+		ALuint m_scrollSound, m_startSound, m_refreshSound;
 		//GRAPHICS
 		//Buttons
 		std::vector<std::unique_ptr<Button>> m_buttons;//Buttons in song select 11 buttons
@@ -38,29 +39,49 @@ namespace SJ
 		//Shader
 		std::unique_ptr<Shader> m_shader;
 		//Textures
-		std::unique_ptr<Texture> m_songBGIm;
-		std::unique_ptr<Texture> m_songSelectIm;
+		std::unique_ptr<Texture> m_songBGIm, m_songSelectIm, m_logoIm;
 		std::shared_ptr<Texture> m_selectWheelIm;
-		//Buttons and images
-		std::unique_ptr<Texture> m_logoIm;
-		std::unique_ptr<Texture> m_settingsIm;
-		std::unique_ptr<Button> m_sButtonmIm;
-		std::unique_ptr<Button> m_logo;
+		//Buttons
+		std::unique_ptr<Button> m_logoBtn;
 		//Objects
-		std::unique_ptr<Rect> m_songBG;
+		std::unique_ptr<Rect> m_songBg;
 		std::unique_ptr<Rect> m_songSelect;
 		//Text
 		std::unique_ptr<Shader> m_textShader;
 		std::vector<std::unique_ptr<Text>> m_songWheelText;
-		std::unique_ptr<Text> m_text;
-		std::unique_ptr<Text> m_text2;
+		std::unique_ptr<Text> m_songText, m_artistText, m_diffText;
 		//Values
 		std::vector<int> m_buttonPositions;//positions of the song wheel
-		int m_upperLimit = 687;
-		int m_lowerLimit = 3;
+		bool m_canClick = true;
+		int m_upperLimit = 687;//Highest point for the image before wrapping around
+		int m_lowerLimit = 60;
 		int m_scrollDirection = 0;
+		bool m_scrollDebounce = false;//Prevents extremely fast scrolling
+		int m_confirmation;//Highlighting the selected song
+		float m_slow = 0;
+		int m_pixels = 0;
+		double m_cursorPosX, m_cursorPosY;
+		bool m_canScrollDown = true;
+		bool m_canScrollUp = false;
+		//Song data storage for the scene
+		std::array<Songdata, 11> m_songData;
+		int m_head = 0;
+		int m_tail = 11;
+		int m_lastSong = 0;
+		void updateSongWheel();
+
+		//GRAPHICS FOR EXITING THE GAME
+		bool m_exitOpen = false;//Whether or no the logo button has been pressed (shows the exit button)
+		std::unique_ptr<Texture> m_exitBgIm;
+		std::unique_ptr<Rect> m_exitBg;
+		std::unique_ptr<Texture> m_exitYesIm, m_exitNoIm;
+		std::unique_ptr<Button> m_exitYesBtn, m_exitNoBtn;
 
 		//GRAPHICS FOR SETTINGS SCREEN
+		bool m_settingsOpen = false;//Settings ui open or not
+		bool m_keybindsOpen = false;//Keybinds ui open or not
+		std::unique_ptr<Texture> m_settingsIm, m_keybindIm;
+		std::unique_ptr<Button> m_keybindBtn, m_sButtonmBtn;
 	public:
 		SongScene(GLFWwindow* window);
 		void Update(float dt);
