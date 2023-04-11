@@ -14,6 +14,10 @@
 
 namespace SJ
 {
+	/**
+	 * \class GameScene
+	 * \brief the GameScene is the main scene where all the game logic occurs such as note spawning and syncing.
+	 */
 	class GameScene : public Scene
 	{
 	private:
@@ -30,9 +34,11 @@ namespace SJ
 		std::array<std::shared_ptr<Texture>, 7> m_riceIm;
 		std::array<std::shared_ptr<Texture>, 7> m_headIm;
 		std::array<std::shared_ptr<Texture>, 7> m_tailIm;
+		std::array<std::shared_ptr<Texture>, 7> m_bodyIm;
 		std::vector<std::unique_ptr<Rect>> m_rice;
 		std::vector<std::unique_ptr<Rect>> m_head;
 		std::vector<std::unique_ptr<Rect>> m_tail;
+		std::vector<std::unique_ptr<Rect>> m_body;
 		//Stage
 		std::unique_ptr<Texture> m_stageLeftIm;
 		std::unique_ptr<Texture> m_stageRightIm;
@@ -49,8 +55,8 @@ namespace SJ
 		std::unique_ptr<Rect> m_health;
 		std::array<std::unique_ptr<Rect>, 7> m_key;
 		//Combo
-		std::array<std::shared_ptr<Texture>, 10> m_comboNumIm;
-		std::array<std::shared_ptr<Rect>, 10> m_comboNum;
+		std::array<std::shared_ptr<Texture>, 10> m_numIm;
+		std::array<std::shared_ptr<Rect>, 10> m_num;
 		//Percent
 		std::shared_ptr<Texture> m_dotIm;
 		std::shared_ptr<Texture> m_percentIm;
@@ -62,8 +68,20 @@ namespace SJ
 		//OTHER DATA
 		std::array<std::vector<Note>, 7> m_notes;//Note data for the song
 		std::wstring m_folder = L"../ShuiJamGame/Songs/";
+
 		std::array<int, 7> m_inputs = //Default keyboard inputs
 		{GLFW_KEY_S, GLFW_KEY_D, GLFW_KEY_F , GLFW_KEY_SPACE, GLFW_KEY_J, GLFW_KEY_K, GLFW_KEY_L};
+		int m_hitPosition = 200;//Pixels above the bottom of the screen determines bar where you hit the note on time
+		int m_comboPosition = 450;
+		int m_judgePosition = 400;
+
+		int m_combo = 0;
+		int m_judgePerf = 0;
+		int m_judgeGreat = 0;
+		int m_judgeGood = 0;
+		int m_judgeBad = 0;
+		int m_judgeMiss = 0;
+		float m_accuracy = 100.0f;
 	public:
 		GameScene(GLFWwindow* window);
 		void Update(float dt);

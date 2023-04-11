@@ -151,7 +151,7 @@ namespace SJ
 			m_songWheelText.at(i)->Draw(*m_textShader);
 		}
 
-		m_shader->setFloat("transparency", 1.f);
+		m_shader->setFloat("transparency", 1.0f);
 		m_songBg->Draw(*m_shader);
 		m_songSelect->Draw(*m_shader);
 
@@ -160,10 +160,12 @@ namespace SJ
 		m_logoBtn->Draw(*m_shader);
 		m_shader->setFloat("transparency", 1.0f);
 
+		//Large text on the left that displays the full detail of the song name and difficulty
 		m_songText->Draw(*m_textShader);
 		m_artistText->Draw(*m_textShader);
 		m_diffText->Draw(*m_textShader);
 
+		//Draw the exit graphics if the player has clicked the logo
 		if(m_exitOpen)
 		{
 			m_exitBg->Draw(*m_shader);
@@ -235,7 +237,6 @@ namespace SJ
 		{
 			if (m_buttons.at(i)->hasMouseOnTop(posX, posY) && action == GLFW_PRESS) 
 			{
-				std::cout << i << "\n";
 				if (m_confirmation != i) 
 				{ 
 					m_songText->changeText(m_songData.at(i).title.substr(0, m_songData.at(i).title.find_first_of(L"[")));
@@ -257,7 +258,6 @@ namespace SJ
 	}
 	void SongScene::getScroll(double xoffset, double yoffset)
 	{
-		//Lowest song wheel is at -627 relative to the song wheel part
 		if(m_scrollDirection == 0)
 		{	
 			if(yoffset == 1 && m_canScrollDown)
@@ -280,6 +280,7 @@ namespace SJ
 	{
 		//A walker that goes through each empty song data in the array and fills it with song data
 		//Ptr goes back to zero as a way to wrap around if there isnt enough song data within the database
+		//The text changes based on the data inside m_songData
 		if (m_head <= 0) 
 		{ 
 			m_canScrollDown = true;

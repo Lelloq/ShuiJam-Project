@@ -10,7 +10,8 @@ namespace SJ
 	private:
 		uint32_t m_ID;//!< Texture ID
 		int m_channels = 0;
-		int m_width, m_height;
+		int m_width = 0;
+		int m_height = 0;
 		int m_slot = 0;
 	public:
 		Texture(std::string& filepath, int wrapping); //!< Load texture from file path
