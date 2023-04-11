@@ -45,18 +45,15 @@ namespace SJ
 		m_artistText = std::make_unique<Text>(glm::vec2(25, 500), L" ", 350, 48, 5, "NotoSansJP-Medium.otf");
 		m_diffText = std::make_unique<Text>(glm::vec2(25, 350), L" ", 350, 36, 5, "NotoSansJP-Regular.otf");
 
-		glm::mat4 model{ 1.0f };
 		glm::mat4 projection{ glm::ortho(0.f, VPORT_WIDTH, 0.f, VPORT_HEIGHT, -1000.f, 1.f) };
 		m_shader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
 
 		m_shader->use();
-		m_shader->setMat4("model", model);
 		m_shader->setMat4("projection", projection);
 
 		m_textShader = std::make_unique<Shader>(SJFOLDER + SHADER + "text.vert", SJFOLDER + SHADER + "text.frag");
 
 		m_textShader->use();
-		m_textShader->setMat4("model", model);
 		m_textShader->setMat4("projection", projection);
 	#pragma endregion
 
