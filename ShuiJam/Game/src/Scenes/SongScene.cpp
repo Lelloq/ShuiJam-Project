@@ -36,10 +36,14 @@ namespace SJ
 		{
 			m_buttonPositions.push_back(630+yPos);
 			m_buttons.push_back(std::make_unique<Button>(glm::vec2(829, 630+yPos), glm::vec2(451, 57), 0, *m_selectWheelIm));
-			m_songWheelText.push_back(std::make_unique<Text>(glm::vec2(865, 637+yPos), L"...", 415, 24, 1));
+			m_songWheelText.push_back(std::make_unique<Text>(glm::vec2(865, 637+yPos), L"...", 415, 24, 1, "NotoSansJP-Light.otf"));
 			m_buttons.at(i)->readjustBounds(glm::vec2(829, 630+yPos));
 			yPos -= 57;
 		}
+
+		m_songText = std::make_unique<Text>(glm::vec2(25, 380), L" ", 350, 96, 5, "NotoSansJP-Regular.otf");
+		m_artistText = std::make_unique<Text>(glm::vec2(25, 500), L" ", 350, 48, 5, "NotoSansJP-Medium.otf");
+		m_diffText = std::make_unique<Text>(glm::vec2(25, 350), L" ", 350, 36, 5, "NotoSansJP-Regular.otf");
 
 		glm::mat4 model{ 1.0f };
 		glm::mat4 projection{ glm::ortho(0.f, VPORT_WIDTH, 0.f, VPORT_HEIGHT, -1000.f, 1.f) };
@@ -72,7 +76,7 @@ namespace SJ
 
 	#pragma region song data processing
 		m_fileProcessor->ProcessFiles();
-		m_fileProcessor->reloadSongs();
+		std::async(std::launch::async, &FileProcessor::reloadSongs, &*m_fileProcessor);
 		m_lastSong = m_fileProcessor->getLastID();
 		updateSongWheel();
 	#pragma endregion
@@ -159,6 +163,10 @@ namespace SJ
 		m_logoBtn->Draw(*m_shader);
 		m_shader->setFloat("transparency", 1.0f);
 
+		m_songText->Draw(*m_textShader);
+		m_artistText->Draw(*m_textShader);
+		m_diffText->Draw(*m_textShader);
+
 		if(m_exitOpen)
 		{
 			m_exitBg->Draw(*m_shader);
@@ -181,27 +189,20 @@ namespace SJ
 		//An alternative way to scroll up or down the song wheel
 		if((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_UP && m_scrollDirection == 0 && m_canScrollDown)
 		{
-			m_head++;
-			m_tail++;
-			m_scrollDirection = 1;
-			m_confirmation = -1;
-			{
-				m_source = std::make_unique<SFXSource>();
-				m_source->Play(m_scrollSound);
-			}
+			scrollDown();
 			updateSongWheel();
 		}
 		else if ((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_DOWN && m_scrollDirection == 0 && m_canScrollUp)
 		{
-			m_head--;
-			m_tail--;
-			m_scrollDirection = -1;
-			m_confirmation = -1;
-			{
-				m_source = std::make_unique<SFXSource>();
-				m_source->Play(m_scrollSound);
-			}
+			scrollUp();
 			updateSongWheel();
+		}
+		else if(action == GLFW_PRESS && key == GLFW_KEY_ENTER)
+		{
+			if(m_confirmation != -1)
+			{
+				startGame();
+			}
 		}
 	}
 	void SongScene::getMouseButton(int button, int action, int mods)
@@ -238,20 +239,20 @@ namespace SJ
 			if (m_buttons.at(i)->hasMouseOnTop(posX, posY) && action == GLFW_PRESS) 
 			{
 				std::cout << i << "\n";
-				if (m_confirmation != i) m_confirmation = i;
-				else if (m_confirmation == i)
-				{
-					//Swap scenes here
-					m_canClick = false;
-					g_CurrentBG = m_songData.at(i).background;
-					g_CurrentSong = m_songData.at(i).audio;
-					g_CurrentDifficulty = m_songData.at(i).osuPath;
-					g_CurrentOsuDir = m_songData.at(i).dirPath;
+				if (m_confirmation != i) 
+				{ 
+					m_songText->changeText(m_songData.at(i).title.substr(0, m_songData.at(i).title.find_first_of(L"[")));
+					m_artistText->changeText(m_songData.at(i).artist);
+					m_diffText->changeText(m_songData.at(i).version);
+					m_confirmation = i; 
 					{
 						m_source = std::make_unique<SFXSource>();
-						m_source->Play(m_startSound);
+						m_source->Play(m_scrollSound);
 					}
-					g_CurrentScene = "game";
+				}
+				else if (m_confirmation == i)
+				{
+					startGame();
 				}
 			}
 		}
@@ -264,25 +265,11 @@ namespace SJ
 		{	
 			if(yoffset == 1 && m_canScrollDown)
 			{
-				m_head++;//increment the head position
-				m_tail++;//increment the tail position
-				m_confirmation = -1;
-				m_scrollDirection = yoffset;
-				{
-					m_source = std::make_unique<SFXSource>();
-					m_source->Play(m_scrollSound);
-				}
+				scrollDown();
 			}
 			else if(yoffset == -1 && m_canScrollUp)
 			{
-				m_head--;//decrement the head position
-				m_tail--;//decrement the tail position
-				m_confirmation = -1;
-				m_scrollDirection = yoffset;
-				{
-					m_source = std::make_unique<SFXSource>();
-					m_source->Play(m_scrollSound);
-				}
+				scrollUp();
 			}
 			updateSongWheel();
 		}
@@ -327,5 +314,50 @@ namespace SJ
 				m_songWheelText.at(index)->changeText(m_songData.at(index).title);
 			}
 		}
+	}
+
+	void SongScene::startGame()
+	{
+		//Swap scenes here
+		m_canClick = false;
+		g_CurrentBG = m_songData.at(m_confirmation).background;
+		g_CurrentSong = m_songData.at(m_confirmation).audio;
+		g_CurrentDifficulty = m_songData.at(m_confirmation).osuPath;
+		g_CurrentOsuDir = m_songData.at(m_confirmation).dirPath;
+		{
+			m_source = std::make_unique<SFXSource>();
+			m_source->Play(m_startSound);
+		}
+		g_CurrentScene = "game";
+	}
+
+	void SongScene::scrollDown()
+	{
+		m_head++;//increment the head position
+		m_tail++;//increment the tail position
+		m_confirmation = -1;
+		m_scrollDirection = 1;
+		{
+			m_source = std::make_unique<SFXSource>();
+			m_source->Play(m_scrollSound);
+		}
+		m_songText->changeText(L" ");
+		m_artistText->changeText(L" ");
+		m_diffText->changeText(L" ");
+	}
+
+	void SongScene::scrollUp()
+	{
+		m_head--;//decrement the head position
+		m_tail--;//decrement the tail position
+		m_confirmation = -1;
+		m_scrollDirection = -1;
+		{
+			m_source = std::make_unique<SFXSource>();
+			m_source->Play(m_scrollSound);
+		}
+		m_songText->changeText(L" ");
+		m_artistText->changeText(L" ");
+		m_diffText->changeText(L" ");
 	}
 }

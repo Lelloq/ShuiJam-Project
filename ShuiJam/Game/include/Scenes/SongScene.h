@@ -69,6 +69,9 @@ namespace SJ
 		int m_tail = 11;
 		int m_lastSong = 0;
 		void updateSongWheel();
+		void startGame();
+		void scrollDown();
+		void scrollUp();
 
 		//GRAPHICS FOR EXITING THE GAME
 		bool m_exitOpen = false;//Whether or no the logo button has been pressed (shows the exit button)
