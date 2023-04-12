@@ -76,20 +76,34 @@ namespace SJ
 		int m_comboPosition = 470;
 		int m_judgePosition = 370;
 		bool m_hasHitRecently = true;//Set to true for now testing purposes
-		//Numbers tracked
+		//Numbers tracking
 		int m_recentJudgement = 0;//Most recent judgement hit
-		float m_hp = 70;
+		float m_hp = 100;
 		int m_combo = 100;
+		float m_accuracy = 100.000f;
+		//Accuracy throughout the song will be calculated as:
+		/*((perfCount* perfWeight) + 
+		   (greatCount * Weight) + 
+		   (goodCount * goodWeight) + 
+		   (badCount * badWeight) + 
+		   (missCount * missWeight)) / m_notesHit;
+		*/
+		int m_notesHit = 0;
+		//Judgement counts will be taken over to the results scene
 		int m_jPerfCount = 0, m_jGreatCount = 0, m_jGoodCount = 0;
 		int m_jBadCount = 0, m_jMissCount = 0;
-		float m_accuracy = 100.000f;
 		//Accuracy windows (in milliseconds (perf->bad taken from lunatic rave 2 easy judge))
 		int m_perfWindow = 21;
 		int m_greatWindow = 60;
 		int m_goodWindow = 120;
 		int m_badWindow = 200;
 		int m_missWindow = 500;
-
+		//Accuracy weighting (perf = 100%, great = 95% etc.) will be tuned throughout development
+		float m_perfWeight = 1.0f;
+		float m_greatWeight = 0.95f;
+		float m_goodWeight = 0.75f;
+		float m_badWeight = 0.25f;
+		float m_missWeight = 0.0f;
 	public:
 		GameScene(GLFWwindow* window);
 		void Update(float dt);

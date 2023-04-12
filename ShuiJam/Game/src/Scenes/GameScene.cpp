@@ -107,6 +107,7 @@ namespace SJ
 	{
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
+	#pragma region Stage and numbers
 		//Draw stage
 		m_stageBG->Draw(*m_shader);
 		m_stageLeft->Draw(*m_shader);
@@ -169,6 +170,7 @@ namespace SJ
 			//Draw judgement
 			m_judgement.at(m_recentJudgement)->Draw(*m_shader);
 		}
+	#pragma endregion
 	}
 
 	void GameScene::getKey(int key, int scancode, int action, int mods)
