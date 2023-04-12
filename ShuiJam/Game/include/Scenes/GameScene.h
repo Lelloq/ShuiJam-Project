@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   GameScene.h
- * \brief  main gameplay
+ * \brief  main gameplay scene of the rhythm game
  * 
  * \date   March 2023
  *********************************************************************/
@@ -75,20 +75,20 @@ namespace SJ
 		int m_hitPosition = 120;//Pixels above the bottom of the screen determines bar where you hit the note on time
 		int m_comboPosition = 470;
 		int m_judgePosition = 370;
-		bool m_hasHitRecently = true;//Set to true for now testing purposes
+		bool m_hasHitRecently = true;//Set to true for testing purposes
 		//Numbers tracking
 		int m_recentJudgement = 0;//Most recent judgement hit
 		float m_hp = 100;
-		int m_combo = 100;
+		int m_combo = 0;
 		float m_accuracy = 100.000f;
 		//Accuracy throughout the song will be calculated as:
 		/*((perfCount* perfWeight) + 
-		   (greatCount * Weight) + 
+		   (greatCount * greatWeight) + 
 		   (goodCount * goodWeight) + 
 		   (badCount * badWeight) + 
 		   (missCount * missWeight)) / m_notesHit;
 		*/
-		int m_notesHit = 0;
+		float m_notesHit = 0;
 		//Judgement counts will be taken over to the results scene
 		int m_jPerfCount = 0, m_jGreatCount = 0, m_jGoodCount = 0;
 		int m_jBadCount = 0, m_jMissCount = 0;

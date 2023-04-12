@@ -96,6 +96,10 @@ namespace SJ
 		}
 
 	#pragma endregion
+
+	#pragma region Note creation
+
+	#pragma endregion
 	}
 
 	void GameScene::Update(float dt)
@@ -171,6 +175,8 @@ namespace SJ
 			m_judgement.at(m_recentJudgement)->Draw(*m_shader);
 		}
 	#pragma endregion
+
+		
 	}
 
 	void GameScene::getKey(int key, int scancode, int action, int mods)
