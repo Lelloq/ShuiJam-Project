@@ -112,6 +112,9 @@ namespace SJ
 		m_stageLeft->Draw(*m_shader);
 		m_stageRight->Draw(*m_shader);
 		m_stageHitposition->Draw(*m_shader);
+		//Draw health
+		float healthPercent = m_hp / 100.f;
+		m_health->resizeVerts(glm::vec2(m_healthIm->getWidth(), m_healthIm->getHeightf() * healthPercent));
 		m_healthBG->Draw(*m_shader);
 		m_health->Draw(*m_shader);
 		//Draw accuracy
@@ -166,7 +169,6 @@ namespace SJ
 			//Draw judgement
 			m_judgement.at(m_recentJudgement)->Draw(*m_shader);
 		}
-
 	}
 
 	void GameScene::getKey(int key, int scancode, int action, int mods)

@@ -78,7 +78,7 @@ namespace SJ
 		bool m_hasHitRecently = true;//Set to true for now testing purposes
 		//Numbers tracked
 		int m_recentJudgement = 0;//Most recent judgement hit
-		int m_hp = 100;
+		float m_hp = 70;
 		int m_combo = 100;
 		int m_jPerfCount = 0, m_jGreatCount = 0, m_jGoodCount = 0;
 		int m_jBadCount = 0, m_jMissCount = 0;

@@ -58,4 +58,14 @@ namespace SJ
 		m_position = pos;
 		m_VBO->Edit(sizeof(m_verts), m_verts.data());
 	}
+	void Rect::resizeVerts(glm::vec2 size)
+	{
+		m_verts =
+		{m_position.x,			   m_position.y,			 m_verts[2],  0.0f, 0.0f,
+		 m_position.x + size.x,	   m_position.y,		     m_verts[2],  1.0f, 0.0f,
+		 m_position.x + size.x,    m_position.y + size.y,    m_verts[2],  1.0f, 1.0f,
+		 m_position.x,			   m_position.y + size.y,    m_verts[2],  0.0f, 1.0f, };
+		m_size = size;
+		m_VBO->Edit(sizeof(m_verts), m_verts.data());
+	}
 }

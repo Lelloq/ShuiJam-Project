@@ -24,5 +24,7 @@ namespace SJ
 		[[nodiscard]] inline uint32_t getID() { return m_ID; }
 		[[nodiscard]] inline int getWidth() { return m_width; }
 		[[nodiscard]] inline int getHeight() { return m_height; }
+		[[nodiscard]] inline float getWidthf() { return m_width; }
+		[[nodiscard]] inline float getHeightf() { return m_height; }
 	};
 }
