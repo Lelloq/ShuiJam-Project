@@ -71,6 +71,7 @@ namespace SJ
 
 		std::array<int, 7> m_inputs = //Default keyboard inputs
 		{GLFW_KEY_S, GLFW_KEY_D, GLFW_KEY_F , GLFW_KEY_SPACE, GLFW_KEY_J, GLFW_KEY_K, GLFW_KEY_L};
+		std::array<bool, 7> m_pressed = { false, false, false, false, false ,false ,false };
 		int m_hitPosition = 200;//Pixels above the bottom of the screen determines bar where you hit the note on time
 		int m_comboPosition = 450;
 		int m_judgePosition = 400;

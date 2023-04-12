@@ -99,11 +99,17 @@ namespace SJ
 
 	void GameScene::Update(float dt)
 	{
+		
 	}
 
 	void GameScene::Render()
 	{
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+		//Draw stage
+		m_stageBG->Draw(*m_shader);
+		m_stageLeft->Draw(*m_shader);
+		m_stageRight->Draw(*m_shader);
 	}
 
 	void GameScene::getKey(int key, int scancode, int action, int mods)
@@ -112,9 +118,11 @@ namespace SJ
 		{
 			if (action == GLFW_PRESS && key == m_inputs.at(i))
 			{
+				m_pressed.at(i) = true;
 			}
 			else if (action == GLFW_RELEASE && key == m_inputs.at(i))
 			{
+				m_pressed.at(i) = false;
 			}
 		}
 	}
