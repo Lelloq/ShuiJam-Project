@@ -5,6 +5,7 @@
 #include "Scenes/GameScene.h"
 #include "Utils/Properties.h"
 #include <future>
+#include <format>
 
 namespace SJ
 {
@@ -24,12 +25,12 @@ namespace SJ
 		for (int i = 0; i < 7; i++)
 		{
 			//Create note images
-			m_riceIm.at(i) = std::make_unique<Texture>(SJFOLDER + IMAGES + "notes/note" + static_cast<char>(i + 1) + ".png", GL_CLAMP_TO_EDGE);
-			m_headIm.at(i) = std::make_unique<Texture>(SJFOLDER + IMAGES + "notes/head" + static_cast<char>(i + 1) + ".png", GL_CLAMP_TO_EDGE);
-			m_tailIm.at(i) = std::make_unique<Texture>(SJFOLDER + IMAGES + "notes/tail" + static_cast<char>(i + 1) + ".png", GL_CLAMP_TO_EDGE);
-			m_bodyIm.at(i) = std::make_unique<Texture>(SJFOLDER + IMAGES + "notes/body" + static_cast<char>(i + 1) + ".png", GL_CLAMP_TO_EDGE);
+			m_riceIm.at(i) = std::make_unique<Texture>(SJFOLDER + IMAGES + "notes/note" + std::to_string(i + 1) + ".png", GL_CLAMP_TO_EDGE);
+			m_headIm.at(i) = std::make_unique<Texture>(SJFOLDER + IMAGES + "notes/head" + std::to_string(i + 1) + ".png", GL_CLAMP_TO_EDGE);
+			m_tailIm.at(i) = std::make_unique<Texture>(SJFOLDER + IMAGES + "notes/tail" + std::to_string(i + 1) + ".png", GL_CLAMP_TO_EDGE);
+			m_bodyIm.at(i) = std::make_unique<Texture>(SJFOLDER + IMAGES + "notes/body" + std::to_string(i + 1) + ".png", GL_CLAMP_TO_EDGE);
 			//Key press images
-			m_keyIm.at(i) = std::make_unique<Texture>(SJFOLDER + IMAGES + "game/key" + static_cast<char>(i + 1) + ".png", GL_CLAMP_TO_EDGE);
+			m_keyIm.at(i) = std::make_unique<Texture>(SJFOLDER + IMAGES + "game/key" + std::to_string(i + 1) + ".png", GL_CLAMP_TO_EDGE);
 		}
 		//Stage images
 		m_stageLeftIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "game/stageleft.png", GL_CLAMP_TO_EDGE);
@@ -66,15 +67,15 @@ namespace SJ
 		m_stageBG = std::make_unique<Rect>(glm::vec2(middleBL, 0),glm::vec2(m_stageBGIm->getWidth(),VPORT_HEIGHT), 0, *m_stageBGIm);
 		m_stageLeft = std::make_unique<Rect>(glm::vec2(middleBL - m_stageLeftIm->getWidth(), 0), glm::vec2(m_stageLeftIm->getWidth(), VPORT_HEIGHT), 1, *m_stageLeftIm);
 		m_stageRight= std::make_unique<Rect>(glm::vec2(middleBL + m_stageBGIm->getWidth(), 0), glm::vec2(m_stageRightIm->getWidth(), VPORT_HEIGHT), 1, *m_stageRightIm);
-		m_stageHitposition = std::make_unique<Rect>(glm::vec2(middleBL, m_hitPosition), glm::vec2(m_stageHitpositionIm->getWidth(), m_stageHitpositionIm->getHeight()), 1, *m_stageHitpositionIm);
+		m_stageHitposition = std::make_unique<Rect>(glm::vec2(middleBL, m_hitPosition), glm::vec2(m_stageHitpositionIm->getWidth(), m_stageHitpositionIm->getHeight()), 2, *m_stageHitpositionIm);
 		//Health
-		m_health = std::make_unique<Rect>(glm::vec2(middleBL + m_stageBGIm->getWidth() + m_healthIm->getWidth(), 0), glm::vec2(m_healthIm->getWidth(), m_healthIm->getHeight()), 2, *m_healthIm);
-		m_healthBG = std::make_unique<Rect>(glm::vec2(middleBL + m_stageBGIm->getWidth() + m_healthBGIm->getWidth(), 0), glm::vec2(m_healthBGIm->getWidth(), m_healthBGIm->getHeight()), 1, *m_healthBGIm);
+		m_health = std::make_unique<Rect>(glm::vec2(middleBL + m_stageBGIm->getWidth() + m_stageRightIm->getWidth(), 0), glm::vec2(m_healthIm->getWidth(), m_healthIm->getHeight()), 2, *m_healthIm);
+		m_healthBG = std::make_unique<Rect>(glm::vec2(middleBL + m_stageBGIm->getWidth() + m_stageRightIm->getWidth(), 0), glm::vec2(m_healthBGIm->getWidth(), m_healthBGIm->getHeight()), 1, *m_healthBGIm);
 		//Key
 		int xPos = middleBL;
 		for(int i = 0; i < 7; i++)
 		{
-			m_key.at(i) = std::make_unique<Rect>(glm::vec2(xPos, 0), glm::vec2(m_stageBGIm->getWidth() / 7, m_keyIm.at(i)->getHeight()), 3, *m_keyIm.at(i));
+			m_key.at(i) = std::make_unique<Rect>(glm::vec2(xPos, 0), glm::vec2(m_stageBGIm->getWidth() / 7, m_keyIm.at(i)->getHeight()), 1, *m_keyIm.at(i));
 			xPos += m_stageBGIm->getWidth() / 7;
 		}
 		//Numbers
@@ -90,7 +91,7 @@ namespace SJ
 		for(int i = 0; i < 5; i++)
 		{
 			m_judgement.at(i) = std::make_unique<Rect>
-				(glm::vec2(middleBL + (m_stageBGIm->getWidth() / 2) - m_judgementIm.at(i)->getWidth(), m_judgePosition), 
+				(glm::vec2(middleBL + (m_stageBGIm->getWidth() / 2) - m_judgementIm.at(i)->getWidth() / 2, m_judgePosition), 
 				 glm::vec2(m_judgementIm.at(i)->getWidth(),m_judgementIm.at(i)->getHeight()), 3, *m_judgementIm.at(i));
 		}
 
@@ -110,6 +111,62 @@ namespace SJ
 		m_stageBG->Draw(*m_shader);
 		m_stageLeft->Draw(*m_shader);
 		m_stageRight->Draw(*m_shader);
+		m_stageHitposition->Draw(*m_shader);
+		m_healthBG->Draw(*m_shader);
+		m_health->Draw(*m_shader);
+		//Draw accuracy
+		m_percent->Draw(*m_shader);
+		std::string m_accStr = std::to_string(m_accuracy);
+		m_accStr = m_accStr.substr(0, m_accStr.find_first_of('.') + 3);
+		int percentNumPosX = VPORT_WIDTH - m_percentIm->getWidth();
+		int percentNumPosY = VPORT_HEIGHT - m_percentIm->getHeight();
+		for(int i = m_accStr.size()-1; i >= 0; i--)
+		{
+			if(m_accStr.at(i) != '.')
+			{
+				percentNumPosX -= m_numIm.at(m_accStr.at(i) - '0')->getWidth();
+				m_num.at(m_accStr.at(i) - '0')->repositionVerts(glm::vec2(percentNumPosX, percentNumPosY));
+				m_num.at(m_accStr.at(i) - '0')->Draw(*m_shader);
+			}
+			else
+			{
+				percentNumPosX -= m_dotIm->getWidth();
+				m_dot->repositionVerts(glm::vec2(percentNumPosX, percentNumPosY));
+				m_dot->Draw(*m_shader);
+			}
+		}
+		//Draw keys
+		for(int i = 0; i < 7; i++)
+		{
+			if(m_pressed.at(i))
+			{
+				m_key.at(i)->Draw(*m_shader);
+			}
+		}
+		if(m_hasHitRecently)
+		{
+			//Draw combo numbers
+			std::string m_comboStr = std::to_string(m_combo);
+			int comboPosX = VPORT_WIDTH / 2;
+			if(m_combo != 0)
+			{
+				//Find the left most combo number position from the middle of the screen
+				for(int i = 0; i < m_comboStr.size(); i++)
+				{
+					comboPosX -= m_numIm.at(m_comboStr.at(i) - '0')->getWidth() / 2;
+				}
+				//Draw the combo
+				for(int i = 0; i < m_comboStr.size(); i++)
+				{
+					m_num.at(m_comboStr.at(i) - '0')->repositionVerts(glm::vec2(comboPosX, m_comboPosition));
+					m_num.at(m_comboStr.at(i) - '0')->Draw(*m_shader);
+					comboPosX += m_numIm.at(m_comboStr.at(i) - '0')->getWidth();
+				}
+			}
+			//Draw judgement
+			m_judgement.at(m_recentJudgement)->Draw(*m_shader);
+		}
+
 	}
 
 	void GameScene::getKey(int key, int scancode, int action, int mods)

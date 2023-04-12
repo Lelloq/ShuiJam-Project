@@ -48,4 +48,14 @@ namespace SJ
 		shader.setInt("image", unit);
 		glDrawElements(GL_TRIANGLES, m_EBO->GetCount(), GL_UNSIGNED_INT, 0);
 	}
+	void Rect::repositionVerts(glm::vec2 pos)
+	{
+		m_verts =
+		{ pos.x,			   pos.y,			 m_verts[2],  0.0f, 0.0f,
+		 pos.x + m_size.x, pos.y,		     m_verts[2],  1.0f, 0.0f,
+		 pos.x + m_size.x, pos.y + m_size.y, m_verts[2],  1.0f, 1.0f,
+		 pos.x,			   pos.y + m_size.y, m_verts[2],  0.0f, 1.0f, };
+		m_position = pos;
+		m_VBO->Edit(sizeof(m_verts), m_verts.data());
+	}
 }

@@ -70,19 +70,26 @@ namespace SJ
 		std::wstring m_folder = L"../ShuiJamGame/Songs/";
 
 		std::array<int, 7> m_inputs = //Default keyboard inputs
-		{GLFW_KEY_S, GLFW_KEY_D, GLFW_KEY_F , GLFW_KEY_SPACE, GLFW_KEY_J, GLFW_KEY_K, GLFW_KEY_L};
+		{GLFW_KEY_Z, GLFW_KEY_X, GLFW_KEY_C , GLFW_KEY_SPACE, GLFW_KEY_COMMA, GLFW_KEY_PERIOD, GLFW_KEY_SLASH};
 		std::array<bool, 7> m_pressed = { false, false, false, false, false ,false ,false };
-		int m_hitPosition = 200;//Pixels above the bottom of the screen determines bar where you hit the note on time
-		int m_comboPosition = 450;
-		int m_judgePosition = 400;
+		int m_hitPosition = 120;//Pixels above the bottom of the screen determines bar where you hit the note on time
+		int m_comboPosition = 470;
+		int m_judgePosition = 370;
+		bool m_hasHitRecently = true;//Set to true for now testing purposes
+		//Numbers tracked
+		int m_recentJudgement = 0;//Most recent judgement hit
+		int m_hp = 100;
+		int m_combo = 100;
+		int m_jPerfCount = 0, m_jGreatCount = 0, m_jGoodCount = 0;
+		int m_jBadCount = 0, m_jMissCount = 0;
+		float m_accuracy = 100.000f;
+		//Accuracy windows (in milliseconds (perf->bad taken from lunatic rave 2 easy judge))
+		int m_perfWindow = 21;
+		int m_greatWindow = 60;
+		int m_goodWindow = 120;
+		int m_badWindow = 200;
+		int m_missWindow = 500;
 
-		int m_combo = 0;
-		int m_judgePerf = 0;
-		int m_judgeGreat = 0;
-		int m_judgeGood = 0;
-		int m_judgeBad = 0;
-		int m_judgeMiss = 0;
-		float m_accuracy = 100.0f;
 	public:
 		GameScene(GLFWwindow* window);
 		void Update(float dt);
