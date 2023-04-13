@@ -32,6 +32,7 @@ namespace SJ
 		std::unique_ptr<SFXSource> m_source;
 		std::unique_ptr<Music> m_music;
 		ALuint m_scrollSound, m_startSound, m_refreshSound;
+		bool m_isPlaying = false;
 		//GRAPHICS
 		//Buttons
 		std::vector<std::unique_ptr<Button>> m_buttons;//Buttons in song select 11 buttons
@@ -57,7 +58,7 @@ namespace SJ
 		int m_lowerLimit = 60;
 		int m_scrollDirection = 0;
 		bool m_scrollDebounce = false;//Prevents extremely fast scrolling
-		int m_confirmation;//Highlighting the selected song
+		int m_confirmation = -1;//Highlighting the selected song
 		float m_slow = 0;
 		int m_pixels = 0;
 		double m_cursorPosX, m_cursorPosY;
@@ -68,9 +69,29 @@ namespace SJ
 		int m_head = 0;
 		int m_tail = 11;
 		int m_lastSong = 0;
+
+		/**
+		 * \function void updateSongWheel().
+		 * \brief Updates the song wheel text based on the song title data within the songs database from head to tail
+		 */
 		void updateSongWheel();
+
+		/**
+		 * \function void startGame().
+		 * \brief Swaps to the GameScene and passes on the selected song data through global variables
+		 */
 		void startGame();
+
+		/**
+		 * \function void scrollDown().
+		 * \brief Scrolls down the song wheel and increments the head and tail as well as stops the current selected audio
+		 */
 		void scrollDown();
+
+		/**
+		 * \function void scrollUp().
+		 * \brief Scrolls down the song wheel and increments the head and tail as well as stops the current selected audio
+		 */
 		void scrollUp();
 
 		//GRAPHICS FOR EXITING THE GAME

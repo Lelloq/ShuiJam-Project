@@ -35,10 +35,7 @@ namespace SJ
 		std::array<std::shared_ptr<Texture>, 7> m_headIm;
 		std::array<std::shared_ptr<Texture>, 7> m_tailIm;
 		std::array<std::shared_ptr<Texture>, 7> m_bodyIm;
-		std::vector<std::unique_ptr<Rect>> m_rice;
-		std::vector<std::unique_ptr<Rect>> m_head;
-		std::vector<std::unique_ptr<Rect>> m_tail;
-		std::vector<std::unique_ptr<Rect>> m_body;
+		std::array<std::vector<std::unique_ptr<Rect>>, 7> m_noteObj;
 		//Stage
 		std::unique_ptr<Texture> m_stageLeftIm;
 		std::unique_ptr<Texture> m_stageRightIm;
@@ -68,6 +65,10 @@ namespace SJ
 		//OTHER DATA
 		std::array<std::vector<Note>, 7> m_notes;//Note data for the song
 		std::wstring m_folder = L"../ShuiJamGame/Songs/";
+		int m_noteHeight = 20;
+		int m_totalNotes = 0;
+		int m_leadin = 2000;//Time miliseconds before the song starts
+		float m_t1 = 0;//The intermediate value for the timing buffer lerping
 
 		std::array<int, 7> m_inputs = //Default keyboard inputs
 		{GLFW_KEY_Z, GLFW_KEY_X, GLFW_KEY_C , GLFW_KEY_SPACE, GLFW_KEY_COMMA, GLFW_KEY_PERIOD, GLFW_KEY_SLASH};
@@ -75,7 +76,7 @@ namespace SJ
 		int m_hitPosition = 120;//Pixels above the bottom of the screen determines bar where you hit the note on time
 		int m_comboPosition = 470;
 		int m_judgePosition = 370;
-		bool m_hasHitRecently = true;//Set to true for testing purposes
+		bool m_hasHitRecently = false;//Set to true for testing purposes
 		//Numbers tracking
 		int m_recentJudgement = 0;//Most recent judgement hit
 		float m_hp = 100;
@@ -104,6 +105,15 @@ namespace SJ
 		float m_goodWeight = 0.75f;
 		float m_badWeight = 0.25f;
 		float m_missWeight = 0.0f;
+		
+		/**
+		 * \function float lerp(float a, float b, float t)
+		 * \param a Start position of the lerp
+		 * \param b End position of the lerp
+		 * \param t Percentage inbetween start and the end
+		 * \return The position of the lerped value
+		 */
+		float lerp(float a, float b, float t);
 	public:
 		GameScene(GLFWwindow* window);
 		void Update(float dt);

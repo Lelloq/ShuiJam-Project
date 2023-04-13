@@ -63,12 +63,12 @@ namespace SJ
 
 	#pragma region exit UI
 		m_exitBgIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "exitbg.png", GL_CLAMP_TO_EDGE);
-		m_exitBg = std::make_unique<Rect>(glm::vec2(500.f,300.f), glm::vec2(300.f, 200.f), 4, *m_exitBgIm);
+		m_exitBg = std::make_unique<Rect>(glm::vec2(500.f,300.f), glm::vec2(300.f, 200.f), 6, *m_exitBgIm);
 
 		m_exitYesIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "yes.png", GL_CLAMP_TO_EDGE);
 		m_exitNoIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "no.png", GL_CLAMP_TO_EDGE);
-		m_exitYesBtn = std::make_unique<Button>(glm::vec2(515.f, 315.f), glm::vec2(121.f, 51.f), 5, *m_exitYesIm);
-		m_exitNoBtn = std::make_unique<Button>(glm::vec2(663.f, 315.f), glm::vec2(121.f, 51.f), 5, *m_exitNoIm);
+		m_exitYesBtn = std::make_unique<Button>(glm::vec2(515.f, 315.f), glm::vec2(121.f, 51.f), 7, *m_exitYesIm);
+		m_exitNoBtn = std::make_unique<Button>(glm::vec2(663.f, 315.f), glm::vec2(121.f, 51.f), 7, *m_exitNoIm);
 	#pragma endregion
 
 	#pragma region song data processing
@@ -130,6 +130,12 @@ namespace SJ
 		}
 
 		#pragma endregion
+
+		if(m_music != nullptr && m_isPlaying)
+		{
+			m_music->Play();
+			m_music->Update();
+		}
 	}
 	void SongScene::Render()
 	{
@@ -246,6 +252,8 @@ namespace SJ
 					{
 						m_source = std::make_unique<SFXSource>();
 						m_source->Play(m_scrollSound);
+						m_music = std::make_unique<Music>(L"../ShuiJamGame/Songs/" + m_songData.at(i).dirPath + L"/" + m_songData.at(i).audio);
+						m_isPlaying = true;
 					}
 				}
 				else if (m_confirmation == i)
@@ -325,6 +333,7 @@ namespace SJ
 		{
 			m_source = std::make_unique<SFXSource>();
 			m_source->Play(m_startSound);
+			m_music->Stop();
 		}
 		g_CurrentScene = "game";
 	}
@@ -338,6 +347,11 @@ namespace SJ
 		{
 			m_source = std::make_unique<SFXSource>();
 			m_source->Play(m_scrollSound);
+			if (m_music != nullptr) 
+			{ 
+				m_isPlaying = false;
+				m_music->Stop(); 
+			}
 		}
 		m_songText->changeText(L" ");
 		m_artistText->changeText(L" ");
@@ -353,6 +367,11 @@ namespace SJ
 		{
 			m_source = std::make_unique<SFXSource>();
 			m_source->Play(m_scrollSound);
+			if (m_music != nullptr) 
+			{
+				m_isPlaying = false;
+				m_music->Stop(); 
+			}
 		}
 		m_songText->changeText(L" ");
 		m_artistText->changeText(L" ");

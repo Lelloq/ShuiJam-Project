@@ -1,5 +1,6 @@
 /*\file Music.cpp*/
 #include "Audio/Music.h"
+#include <future>
 
 namespace SJ
 {
@@ -124,7 +125,7 @@ namespace SJ
 				alSourceQueueBuffers(m_source, i, m_buffers);
 				alSourcePlay(m_source);
 			}
-			startTimer();//Start the song timer
+			startTimer();
 		}
 	}
 
@@ -132,24 +133,9 @@ namespace SJ
 	{
 		//Stop the music and free all data
 		alSourceStop(m_source);
-		if (mStream != NULL) 
-		{ 
-			drmp3_free(&mStream->mp3, nullptr);
-			mStream.release(); 
-			return; 
-		}
-		else if (wStream != NULL) 
-		{ 
-			drwav_free(&wStream->wav, nullptr);
-			wStream.release(); 
-			return; 
-		}
-		else if (oStream != NULL) 
+		if (oStream != nullptr)
 		{ 
 			fclose(file);
-			ov_clear(&oStream->vfile);
-			oStream.release(); 
-			return; 
 		}
 	}
 
@@ -234,7 +220,6 @@ namespace SJ
 			auto end = chrono::steady_clock::now();
 			m_timepos += chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 		}
-		startTimer();
 	}
 
 	void Music::startTimer()

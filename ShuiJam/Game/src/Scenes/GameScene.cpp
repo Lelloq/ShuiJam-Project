@@ -75,7 +75,7 @@ namespace SJ
 		int xPos = middleBL;
 		for(int i = 0; i < 7; i++)
 		{
-			m_key.at(i) = std::make_unique<Rect>(glm::vec2(xPos, 0), glm::vec2(m_stageBGIm->getWidth() / 7, m_keyIm.at(i)->getHeight()), 1, *m_keyIm.at(i));
+			m_key.at(i) = std::make_unique<Rect>(glm::vec2(xPos, 0), glm::vec2(m_stageBGIm->getWidth() / 7, m_keyIm.at(i)->getHeight()), 5, *m_keyIm.at(i));
 			xPos += m_stageBGIm->getWidth() / 7;
 		}
 		//Numbers
@@ -98,13 +98,58 @@ namespace SJ
 	#pragma endregion
 
 	#pragma region Note creation
+		for(int i = 0; i < 7; i++)
+		{
+			m_totalNotes += m_notes.at(i).size();
+		}
 
+		int noteX = middleBL;
+		for(int i = 0; i < 7; i++)
+		{
+			for(int j = 0; j < m_notes.at(i).size(); j++)
+			{
+				int release = m_notes.at(i).at(j).releasePoint;
+				//m_timingBuffer converted to miliseconds for note position
+				int timing = m_notes.at(i).at(j).timingPoint + m_leadin;
+				if(release != 0)
+				{
+					m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, timing), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, *m_headIm.at(i)));
+					m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, timing), glm::vec2(m_stageBGIm->getWidth() / 7, release), 2, *m_bodyIm.at(i)));
+					m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, timing + release), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, *m_tailIm.at(i)));
+				}
+				else
+				{
+					m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, timing), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, *m_riceIm.at(i)));
+				}
+				noteX += m_stageBGIm->getWidth() / 7;
+			}
+		}
 	#pragma endregion
 	}
 
+	using namespace std::chrono_literals;
 	void GameScene::Update(float dt)
 	{
-		
+		if(m_t1 < 1.f)
+		{
+			float time = lerp(m_leadin, 0, m_t1);
+			m_t1 += (1.f / 2000.f) * 1000 * dt;
+		}
+		else
+		{
+			m_music->Play();
+			m_music->Update();
+		}
+		for (int i = 0; i < 7; i++)
+		{
+			//Need to fully implement the scrolling of the notes
+			for (int j = 0; j < m_notes.at(i).size(); j++)
+			{
+				int objPos = m_notes.at(i).at(j).timingPoint;
+				float lerpedY = lerp(objPos, m_hitPosition, 0.5);
+				m_noteObj.at(i).at(j)->repositionVerts(glm::vec2(m_noteObj.at(i).at(j)->getPosition().x, lerpedY));
+			}
+		}
 	}
 
 	void GameScene::Render()
@@ -176,7 +221,19 @@ namespace SJ
 		}
 	#pragma endregion
 
-		
+	#pragma region Notes
+		//Render notes as long as it is within view of the screen
+		for (int i = 0; i < 7; i++)
+		{
+			for (int j = 0; j < m_noteObj.at(i).size(); j++)
+			{
+				if(m_noteObj.at(i).at(j)->getPosition().y <= VPORT_HEIGHT && m_noteObj.at(i).at(j)->getPosition().y >= 0)
+				{
+					m_noteObj.at(i).at(j)->Draw(*m_shader);
+				}
+			}
+		}
+	#pragma endregion
 	}
 
 	void GameScene::getKey(int key, int scancode, int action, int mods)
@@ -194,6 +251,7 @@ namespace SJ
 		}
 	}
 
+#pragma region NOT IN USE
 	void GameScene::getMouseButton(int button, int action, int mods)
 	{
 	}
@@ -204,5 +262,11 @@ namespace SJ
 
 	void GameScene::fileDrop(int count, const char** paths)
 	{
+	}
+#pragma endregion
+
+	float GameScene::lerp(float a, float b, float t)
+	{
+		return a + (b - a) * t;
 	}
 }
