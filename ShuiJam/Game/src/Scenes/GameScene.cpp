@@ -127,7 +127,6 @@ namespace SJ
 	#pragma endregion
 	}
 
-	using namespace std::chrono_literals;
 	void GameScene::Update(float dt)
 	{
 		if(m_t1 < 1.f)

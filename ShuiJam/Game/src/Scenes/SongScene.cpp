@@ -141,8 +141,6 @@ namespace SJ
 	{
 		double posX, posY;
 		glfwGetCursorPos(m_window, &posX, &posY);
-		m_cursorPosX = posX * (VPORT_WIDTH / SCR_WIDTH);
-		m_cursorPosY = posY * (VPORT_HEIGHT / SCR_HEIGHT);
 
 		glClearColor(0.5568f, 0.8f, 0.7764f, 0.f);
 
@@ -151,7 +149,7 @@ namespace SJ
 			//Highlight the cursor hovering over the wheel
 			//Highlight the selected song wheel
 			if (m_confirmation == i) { m_shader->setFloat("transparency", 1.2f); }
-			else if(m_buttons.at(i)->hasMouseOnTop(m_cursorPosX,m_cursorPosY)) { m_shader->setFloat("transparency", 1.1f); }
+			else if(m_buttons.at(i)->hasMouseOnTop(posX,posY)) { m_shader->setFloat("transparency", 1.1f); }
 			else {m_shader->setFloat("transparency", 1.f); }
 			m_buttons.at(i)->Draw(*m_shader);
 			m_songWheelText.at(i)->Draw(*m_textShader);
@@ -161,7 +159,7 @@ namespace SJ
 		m_songBg->Draw(*m_shader);
 		m_songSelect->Draw(*m_shader);
 
-		if (m_logoBtn->hasMouseOnTop(m_cursorPosX, m_cursorPosY)) { m_shader->setFloat("transparency", 2.0f); }
+		if (m_logoBtn->hasMouseOnTop(posX, posY)) { m_shader->setFloat("transparency", 2.0f); }
 		else m_shader->setFloat("transparency", 1.0f);
 		m_logoBtn->Draw(*m_shader);
 		m_shader->setFloat("transparency", 1.0f);
