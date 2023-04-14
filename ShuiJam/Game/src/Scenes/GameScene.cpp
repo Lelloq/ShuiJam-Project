@@ -141,7 +141,7 @@ namespace SJ
 		}
 		for (int i = 0; i < 7; i++)
 		{
-			//Need to fully implement the scrolling of the notes
+			//Need to fully implement the scrolling of the notes as well as optimise
 			for (int j = 0; j < m_notes.at(i).size(); j++)
 			{
 				int objPos = m_notes.at(i).at(j).timingPoint;
@@ -221,7 +221,7 @@ namespace SJ
 	#pragma endregion
 
 	#pragma region Notes
-		//Render notes as long as it is within view of the screen
+		//Render notes as long as it is within view of the screen (need optimisation)
 		for (int i = 0; i < 7; i++)
 		{
 			for (int j = 0; j < m_noteObj.at(i).size(); j++)

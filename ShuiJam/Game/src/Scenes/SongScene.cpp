@@ -250,6 +250,7 @@ namespace SJ
 					{
 						m_source = std::make_unique<SFXSource>();
 						m_source->Play(m_scrollSound);
+						if (m_music != nullptr) m_music->Stop();
 						m_music = std::make_unique<Music>(L"../ShuiJamGame/Songs/" + m_songData.at(i).dirPath + L"/" + m_songData.at(i).audio);
 						m_isPlaying = true;
 					}

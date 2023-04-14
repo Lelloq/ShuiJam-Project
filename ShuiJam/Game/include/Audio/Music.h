@@ -47,13 +47,14 @@ namespace SJ
 		ALuint m_source;//!<OpenAL sound source
 		ALuint m_buffers[NUM_BUFFERS];//!<Number of buffers
 		ALenum m_format;//!<OpenAL audio format
-		std::unique_ptr<MP3StreamData> mStream;//!<Empty Mp3Data struct if the file reads a mp3 file
-		std::unique_ptr<OggStreamData> oStream;//!<Empty OggData struct if the file reads an ogg file
-		std::unique_ptr<WavStreamData> wStream;//!<Empty WavData struct if the file reads a wav file
+		MP3StreamData mStream;//!<Empty Mp3Data struct if the file reads a mp3 file
+		OggStreamData oStream;//!<Empty OggData struct if the file reads an ogg file
+		WavStreamData wStream;//!<Empty WavData struct if the file reads a wav file
 
 		int m_timepos = 0;//!<Time position of the song in milliseconds
 		bool m_atEnd = false;//!<Is the song at the end
 		std::string m_extension;//!<Song file extension
+		std::thread m_thread;
 
 		void timerThread();//!<Function that accumulates time, done on a separate thread
 		void startTimer();//!<Creates a thread that starts the timer
