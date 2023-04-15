@@ -30,12 +30,13 @@ namespace SJ
 		//GRAPHICS
 		//Shader
 		std::shared_ptr<Shader> m_shader;
+
 		//Note images
 		std::array<std::shared_ptr<Texture>, 7> m_riceIm;
 		std::array<std::shared_ptr<Texture>, 7> m_headIm;
 		std::array<std::shared_ptr<Texture>, 7> m_tailIm;
 		std::array<std::shared_ptr<Texture>, 7> m_bodyIm;
-		std::array<std::vector<std::unique_ptr<Rect>>, 7> m_noteObj;
+
 		//Stage
 		std::unique_ptr<Texture> m_stageLeftIm;
 		std::unique_ptr<Texture> m_stageRightIm;
@@ -51,19 +52,27 @@ namespace SJ
 		std::unique_ptr<Rect> m_healthBG;
 		std::unique_ptr<Rect> m_health;
 		std::array<std::unique_ptr<Rect>, 7> m_key;
+
 		//Combo
 		std::array<std::shared_ptr<Texture>, 10> m_numIm;
 		std::array<std::shared_ptr<Rect>, 10> m_num;
+
 		//Percent
 		std::shared_ptr<Texture> m_dotIm;
 		std::shared_ptr<Texture> m_percentIm;
 		std::shared_ptr<Rect> m_percent;
 		std::shared_ptr<Rect> m_dot;
+
 		//Judgement
 		std::array<std::unique_ptr<Texture>, 5> m_judgementIm;
 		std::array<std::unique_ptr<Rect>, 5> m_judgement;
-		//OTHER DATA
+
+		//NOTE DATA
 		std::array<std::vector<Note>, 7> m_notes;//Note data for the song
+		std::array<int, 7> m_nextNote = {0,0,0,0,0,0,0};
+		std::array<std::vector<std::unique_ptr<Rect>>, 7> m_noteObj;
+
+		//OTHER DATA
 		std::wstring m_folder = L"../ShuiJamGame/Songs/";
 		int m_noteHeight = 20;
 		int m_totalNotes = 0;
@@ -76,7 +85,7 @@ namespace SJ
 		int m_hitPosition = 120;//Pixels above the bottom of the screen determines bar where you hit the note on time
 		int m_comboPosition = 470;
 		int m_judgePosition = 370;
-		bool m_hasHitRecently = false;//Set to true for testing purposes
+		bool m_hasHitRecently = false;
 		//Numbers tracking
 		int m_recentJudgement = 0;//Most recent judgement hit
 		float m_hp = 100;

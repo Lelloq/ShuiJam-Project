@@ -65,6 +65,7 @@ namespace SJ
 	}
 	Music::~Music()
 	{
+		m_atEnd = true;
 		alDeleteSources(1, &m_source);
 		alDeleteBuffers(NUM_BUFFERS, m_buffers);
 		if(m_extension == ".mp3")
