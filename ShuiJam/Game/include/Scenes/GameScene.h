@@ -77,6 +77,7 @@ namespace SJ
 		int m_noteHeight = 20;
 		int m_totalNotes = 0;
 		int m_leadin = 2000;//Time miliseconds before the song starts
+		float m_spawnPos = 720;
 		float m_t1 = 0;//The intermediate value for the timing buffer lerping
 
 		std::array<int, 7> m_inputs = //Default keyboard inputs

@@ -139,6 +139,7 @@ namespace SJ
 		{
 			m_music->Play();
 			m_music->Update();
+			std::cout << m_music->getTimePosition() << "\n";
 		}
 
 		//Note spawning (Idea taken from https://www.gamedeveloper.com/programming/music-syncing-in-rhythm-games)
@@ -154,13 +155,13 @@ namespace SJ
 					int timing = m_notes.at(i).at(m_nextNote.at(i)).timingPoint;
 					if(release != 0)
 					{
-						m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, timing + m_leadin), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_headIm.at(i)));
-						m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, timing + m_leadin), glm::vec2(m_stageBGIm->getWidth() / 7, release), 2, *m_bodyIm.at(i)));
-						m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, timing + release + m_leadin), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_tailIm.at(i)));
+						m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, timing), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_headIm.at(i)));
+						m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, timing), glm::vec2(m_stageBGIm->getWidth() / 7, release), 2, *m_bodyIm.at(i)));
+						m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, timing), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_tailIm.at(i)));
 					}
 					else
 					{
-						m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, timing + m_leadin), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, *m_riceIm.at(i)));
+						m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, timing), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, *m_riceIm.at(i)));
 					}
 					m_nextNote.at(i)++;
 				}
@@ -168,9 +169,17 @@ namespace SJ
 			noteX += m_stageBGIm->getWidth() / 7;
 		}
 		//Note moving
-		for(int i = 0; i < m_noteObj.size(); i++)
+		noteX = (VPORT_WIDTH / 2) - (m_stageBGIm->getWidth() / 2);
+		for(int i = 0; i < m_notes.size(); i++)
 		{
-
+			for (int j = 0; j < m_noteObj.at(i).size(); j++)
+			{
+				int timing = m_notes.at(i).at(j).timingPoint;
+				int lerped = lerp(m_spawnPos, m_hitPosition,
+					(550.0f - (timing - (m_music->getTimePosition()))) / 550.0f);
+				m_noteObj.at(i).at(j)->repositionVerts(glm::vec2(noteX, lerped));
+			}
+			noteX += m_stageBGIm->getWidth() / 7;
 		}
 	}
 
@@ -251,12 +260,12 @@ namespace SJ
 			for(auto& note : m_noteObj.at(i))
 			{
 				//Early exit to prevent any more accessing into notes that are outside of the viewport height
-				if (note->getPosition().y > VPORT_HEIGHT) { break; }
-				else if (note->getPosition().y <= VPORT_HEIGHT && note->getPosition().y >= 0)
+				if(note->getPosition().y > VPORT_HEIGHT) { break; }
+				else if(note->getPosition().y <= VPORT_HEIGHT && note->getPosition().y + note->getSize().y >= 0)
 				{
 					note->Draw(*m_shader);
 				}
-				else if (note->getPosition().y < 0)
+				else if(note->getPosition().y + note->getSize().y > 0)
 				{
 					m_noteObj.at(i).erase(m_noteObj.at(i).begin());
 				}
