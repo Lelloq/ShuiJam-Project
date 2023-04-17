@@ -110,11 +110,12 @@ namespace SJ
 	{
 		if(m_t1 < 1.f)
 		{
-			float time = lerp(m_leadin, 0, m_t1);
+			m_leadin = lerp(2000, 0, m_t1);
 			m_t1 += (1.f / 2000.f) * 1000 * dt;
 		}
 		else
 		{
+			m_leadin = 0;
 			m_music->Play();
 			m_music->Update();
 		}
@@ -127,19 +128,19 @@ namespace SJ
 		{
 			for(int j = m_nextNote.at(i); j < m_notes.at(i).size(); j++)
 			{
-				if(m_nextNote.at(i) < m_notes.at(i).size() && m_notes.at(i).at(m_nextNote.at(i)).timingPoint < m_music->getTimePosition() + 30000)
+				if(m_nextNote.at(i) < m_notes.at(i).size() && m_notes.at(i).at(m_nextNote.at(i)).timingPoint < m_music->getTimePosition() + 450.0f)
 				{
 					int release = m_notes.at(i).at(m_nextNote.at(i)).releasePoint;
 					int timing = m_notes.at(i).at(m_nextNote.at(i)).timingPoint;
 					if(release != 0)
 					{
-						m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, timing), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_headIm.at(i)));
-						m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, timing), glm::vec2(m_stageBGIm->getWidth() / 7, release), 2, *m_bodyIm.at(i)));
-						m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, timing), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_tailIm.at(i)));
+						m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_headIm.at(i)));
+						m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, release), 2, *m_bodyIm.at(i)));
+						m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_tailIm.at(i)));
 					}
 					else
 					{
-						m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, timing), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, *m_riceIm.at(i)));
+						m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, *m_riceIm.at(i)));
 					}
 					m_nextNote.at(i)++;
 				}
@@ -150,12 +151,21 @@ namespace SJ
 		noteX = (VPORT_WIDTH / 2) - (m_stageBGIm->getWidth() / 2);
 		for(int i = 0; i < m_notes.size(); i++)
 		{
-			for (int j = 0; j < m_noteObj.at(i).size(); j++)
+			for (int j = m_notesPassed.at(i); j < m_noteObj.at(i).size(); j++)
 			{
-				int timing = m_notes.at(i).at(j).timingPoint;
+				std::unique_ptr<Rect>& noteObj = m_noteObj.at(i).at(j);
+				Note note = m_notes.at(i).at(j);
+
+				int timing = note.timingPoint;
 				int lerped = lerp(m_spawnPos, m_hitPosition,
-					(550.0f - (timing - timePos)) / 550.0f);
-				m_noteObj.at(i).at(j)->repositionVerts(glm::vec2(noteX, lerped));
+					(450.0f - (timing - (timePos - m_leadin))) / 450.0f);
+				noteObj->repositionVerts(glm::vec2(noteX, lerped));
+				//Increasing the notes passed instead of using vector erase due to some errors with it where
+				//All the notes gets erased instead
+				if(noteObj->getPosition().y + noteObj->getSize().y < -10)
+				{
+					m_notesPassed.at(i)++;
+				}
 			}
 			noteX += m_stageBGIm->getWidth() / 7;
 		}
@@ -229,26 +239,21 @@ namespace SJ
 			m_judgement.at(m_recentJudgement)->Draw(*m_shader);
 		}
 	#pragma endregion
-
 	#pragma region Notes
 		//Render notes as long as it is within view of the screen (need optimisation)
 		//2D array as it accesses each column and goes through each note in that column
 		for (int i = 0; i < m_noteObj.size(); i++)
 		{
-			for(auto& note : m_noteObj.at(i))
+			for (int j = m_notesPassed.at(i); j < m_noteObj.at(i).size(); j++)
 			{
-				//Early exit to prevent any more accessing into notes that are outside of the viewport height
-				if(note->getPosition().y > VPORT_HEIGHT) { break; }
-				else if(note->getPosition().y <= VPORT_HEIGHT && note->getPosition().y + note->getSize().y >= 0)
+				std::unique_ptr<Rect>& noteObj = m_noteObj.at(i).at(j);
+				if (noteObj->getPosition().y <= VPORT_HEIGHT && noteObj->getPosition().y + noteObj->getSize().y >= 0)
 				{
-					note->Draw(*m_shader);
-				}
-				else if(note->getPosition().y + note->getSize().y > 0)
-				{
-					m_noteObj.at(i).erase(m_noteObj.at(i).begin());
+					noteObj->Draw(*m_shader);
 				}
 			}
 		}
+
 	#pragma endregion
 	}
 
