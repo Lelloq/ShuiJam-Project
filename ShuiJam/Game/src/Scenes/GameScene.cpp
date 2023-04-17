@@ -128,14 +128,14 @@ namespace SJ
 		{
 			for(int j = m_nextNote.at(i); j < m_notes.at(i).size(); j++)
 			{
-				if(m_nextNote.at(i) < m_notes.at(i).size() && m_notes.at(i).at(m_nextNote.at(i)).timingPoint < m_music->getTimePosition() + 450.0f)
+				if(m_nextNote.at(i) < m_notes.at(i).size() && m_notes.at(i).at(m_nextNote.at(i)).timingPoint < m_music->getTimePosition() + 30000.0f)
 				{
 					int release = m_notes.at(i).at(m_nextNote.at(i)).releasePoint;
 					int timing = m_notes.at(i).at(m_nextNote.at(i)).timingPoint;
 					if(release != 0)
 					{
 						m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_headIm.at(i)));
-						m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, release), 2, *m_bodyIm.at(i)));
+						m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, *m_bodyIm.at(i)));
 						m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_tailIm.at(i)));
 					}
 					else
@@ -158,8 +158,11 @@ namespace SJ
 
 				int timing = note.timingPoint;
 				int lerped = lerp(m_spawnPos, m_hitPosition,
-					(450.0f - (timing - (timePos - m_leadin))) / 450.0f);
-				noteObj->repositionVerts(glm::vec2(noteX, lerped));
+					((2000.0f - m_cSpeed) - (timing - (timePos - m_leadin))) / (2000.0f - m_cSpeed));
+				if(lerped <= VPORT_HEIGHT)
+				{
+					noteObj->repositionVerts(glm::vec2(noteX, lerped));
+				}
 				//Increasing the notes passed instead of using vector erase due to some errors with it where
 				//All the notes gets erased instead
 				if(noteObj->getPosition().y + noteObj->getSize().y < -10)
@@ -240,7 +243,7 @@ namespace SJ
 		}
 	#pragma endregion
 	#pragma region Notes
-		//Render notes as long as it is within view of the screen (need optimisation)
+		//Render notes as long as it is within view of the screen
 		//2D array as it accesses each column and goes through each note in that column
 		for (int i = 0; i < m_noteObj.size(); i++)
 		{

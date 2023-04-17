@@ -75,11 +75,12 @@ namespace SJ
 
 		//OTHER DATA
 		std::wstring m_folder = L"../ShuiJamGame/Songs/";
-		int m_noteHeight = 20;
+		int m_noteHeight = 25;
 		int m_totalNotes = 0;
 		int m_leadin = 2000;//Time miliseconds before the song starts
-		float m_spawnPos = 720;
+		float m_spawnPos = 2000;
 		float m_t1 = 0;//The intermediate value for the timing buffer lerping
+		float m_cSpeed = 550.f;
 
 		std::array<int, 7> m_inputs = //Default keyboard inputs
 		{GLFW_KEY_Z, GLFW_KEY_X, GLFW_KEY_C , GLFW_KEY_SPACE, GLFW_KEY_COMMA, GLFW_KEY_PERIOD, GLFW_KEY_SLASH};
