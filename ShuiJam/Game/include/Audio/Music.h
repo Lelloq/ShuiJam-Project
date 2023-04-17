@@ -63,6 +63,6 @@ namespace SJ
 		void Play();//!<Plays the music
 		void Stop();//!<Stops the music
 		void Update();//!<Updates the buffer stream
-		inline int getTimePosition() { return m_timepos * 1000; }//!<Get time position in milliseconds
+		inline int getTimePosition() { return m_timepos; }//!<Get time position in milliseconds
 	};
 }
