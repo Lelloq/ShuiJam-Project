@@ -52,12 +52,11 @@ namespace SJ
 		WavStreamData wStream;//!<Empty WavData struct if the file reads a wav file
 
 		int m_timepos = 0;//!<Time position of the song in milliseconds
+		float m_sampleRate = 0;
+		float m_samplesProcessed = 0;
 		bool m_atEnd = false;//!<Is the song at the end
 		std::string m_extension;//!<Song file extension
-		std::thread m_thread;
 
-		void timerThread();//!<Function that accumulates time, done on a separate thread
-		void startTimer();//!<Creates a thread that starts the timer
 	public:
 		Music(std::filesystem::path filePath);//!<Loads music with the assigned file path
 		~Music();//!<Destructor

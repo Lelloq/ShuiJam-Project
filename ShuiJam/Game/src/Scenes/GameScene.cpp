@@ -103,28 +103,6 @@ namespace SJ
 		{
 			m_totalNotes += m_notes.at(i).size();
 		}
-
-		//int noteX = middleBL;
-		//for(int i = 0; i < 7; i++)
-		//{
-		//	for(int j = 0; j < m_notes.at(i).size(); j++)
-		//	{
-		//		int release = m_notes.at(i).at(j).releasePoint;
-		//		//m_timingBuffer converted to miliseconds for note position
-		//		int timing = m_notes.at(i).at(j).timingPoint + m_leadin;
-		//		if(release != 0)
-		//		{
-		//			m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, timing), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_headIm.at(i)));
-		//			m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, timing), glm::vec2(m_stageBGIm->getWidth() / 7, release), 2, *m_bodyIm.at(i)));
-		//			m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, timing + release), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_tailIm.at(i)));
-		//		}
-		//		else
-		//		{
-		//			m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, timing), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, *m_riceIm.at(i)));
-		//		}
-		//	}
-		//	noteX += m_stageBGIm->getWidth() / 7;
-		//}
 	#pragma endregion
 	}
 
@@ -139,8 +117,8 @@ namespace SJ
 		{
 			m_music->Play();
 			m_music->Update();
-			std::cout << m_music->getTimePosition() << "\n";
 		}
+		int timePos = m_music->getTimePosition();
 
 		//Note spawning (Idea taken from https://www.gamedeveloper.com/programming/music-syncing-in-rhythm-games)
 		//Originally for unity but the theory behind it can apply to here
@@ -176,7 +154,7 @@ namespace SJ
 			{
 				int timing = m_notes.at(i).at(j).timingPoint;
 				int lerped = lerp(m_spawnPos, m_hitPosition,
-					(550.0f - (timing - (m_music->getTimePosition()))) / 550.0f);
+					(550.0f - (timing - timePos)) / 550.0f);
 				m_noteObj.at(i).at(j)->repositionVerts(glm::vec2(noteX, lerped));
 			}
 			noteX += m_stageBGIm->getWidth() / 7;

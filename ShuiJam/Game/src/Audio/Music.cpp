@@ -26,6 +26,7 @@ namespace SJ
 				//Allocate the buffer which will be used to fill the queued buffers
 				frame_size = (size_t)(BUFFER_SIZE * mStream.mp3.channels) * 2;
 				mStream.buffer = new int16_t[frame_size];
+				m_sampleRate = mStream.mp3.sampleRate;
 			}
 		}
 		//Open the file using drwav if it detects a wav file
@@ -42,6 +43,7 @@ namespace SJ
 				//Allocate the buffer which will be used to fill the queued buffers
 				frame_size = (size_t)(BUFFER_SIZE * wStream.wav.channels) * 2;
 				wStream.buffer = new int16_t[frame_size];
+				m_sampleRate = wStream.wav.sampleRate;
 			}
 		}
 		//Open the file using vorbis if it detects an ogg file
@@ -60,6 +62,7 @@ namespace SJ
 
 				frame_size = (size_t)(BUFFER_SIZE * oStream.info->channels) * 2;
 				oStream.buffer = new int16_t[frame_size];
+				m_sampleRate = oStream.info->rate;
 			}
 		}
 	}
@@ -138,7 +141,6 @@ namespace SJ
 				alSourceQueueBuffers(m_source, i, m_buffers);
 				alSourcePlay(m_source);
 			}
-			startTimer();
 		}
 	}
 
@@ -169,8 +171,17 @@ namespace SJ
 		while(processed > 0)
 		{
 			ALuint bufid;
+			ALint sizeInBytes;
+			ALint channels;
+			ALint bits;
 
 			alSourceUnqueueBuffers(m_source, 1, &bufid);
+
+			alGetBufferi(bufid, AL_SIZE, &sizeInBytes);
+			alGetBufferi(bufid, AL_CHANNELS, &channels);
+			alGetBufferi(bufid, AL_BITS, &bits);
+			m_samplesProcessed += sizeInBytes * 8 / (channels * bits);
+
 			processed--;
 
 			if(m_extension == ".mp3")
@@ -205,6 +216,10 @@ namespace SJ
 			}
 		}
 
+		ALfloat offset;
+		alGetSourcef(m_source, AL_SAMPLE_OFFSET, &offset);
+		m_timepos = ((m_samplesProcessed + offset) / m_sampleRate) * 1000;
+
 		//Keep playing the source to the end unless it has been paused or stopped
 		if(state != AL_PLAYING && state != AL_PAUSED)
 		{
@@ -219,29 +234,6 @@ namespace SJ
 			}
 
 			alSourcePlay(m_source);
-		}
-	}
-
-	void Music::timerThread()
-	{
-		using namespace std;
-		while(!m_atEnd)
-		{
-			auto start = chrono::steady_clock::now();	
-			this_thread::sleep_for(1ms);
-			auto end = chrono::steady_clock::now();
-			m_timepos += chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-		}
-	}
-
-	void Music::startTimer()
-	{
-		m_thread = std::thread(&Music::timerThread, this);
-		if (!m_atEnd) m_thread.detach();
-		else 
-		{ 
-			m_thread.join(); 
-			m_atEnd = false;
 		}
 	}
 }
