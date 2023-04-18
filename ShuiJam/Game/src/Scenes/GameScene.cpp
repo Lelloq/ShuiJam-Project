@@ -128,31 +128,24 @@ namespace SJ
 		int noteX = (VPORT_WIDTH / 2) - (m_stageBGIm->getWidth() / 2);
 		for (int i = 0; i < m_notes.size(); i++)
 		{
-			for(int j = m_nextNote.at(i); j < m_notes.at(i).size(); j++)
+			if(m_nextNote.at(i) < m_notes.at(i).size() && m_notes.at(i).at(m_nextNote.at(i)).timingPoint < m_music->getTimePosition() + 300000.0f)
 			{
-				if(m_nextNote.at(i) < m_notes.at(i).size() && m_notes.at(i).at(m_nextNote.at(i)).timingPoint < m_music->getTimePosition() + 300000.0f)
+				int column = m_notes.at(i).at(m_nextNote.at(i)).column;
+				int release = m_notes.at(i).at(m_nextNote.at(i)).releasePoint;
+				int timing = m_notes.at(i).at(m_nextNote.at(i)).timingPoint;
+				if(release != 0)
 				{
-					int release = m_notes.at(i).at(m_nextNote.at(i)).releasePoint;
-					int timing = m_notes.at(i).at(m_nextNote.at(i)).timingPoint;
-					if(release != 0)
-					{
-						//m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_headIm.at(i)));
-						//m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, *m_bodyIm.at(i)));
-						//m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_tailIm.at(i)));
-
-						m_noteObj.at(i).push_back(
-							{std::make_shared<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_headIm.at(i)),
-							 std::make_shared<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, *m_bodyIm.at(i)),
-							 std::make_shared<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_tailIm.at(i))
-							});
-					}
-					else
-					{
-						m_noteObj.at(i).push_back({std::make_shared<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_riceIm.at(i))});
-						//m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, *m_riceIm.at(i)));
-					}
-					m_nextNote.at(i)++;
+					m_noteObj.at(column).push_back(
+						{std::make_shared<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_headIm.at(i)),
+						 std::make_shared<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, *m_bodyIm.at(i)),
+						 std::make_shared<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_tailIm.at(i))
+						});
 				}
+				else
+				{
+					m_noteObj.at(column).push_back({std::make_shared<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_riceIm.at(i))});
+				}
+				m_nextNote.at(i)++;
 			}
 			noteX += m_stageBGIm->getWidth() / 7;
 		}
