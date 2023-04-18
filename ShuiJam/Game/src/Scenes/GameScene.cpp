@@ -172,8 +172,9 @@ namespace SJ
 						std::unique_ptr<Rect>& body = m_noteObj.at(i).at(j+1);
 						std::unique_ptr<Rect>& tail = m_noteObj.at(i).at(j+2);
 						tail->repositionVerts(glm::vec2(noteX, lerpedRel));
-						int length = tail->getSize().y - rice->getSize().y;
+						int length = tail->getPosition().y - rice->getPosition().y;
 						body->resizeVerts(glm::vec2(body->getSize().x, length));
+						body->repositionVerts(rice->getPosition());
 					}
 				}
 				else { break; }
