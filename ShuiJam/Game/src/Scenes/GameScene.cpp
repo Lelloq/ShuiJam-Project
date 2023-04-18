@@ -173,7 +173,6 @@ namespace SJ
 						((2000.0f - m_cSpeed) - (release - (timePos - m_leadin))) / (2000.0f - m_cSpeed));
 				if(lerped <= VPORT_HEIGHT)
 				{
-					//LN moves up when it touches the hit position (needs fixing)
 					//Note object are not aligned with the note data itself
 					if(release != 0)
 					{
