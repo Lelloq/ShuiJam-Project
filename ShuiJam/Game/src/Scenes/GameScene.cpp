@@ -38,6 +38,7 @@ namespace SJ
 		m_stageRightIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "game/stageright.png", GL_CLAMP_TO_EDGE);
 		m_stageHitpositionIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "game/stagehit.png", GL_CLAMP_TO_EDGE);
 		m_stageBGIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "game/stagebg.png", GL_CLAMP_TO_EDGE);
+		m_stagebottomIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "game/stagebottom.png", GL_CLAMP_TO_EDGE);
 		//Health images
 		m_healthIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "game/healthbar.png", GL_CLAMP_TO_EDGE);
 		m_healthBGIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "game/healthbarbg.png", GL_CLAMP_TO_EDGE);
@@ -69,6 +70,7 @@ namespace SJ
 		m_stageLeft = std::make_unique<Rect>(glm::vec2(middleBL - m_stageLeftIm->getWidth(), 0), glm::vec2(m_stageLeftIm->getWidth(), VPORT_HEIGHT), 1, *m_stageLeftIm);
 		m_stageRight= std::make_unique<Rect>(glm::vec2(middleBL + m_stageBGIm->getWidth(), 0), glm::vec2(m_stageRightIm->getWidth(), VPORT_HEIGHT), 1, *m_stageRightIm);
 		m_stageHitposition = std::make_unique<Rect>(glm::vec2(middleBL, m_hitPosition), glm::vec2(m_stageHitpositionIm->getWidth(), m_stageHitpositionIm->getHeight()), 2, *m_stageHitpositionIm);
+		m_stagebottom = std::make_unique<Rect>(glm::vec2(middleBL, 0), glm::vec2(m_stageBGIm->getWidth(), m_hitPosition), 4, *m_stagebottomIm);
 		//Health
 		m_health = std::make_unique<Rect>(glm::vec2(middleBL + m_stageBGIm->getWidth() + m_stageRightIm->getWidth(), 0), glm::vec2(m_healthIm->getWidth(), m_healthIm->getHeight()), 2, *m_healthIm);
 		m_healthBG = std::make_unique<Rect>(glm::vec2(middleBL + m_stageBGIm->getWidth() + m_stageRightIm->getWidth(), 0), glm::vec2(m_healthBGIm->getWidth(), m_healthBGIm->getHeight()), 1, *m_healthBGIm);
@@ -139,14 +141,14 @@ namespace SJ
 						//m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_tailIm.at(i)));
 
 						m_noteObj.at(i).push_back(
-							{std::make_shared<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, *m_headIm.at(i)),
+							{std::make_shared<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_headIm.at(i)),
 							 std::make_shared<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, *m_bodyIm.at(i)),
 							 std::make_shared<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_tailIm.at(i))
 							});
 					}
 					else
 					{
-						m_noteObj.at(i).push_back({std::make_shared<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, *m_riceIm.at(i))});
+						m_noteObj.at(i).push_back({std::make_shared<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_riceIm.at(i))});
 						//m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, *m_riceIm.at(i)));
 					}
 					m_nextNote.at(i)++;
@@ -211,6 +213,7 @@ namespace SJ
 		m_stageBG->Draw(*m_shader);
 		m_stageLeft->Draw(*m_shader);
 		m_stageRight->Draw(*m_shader);
+		m_stagebottom->Draw(*m_shader);
 		m_stageHitposition->Draw(*m_shader);
 		//Draw health
 		float healthPercent = m_hp / 100.f;
@@ -270,6 +273,7 @@ namespace SJ
 			m_judgement.at(m_recentJudgement)->Draw(*m_shader);
 		}
 	#pragma endregion
+
 	#pragma region Notes
 		//Render notes as long as it is within view of the screen
 		//2D array as it accesses each column and goes through each note in that column

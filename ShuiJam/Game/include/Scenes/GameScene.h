@@ -41,6 +41,7 @@ namespace SJ
 		std::unique_ptr<Texture> m_stageLeftIm;
 		std::unique_ptr<Texture> m_stageRightIm;
 		std::unique_ptr<Texture> m_stageHitpositionIm;
+		std::unique_ptr<Texture> m_stagebottomIm;
 		std::unique_ptr<Texture> m_stageBGIm;
 		std::unique_ptr<Texture> m_healthBGIm;
 		std::unique_ptr<Texture> m_healthIm;
@@ -49,6 +50,7 @@ namespace SJ
 		std::unique_ptr<Rect> m_stageRight;
 		std::unique_ptr<Rect> m_stageHitposition;
 		std::unique_ptr<Rect> m_stageBG;
+		std::unique_ptr<Rect> m_stagebottom;
 		std::unique_ptr<Rect> m_healthBG;
 		std::unique_ptr<Rect> m_health;
 		std::array<std::unique_ptr<Rect>, 7> m_key;
