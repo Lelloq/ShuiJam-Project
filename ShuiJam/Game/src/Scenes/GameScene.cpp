@@ -128,7 +128,7 @@ namespace SJ
 		{
 			for(int j = m_nextNote.at(i); j < m_notes.at(i).size(); j++)
 			{
-				if(m_nextNote.at(i) < m_notes.at(i).size() && m_notes.at(i).at(m_nextNote.at(i)).timingPoint < m_music->getTimePosition() + 30000.0f)
+				if(m_nextNote.at(i) < m_notes.at(i).size() && m_notes.at(i).at(m_nextNote.at(i)).timingPoint < m_music->getTimePosition() + 300000.0f)
 				{
 					int release = m_notes.at(i).at(m_nextNote.at(i)).releasePoint;
 					int timing = m_notes.at(i).at(m_nextNote.at(i)).timingPoint;
@@ -148,24 +148,38 @@ namespace SJ
 			noteX += m_stageBGIm->getWidth() / 7;
 		}
 		//Note moving
-		noteX = (VPORT_WIDTH / 2) - (m_stageBGIm->getWidth() / 2);
+		noteX = (VPORT_WIDTH / 2) - (m_stageBGIm->getWidth() / 2);	
 		for(int i = 0; i < m_notes.size(); i++)
 		{
-			for (int j = m_notesPassed.at(i); j < m_noteObj.at(i).size(); j++)
+			for (int j = m_notesPassed.at(i); j < m_notes.at(i).size(); j++)
 			{
-				std::unique_ptr<Rect>& noteObj = m_noteObj.at(i).at(j);
+				std::unique_ptr<Rect>& rice = m_noteObj.at(i).at(j);
+				//Need to fix vector going out of range
 				Note note = m_notes.at(i).at(j);
 
 				int timing = note.timingPoint;
+				int release = note.releasePoint;
+
 				int lerped = lerp(m_spawnPos, m_hitPosition,
 					((2000.0f - m_cSpeed) - (timing - (timePos - m_leadin))) / (2000.0f - m_cSpeed));
 				if(lerped <= VPORT_HEIGHT)
 				{
-					noteObj->repositionVerts(glm::vec2(noteX, lerped));
+					rice->repositionVerts(glm::vec2(noteX, lerped));
+					if(release != 0)
+					{
+						int lerpedRel = lerp(m_spawnPos, m_hitPosition,
+							((2000.0f - m_cSpeed) - (release - (timePos - m_leadin))) / (2000.0f - m_cSpeed));
+						std::unique_ptr<Rect>& body = m_noteObj.at(i).at(j+1);
+						std::unique_ptr<Rect>& tail = m_noteObj.at(i).at(j+2);
+						tail->repositionVerts(glm::vec2(noteX, lerpedRel));
+						int length = tail->getSize().y - rice->getSize().y;
+						body->resizeVerts(glm::vec2(body->getSize().x, length));
+					}
 				}
+				else { break; }
 				//Increasing the notes passed instead of using vector erase due to some errors with it where
 				//All the notes gets erased instead
-				if(noteObj->getPosition().y + noteObj->getSize().y < -10)
+				if((timing + release) - timePos < -m_cSpeed)
 				{
 					m_notesPassed.at(i)++;
 				}
