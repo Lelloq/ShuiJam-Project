@@ -70,7 +70,7 @@ namespace SJ
 		//NOTE DATA
 		std::array<std::vector<Note>, 7> m_notes;//Note data for the song
 		std::array<int, 7> m_nextNote = {0,0,0,0,0,0,0};
-		std::array<std::vector<std::unique_ptr<Rect>>, 7> m_noteObj;
+		std::array<std::vector<std::vector<std::shared_ptr<Rect>>>, 7> m_noteObj;
 		std::array<int, 7> m_notesPassed = {0,0,0,0,0,0,0};
 
 		//OTHER DATA

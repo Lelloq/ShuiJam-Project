@@ -76,7 +76,7 @@ namespace SJ
 		int xPos = middleBL;
 		for(int i = 0; i < 7; i++)
 		{
-			m_key.at(i) = std::make_unique<Rect>(glm::vec2(xPos, 0), glm::vec2(m_stageBGIm->getWidth() / 7, m_keyIm.at(i)->getHeight()), 5, *m_keyIm.at(i));
+			m_key.at(i) = std::make_unique<Rect>(glm::vec2(xPos, 0), glm::vec2(m_stageBGIm->getWidth() / 7, m_keyIm.at(i)->getHeight()), 6, *m_keyIm.at(i));
 			xPos += m_stageBGIm->getWidth() / 7;
 		}
 		//Numbers
@@ -134,13 +134,20 @@ namespace SJ
 					int timing = m_notes.at(i).at(m_nextNote.at(i)).timingPoint;
 					if(release != 0)
 					{
-						m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_headIm.at(i)));
-						m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, *m_bodyIm.at(i)));
-						m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_tailIm.at(i)));
+						//m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_headIm.at(i)));
+						//m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, *m_bodyIm.at(i)));
+						//m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_tailIm.at(i)));
+
+						m_noteObj.at(i).push_back(
+							{std::make_shared<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, *m_headIm.at(i)),
+							 std::make_shared<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, *m_bodyIm.at(i)),
+							 std::make_shared<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_tailIm.at(i))
+							});
 					}
 					else
 					{
-						m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, *m_riceIm.at(i)));
+						m_noteObj.at(i).push_back({std::make_shared<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, *m_riceIm.at(i))});
+						//m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, *m_riceIm.at(i)));
 					}
 					m_nextNote.at(i)++;
 				}
@@ -153,8 +160,6 @@ namespace SJ
 		{
 			for (int j = m_notesPassed.at(i); j < m_notes.at(i).size(); j++)
 			{
-				std::unique_ptr<Rect>& rice = m_noteObj.at(i).at(j);
-				//Need to fix vector going out of range
 				Note note = m_notes.at(i).at(j);
 
 				int timing = note.timingPoint;
@@ -162,19 +167,27 @@ namespace SJ
 
 				int lerped = lerp(m_spawnPos, m_hitPosition,
 					((2000.0f - m_cSpeed) - (timing - (timePos - m_leadin))) / (2000.0f - m_cSpeed));
+				int lerpedRel = lerp(m_spawnPos, m_hitPosition,
+						((2000.0f - m_cSpeed) - (release - (timePos - m_leadin))) / (2000.0f - m_cSpeed));
 				if(lerped <= VPORT_HEIGHT)
 				{
-					rice->repositionVerts(glm::vec2(noteX, lerped));
+					//LN moves up when it touches the hit position (needs fixing)
+					//Note object are not aligned with the note data itself
 					if(release != 0)
 					{
-						int lerpedRel = lerp(m_spawnPos, m_hitPosition,
-							((2000.0f - m_cSpeed) - (release - (timePos - m_leadin))) / (2000.0f - m_cSpeed));
-						std::unique_ptr<Rect>& body = m_noteObj.at(i).at(j+1);
-						std::unique_ptr<Rect>& tail = m_noteObj.at(i).at(j+2);
+						std::shared_ptr<Rect>& head = m_noteObj.at(i).at(j).at(0);
+						std::shared_ptr<Rect>& body = m_noteObj.at(i).at(j).at(1);
+						std::shared_ptr<Rect>& tail = m_noteObj.at(i).at(j).at(2);
+						head->repositionVerts(glm::vec2(noteX, lerped));
 						tail->repositionVerts(glm::vec2(noteX, lerpedRel));
-						int length = tail->getPosition().y - rice->getPosition().y;
+						int length = tail->getPosition().y - head->getPosition().y;
 						body->resizeVerts(glm::vec2(body->getSize().x, length));
-						body->repositionVerts(rice->getPosition());
+						body->repositionVerts(head->getPosition());
+					}
+					else
+					{
+						std::shared_ptr<Rect>& rice = m_noteObj.at(i).at(j).at(0);
+						rice->repositionVerts(glm::vec2(noteX, lerped));
 					}
 				}
 				else { break; }
@@ -264,7 +277,7 @@ namespace SJ
 		{
 			for (int j = m_notesPassed.at(i); j < m_noteObj.at(i).size(); j++)
 			{
-				std::unique_ptr<Rect>& noteObj = m_noteObj.at(i).at(j);
+				for(auto& noteObj : m_noteObj.at(i).at(j))
 				if (noteObj->getPosition().y <= VPORT_HEIGHT && noteObj->getPosition().y + noteObj->getSize().y >= 0)
 				{
 					noteObj->Draw(*m_shader);

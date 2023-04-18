@@ -142,8 +142,6 @@ namespace SJ
 		double posX, posY;
 		glfwGetCursorPos(m_window, &posX, &posY);
 
-		glClearColor(0.5568f, 0.8f, 0.7764f, 0.f);
-
 		for(int i = 0; i < m_buttonPositions.size(); i++)
 		{
 			//Highlight the cursor hovering over the wheel
