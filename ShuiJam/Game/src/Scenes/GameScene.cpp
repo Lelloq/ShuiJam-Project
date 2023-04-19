@@ -151,7 +151,6 @@ namespace SJ
 			for (int j = m_notesPassed.at(i); j < m_notes.at(i).size(); j++)
 			{
 				Note note = m_notes.at(i).at(j);
-				int colukn = note.column;
 				int timing = note.timingPoint;
 				int release = note.releasePoint;
 
@@ -181,11 +180,6 @@ namespace SJ
 				else { break; }
 				//Increasing the notes passed instead of using vector erase due to some errors with it where
 				//All the notes gets erased instead
-				if((timing + release) - timePos < -m_cSpeed)
-				{
-					m_notesPassed.at(i)++;
-					m_noteObj.at(i).at(j).erase(m_noteObj.at(i).at(j).begin(), m_noteObj.at(i).at(j).end());
-				}
 			}
 			noteX += m_stageBGIm->getWidth() / 7;
 		}
@@ -272,6 +266,11 @@ namespace SJ
 				if (noteObj->getPosition().y <= VPORT_HEIGHT && noteObj->getPosition().y + noteObj->getSize().y >= 0)
 				{
 					noteObj->Draw(*m_shader);
+				}
+				else if(noteObj->getPosition().y + noteObj->getSize().y < 0)
+				{
+					m_noteObj.at(i).at(j).clear();
+					m_notesPassed.at(i)++;
 				}
 			}
 		}
