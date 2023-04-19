@@ -27,6 +27,7 @@ namespace SJ
 		AudioDevice* m_device;//!< Audio device
 		SoundEffect* m_sfx;//!< Sound effect
 		std::unique_ptr<Music> m_music;
+		bool m_playing = false;
 		//GRAPHICS
 		//Shader
 		std::shared_ptr<Shader> m_shader;
@@ -77,6 +78,7 @@ namespace SJ
 		float m_spawnPos = 2000;
 		float m_t1 = 0;//The intermediate value for the timing buffer lerping
 		float m_cSpeed = 550.f;
+		float m_curTimePos = 0.f;
 
 		std::array<int, 7> m_inputs = //Default keyboard inputs
 		{GLFW_KEY_Z, GLFW_KEY_X, GLFW_KEY_C , GLFW_KEY_SPACE, GLFW_KEY_COMMA, GLFW_KEY_PERIOD, GLFW_KEY_SLASH};
@@ -122,6 +124,7 @@ namespace SJ
 		 * \return The position of the lerped value
 		 */
 		float lerp(float a, float b, float t);
+		void play();
 	public:
 		GameScene(GLFWwindow* window);
 		void Update(float dt);

@@ -113,17 +113,16 @@ namespace SJ
 		else
 		{
 			m_leadin = 0;
-			m_music->Play();
-			m_music->Update();
+			std::async(std::launch::async, &GameScene::play, this);
 		}
-		int timePos = m_music->getTimePosition();
+		m_curTimePos = m_music->getTimePosition();
 
 		//Note spawning (Idea taken from https://www.gamedeveloper.com/programming/music-syncing-in-rhythm-games)
 		//Originally for unity but the theory behind it can apply to here
 		int noteX = (VPORT_WIDTH / 2) - (m_stageBGIm->getWidth() / 2);
 		for (int i = 0; i < m_notes.size(); i++)
 		{
-			if(m_nextNote.at(i) < m_notes.at(i).size() && m_notes.at(i).at(m_nextNote.at(i)).timingPoint < m_music->getTimePosition() + 300000.0f)
+			if(m_nextNote.at(i) < m_notes.at(i).size() && m_notes.at(i).at(m_nextNote.at(i)).timingPoint < m_music->getTimePosition() + m_cSpeed)
 			{
 				int column = m_notes.at(i).at(m_nextNote.at(i)).column;
 				int release = m_notes.at(i).at(m_nextNote.at(i)).releasePoint;
@@ -155,9 +154,9 @@ namespace SJ
 				int release = note.releasePoint;
 
 				int lerped = lerp(m_spawnPos, m_hitPosition,
-					((2000.0f - m_cSpeed) - (timing - (timePos - m_leadin))) / (2000.0f - m_cSpeed));
+					((2000.0f - m_cSpeed) - (timing - (m_curTimePos - m_leadin))) / (2000.0f - m_cSpeed));
 				int lerpedRel = lerp(m_spawnPos, m_hitPosition,
-						((2000.0f - m_cSpeed) - (release - (timePos - m_leadin))) / (2000.0f - m_cSpeed));
+						((2000.0f - m_cSpeed) - (release - (m_curTimePos - m_leadin))) / (2000.0f - m_cSpeed));
 				if(lerped <= VPORT_HEIGHT)
 				{
 					if(release != 0)
@@ -178,8 +177,6 @@ namespace SJ
 					}
 				}
 				else { break; }
-				//Increasing the notes passed instead of using vector erase due to some errors with it where
-				//All the notes gets erased instead
 			}
 			noteX += m_stageBGIm->getWidth() / 7;
 		}
@@ -263,14 +260,28 @@ namespace SJ
 			for (int j = m_notesPassed.at(i); j < m_noteObj.at(i).size(); j++)
 			{
 				for(auto& noteObj : m_noteObj.at(i).at(j))
-				if (noteObj->getPosition().y <= VPORT_HEIGHT && noteObj->getPosition().y + noteObj->getSize().y >= 0)
 				{
-					noteObj->Draw(*m_shader);
+					if (noteObj->getPosition().y <= VPORT_HEIGHT && noteObj->getPosition().y + noteObj->getSize().y >= 0)
+					{
+						noteObj->Draw(*m_shader);
+					}
 				}
-				else if(noteObj->getPosition().y + noteObj->getSize().y < 0)
+				//Cleanup
+				if(m_noteObj.at(i).at(j).size() > 1)
 				{
-					m_noteObj.at(i).at(j).clear();
-					m_notesPassed.at(i)++;
+					if (m_noteObj.at(i).at(j).at(2)->getPosition().y + m_noteObj.at(i).at(j).at(2)->getSize().y < 0)
+					{
+						m_noteObj.at(i).at(j).clear();
+						m_notesPassed.at(i)++;
+					}
+				}
+				else
+				{
+					if (m_noteObj.at(i).at(j).at(0)->getPosition().y + m_noteObj.at(i).at(j).at(0)->getSize().y < 0)
+					{
+						m_noteObj.at(i).at(j).clear();
+						m_notesPassed.at(i)++;
+					}
 				}
 			}
 		}
@@ -310,5 +321,11 @@ namespace SJ
 	float GameScene::lerp(float a, float b, float t)
 	{
 		return a + (b - a) * t;
+	}
+
+	void GameScene::play()
+	{
+		m_music->Play();
+		m_music->Update();
 	}
 }
