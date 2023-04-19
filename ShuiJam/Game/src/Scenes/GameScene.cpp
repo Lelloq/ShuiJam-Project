@@ -96,13 +96,6 @@ namespace SJ
 		}
 
 	#pragma endregion
-
-	#pragma region Note creation
-		for(int i = 0; i < 7; i++)
-		{
-			m_totalNotes += m_notes.at(i).size();
-		}
-	#pragma endregion
 	}
 
 	void GameScene::Update(float dt)
@@ -179,6 +172,29 @@ namespace SJ
 					}
 				}
 				else { break; }
+				//Cleanup based on miss window
+				if(release != 0)
+				{
+					if (m_curTimePos - timing >= m_missWindow) 
+					{
+						m_notesProcessedWeighted += 1.0; 
+					}
+					if (m_curTimePos - release >= m_missWindow)
+					{ 
+						m_notesProcessedWeighted += 1.0; 
+						m_noteObj.at(i).at(j).clear();
+						m_notesPassed.at(i)++;
+					}
+				}
+				else if(release == 0)
+				{
+					if (m_curTimePos - timing >= m_missWindow) 
+					{ 
+						m_notesProcessedWeighted += 1.0;
+						m_noteObj.at(i).at(j).clear();
+						m_notesPassed.at(i)++;
+					}
+				}
 			}
 			noteX += m_stageBGIm->getWidth() / 7;
 		}
@@ -271,23 +287,6 @@ namespace SJ
 						noteObj->Draw(*m_shader);
 					}
 				}
-				//Cleanup
-				if(m_noteObj.at(i).at(j).size() > 1)
-				{
-					if (m_noteObj.at(i).at(j).at(2)->getPosition().y + m_noteObj.at(i).at(j).at(2)->getSize().y < 0)
-					{
-						m_noteObj.at(i).at(j).clear();
-						m_notesPassed.at(i)++;
-					}
-				}
-				else
-				{
-					if (m_noteObj.at(i).at(j).at(0)->getPosition().y + m_noteObj.at(i).at(j).at(0)->getSize().y < 0)
-					{
-						m_noteObj.at(i).at(j).clear();
-						m_notesPassed.at(i)++;
-					}
-				}
 			}
 		}
 
@@ -298,13 +297,17 @@ namespace SJ
 	{
 		for (int i = 0; i < 7; i++)
 		{
+			//Check timing inputs
 			if (action == GLFW_PRESS && key == m_inputs.at(i))
 			{
+				//m_pressed is for showing the key pressed image
 				m_pressed.at(i) = true;
+				calcJudgementHit(i);
 			}
 			else if (action == GLFW_RELEASE && key == m_inputs.at(i))
 			{
 				m_pressed.at(i) = false;
+				calcJudgementRelease(i);
 			}
 		}
 	}
@@ -326,6 +329,17 @@ namespace SJ
 	float GameScene::lerp(float a, float b, float t)
 	{
 		return a + (b - a) * t;
+	}
+
+	void GameScene::calcJudgementHit(int column)
+	{
+		int hit = m_notes.at(column).at(m_notesPassed.at(column)).timingPoint;
+
+	}
+
+	void GameScene::calcJudgementRelease(int column)
+	{
+		int release = m_notes.at(column).at(m_notesPassed.at(column)).timingPoint;
 	}
 
 	void GameScene::play()

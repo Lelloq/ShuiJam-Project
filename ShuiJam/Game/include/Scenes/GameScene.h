@@ -75,7 +75,6 @@ namespace SJ
 		//OTHER DATA
 		std::wstring m_folder = L"../ShuiJamGame/Songs/";
 		int m_noteHeight = 25;
-		int m_totalNotes = 0;
 		int m_leadin = 2000;//Time miliseconds before the song starts
 		float m_spawnPos = 2000;
 		float m_t1 = 0;//The intermediate value for the timing buffer lerping
@@ -101,16 +100,18 @@ namespace SJ
 		   (badCount * badWeight) + 
 		   (missCount * missWeight)) / m_notesHit;
 		*/
-		float m_notesHit = 0;
+		float m_notesHitWeighted = 0.0f;
+		float m_notesProcessedWeighted = 0.0f;
 		//Judgement counts will be taken over to the results scene
 		int m_jPerfCount = 0, m_jGreatCount = 0, m_jGoodCount = 0;
 		int m_jBadCount = 0, m_jMissCount = 0;
 		//Accuracy windows (in milliseconds (perf->bad taken from lunatic rave 2 easy judge))
+		//Positive means late, negative means early
 		int m_perfWindow = 21;
 		int m_greatWindow = 60;
 		int m_goodWindow = 120;
 		int m_badWindow = 200;
-		int m_missWindow = 500;
+		int m_missWindow = 300;
 		//Accuracy weighting (perf = 100%, great = 95% etc.) will be tuned throughout development
 		float m_perfWeight = 1.0f;
 		float m_greatWeight = 0.95f;
@@ -126,6 +127,8 @@ namespace SJ
 		 * \return The position of the lerped value
 		 */
 		float lerp(float a, float b, float t);
+		void calcJudgementHit(int column);
+		void calcJudgementRelease(int column);
 		void play();
 	public:
 		GameScene(GLFWwindow* window);
