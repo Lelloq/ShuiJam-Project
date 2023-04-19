@@ -31,12 +31,6 @@ namespace SJ
 		//Shader
 		std::shared_ptr<Shader> m_shader;
 
-		//Note images
-		std::array<std::shared_ptr<Texture>, 7> m_riceIm;
-		std::array<std::shared_ptr<Texture>, 7> m_headIm;
-		std::array<std::shared_ptr<Texture>, 7> m_tailIm;
-		std::array<std::shared_ptr<Texture>, 7> m_bodyIm;
-
 		//Stage
 		std::unique_ptr<Texture> m_stageLeftIm;
 		std::unique_ptr<Texture> m_stageRightIm;

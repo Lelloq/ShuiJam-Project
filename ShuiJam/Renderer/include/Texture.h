@@ -14,7 +14,7 @@ namespace SJ
 		int m_height = 0;
 		int m_slot = 0;
 	public:
-		Texture(std::string& filepath, int wrapping); //!< Load texture from file path
+		Texture(std::string filepath, int wrapping); //!< Load texture from file path
 		Texture(uint32_t width, uint32_t height, uint32_t channels, unsigned char* data);//!< Load texture with raw data
 		~Texture();//!< Deconstructor that deletes texture
 		void reloadTexture(std::string& filepath, int wrapping);//!< Reload texture with a different image
