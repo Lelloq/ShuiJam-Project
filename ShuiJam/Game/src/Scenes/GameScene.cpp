@@ -92,7 +92,7 @@ namespace SJ
 		{
 			m_judgement.at(i) = std::make_unique<Rect>
 				(glm::vec2(middleBL + (m_stageBGIm->getWidth() / 2) - m_judgementIm.at(i)->getWidth() / 2, m_judgePosition), 
-				 glm::vec2(m_judgementIm.at(i)->getWidth(),m_judgementIm.at(i)->getHeight()), 3, *m_judgementIm.at(i));
+				 glm::vec2(m_judgementIm.at(i)->getWidth(),m_judgementIm.at(i)->getHeight()), 6, *m_judgementIm.at(i));
 		}
 
 	#pragma endregion
@@ -112,6 +112,12 @@ namespace SJ
 		}
 		m_curTimePos = m_music->getTimePosition();
 
+		if(m_notesHitWeighted > 0.0f || m_notesProcessedWeighted > 0.0f)
+		{
+			m_accuracy = glm::clamp((m_notesHitWeighted / m_notesProcessedWeighted) * 100.f, 0.0f, 100.f);
+		}
+
+	#pragma region Note spawning
 		//Note spawning (Idea taken from https://www.gamedeveloper.com/programming/music-syncing-in-rhythm-games)
 		//Originally for unity but the theory behind it can apply to here
 		int noteX = (VPORT_WIDTH / 2) - (m_stageBGIm->getWidth() / 2);
@@ -138,12 +144,16 @@ namespace SJ
 			}
 			noteX += m_stageBGIm->getWidth() / 7;
 		}
+	#pragma endregion
+
+	#pragma region Note Moving
 		//Note moving
 		noteX = (VPORT_WIDTH / 2) - (m_stageBGIm->getWidth() / 2);	
 		for(int i = 0; i < m_notes.size(); i++)
 		{
 			for (int j = m_notesPassed.at(i); j < m_notes.at(i).size(); j++)
 			{
+				//Interpolating the notes towards the hit position
 				Note note = m_notes.at(i).at(j);
 				int timing = note.timingPoint;
 				int release = note.releasePoint;
@@ -175,22 +185,30 @@ namespace SJ
 				//Cleanup based on miss window
 				if(release != 0)
 				{
+					//300ms late
 					if (m_curTimePos - timing >= m_missWindow) 
 					{
-						m_notesProcessedWeighted += 1.0; 
+						m_notesProcessedWeighted += 1.0;
+						m_hasHitRecently = true;
+						m_recentJudgement = 4;
 					}
 					if (m_curTimePos - release >= m_missWindow)
 					{ 
 						m_notesProcessedWeighted += 1.0; 
+						m_hasHitRecently = true;
+						m_recentJudgement = 4;
 						m_noteObj.at(i).at(j).clear();
 						m_notesPassed.at(i)++;
 					}
 				}
 				else if(release == 0)
 				{
+					//300ms late
 					if (m_curTimePos - timing >= m_missWindow) 
 					{ 
 						m_notesProcessedWeighted += 1.0;
+						m_hasHitRecently = true;
+						m_recentJudgement = 4;
 						m_noteObj.at(i).at(j).clear();
 						m_notesPassed.at(i)++;
 					}
@@ -198,6 +216,8 @@ namespace SJ
 			}
 			noteX += m_stageBGIm->getWidth() / 7;
 		}
+	#pragma endregion
+
 	}
 
 	void GameScene::Render()
@@ -333,13 +353,150 @@ namespace SJ
 
 	void GameScene::calcJudgementHit(int column)
 	{
+		//Late: >=
+		//Early: <=
 		int hit = m_notes.at(column).at(m_notesPassed.at(column)).timingPoint;
-
+		float difference = m_curTimePos - hit;
+		//Increase combo or reset combo depending if its a perfect to good or bad to a miss
+		//Display the combo and judge
+		//Calculate accuracy
+		//Remove the note if its a rice note
+		if(difference <= m_perfWindow && difference >= -m_perfWindow)
+		{
+			m_combo++;
+			m_hasHitRecently = true;
+			m_recentJudgement = 0;
+			m_notesHitWeighted += m_perfWeight;
+			m_notesProcessedWeighted += 1.0;
+			if(m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 1)
+			{
+				m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
+				m_notesPassed.at(column)++;
+			}
+		}
+		else if (difference <= m_greatWindow && difference >= -m_greatWindow)
+		{
+			m_combo++;
+			m_hasHitRecently = true;
+			m_recentJudgement = 1;
+			m_notesHitWeighted += m_greatWeight;
+			m_notesProcessedWeighted += 1.0;
+			if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 1)
+			{
+				m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
+				m_notesPassed.at(column)++;
+			}
+		}
+		else if (difference <= m_goodWindow && difference >= -m_goodWindow)
+		{
+			m_combo++;
+			m_hasHitRecently = true;
+			m_recentJudgement = 2;
+			m_notesHitWeighted += m_goodWeight;
+			m_notesProcessedWeighted += 1.0;
+			if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 1)
+			{
+				m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
+				m_notesPassed.at(column)++;
+			}
+		}
+		else if (difference <= m_badWindow && difference >= -m_badWindow)
+		{
+			m_combo = 0;
+			m_hasHitRecently = true;
+			m_recentJudgement = 3;
+			m_notesHitWeighted += m_badWeight;
+			m_notesProcessedWeighted += 1.0;
+			if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 1)
+			{
+				m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
+				m_notesPassed.at(column)++;
+			}
+		}
+		else if (difference <= m_missWindow && difference >= -m_missWindow)
+		{
+			m_combo = 0;
+			m_hasHitRecently = true;
+			m_recentJudgement = 4;
+			m_notesHitWeighted += m_missWeight;
+			m_notesProcessedWeighted += 1.0;
+			if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 1)
+			{
+				m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
+				m_notesPassed.at(column)++;
+			}
+		}
 	}
 
 	void GameScene::calcJudgementRelease(int column)
 	{
 		int release = m_notes.at(column).at(m_notesPassed.at(column)).timingPoint;
+		float difference = m_curTimePos - release;
+		if (difference <= m_perfWindow && difference >= -m_perfWindow)
+		{
+			m_combo++;
+			m_hasHitRecently = true;
+			m_recentJudgement = 0;
+			m_notesHitWeighted += m_perfWeight;
+			m_notesProcessedWeighted += 1.0;
+			if(m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 3)
+			{
+				m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
+				m_notesPassed.at(column)++;
+			}
+		}
+		else if (difference <= m_greatWindow && difference >= -m_greatWindow)
+		{
+			m_combo++;
+			m_hasHitRecently = true;
+			m_recentJudgement = 1;
+			m_notesHitWeighted += m_greatWeight;
+			m_notesProcessedWeighted += 1.0;
+			if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 3)
+			{
+				m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
+				m_notesPassed.at(column)++;
+			}
+		}
+		else if (difference <= m_goodWindow && difference >= -m_goodWindow)
+		{
+			m_combo++;
+			m_hasHitRecently = true;
+			m_recentJudgement = 2;
+			m_notesHitWeighted += m_goodWeight;
+			m_notesProcessedWeighted += 1.0;
+			if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 3)
+			{
+				m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
+				m_notesPassed.at(column)++;
+			}
+		}
+		else if (difference <= m_badWindow && difference >= -m_badWindow)
+		{
+			m_combo = 0;
+			m_hasHitRecently = true;
+			m_recentJudgement = 3;
+			m_notesHitWeighted += m_badWeight;
+			m_notesProcessedWeighted += 1.0;
+			if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 3)
+			{
+				m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
+				m_notesPassed.at(column)++;
+			}
+		}
+		else if (difference <= m_missWindow && difference >= -m_missWindow)
+		{
+			m_combo = 0;
+			m_hasHitRecently = true;
+			m_recentJudgement = 4;
+			m_notesHitWeighted += m_missWeight;
+			m_notesProcessedWeighted += 1.0;
+			if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 3)
+			{
+				m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
+				m_notesPassed.at(column)++;
+			}
+		}
 	}
 
 	void GameScene::play()
