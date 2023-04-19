@@ -33,6 +33,7 @@ namespace SJ
 		std::shared_ptr<Shader> m_shader;
 
 		//Stage
+		std::unique_ptr<Texture> m_songBGIm;
 		std::unique_ptr<Texture> m_stageLeftIm;
 		std::unique_ptr<Texture> m_stageRightIm;
 		std::unique_ptr<Texture> m_stageHitpositionIm;
@@ -41,6 +42,7 @@ namespace SJ
 		std::unique_ptr<Texture> m_healthBGIm;
 		std::unique_ptr<Texture> m_healthIm;
 		std::array<std::unique_ptr<Texture>, 7> m_keyIm;
+		std::unique_ptr<Rect> m_songBG;
 		std::unique_ptr<Rect> m_stageLeft;
 		std::unique_ptr<Rect> m_stageRight;
 		std::unique_ptr<Rect> m_stageHitposition;

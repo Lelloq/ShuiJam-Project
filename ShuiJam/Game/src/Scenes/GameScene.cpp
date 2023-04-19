@@ -34,6 +34,7 @@ namespace SJ
 		m_stageHitpositionIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "game/stagehit.png", GL_CLAMP_TO_EDGE);
 		m_stageBGIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "game/stagebg.png", GL_CLAMP_TO_EDGE);
 		m_stagebottomIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "game/stagebottom.png", GL_CLAMP_TO_EDGE);
+		m_songBGIm = std::make_unique<Texture>(m_folder + g_CurrentOsuDir + L"/" + g_CurrentBG, GL_CLAMP_TO_EDGE);
 		//Health images
 		m_healthIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "game/healthbar.png", GL_CLAMP_TO_EDGE);
 		m_healthBGIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "game/healthbarbg.png", GL_CLAMP_TO_EDGE);
@@ -61,11 +62,12 @@ namespace SJ
 		//Stage
 		//named middleBL since the textures are created where the origin is at the bottom left
 		float middleBL = (VPORT_WIDTH / 2) - (m_stageBGIm->getWidth() / 2);
-		m_stageBG = std::make_unique<Rect>(glm::vec2(middleBL, 0),glm::vec2(m_stageBGIm->getWidth(),VPORT_HEIGHT), 0, *m_stageBGIm);
+		m_stageBG = std::make_unique<Rect>(glm::vec2(middleBL, 0),glm::vec2(m_stageBGIm->getWidth(),VPORT_HEIGHT), 1, *m_stageBGIm);
 		m_stageLeft = std::make_unique<Rect>(glm::vec2(middleBL - m_stageLeftIm->getWidth(), 0), glm::vec2(m_stageLeftIm->getWidth(), VPORT_HEIGHT), 1, *m_stageLeftIm);
 		m_stageRight= std::make_unique<Rect>(glm::vec2(middleBL + m_stageBGIm->getWidth(), 0), glm::vec2(m_stageRightIm->getWidth(), VPORT_HEIGHT), 1, *m_stageRightIm);
 		m_stageHitposition = std::make_unique<Rect>(glm::vec2(middleBL, m_hitPosition), glm::vec2(m_stageHitpositionIm->getWidth(), m_stageHitpositionIm->getHeight()), 2, *m_stageHitpositionIm);
 		m_stagebottom = std::make_unique<Rect>(glm::vec2(middleBL, 0), glm::vec2(m_stageBGIm->getWidth(), m_hitPosition), 4, *m_stagebottomIm);
+		m_songBG = std::make_unique<Rect>(glm::vec2(0, 0), glm::vec2(VPORT_WIDTH, VPORT_HEIGHT), 0, *m_songBGIm);
 		//Health
 		m_health = std::make_unique<Rect>(glm::vec2(middleBL + m_stageBGIm->getWidth() + m_stageRightIm->getWidth(), 0), glm::vec2(m_healthIm->getWidth(), m_healthIm->getHeight()), 2, *m_healthIm);
 		m_healthBG = std::make_unique<Rect>(glm::vec2(middleBL + m_stageBGIm->getWidth() + m_stageRightIm->getWidth(), 0), glm::vec2(m_healthBGIm->getWidth(), m_healthBGIm->getHeight()), 1, *m_healthBGIm);
@@ -188,6 +190,9 @@ namespace SJ
 
 	#pragma region Stage and numbers
 		//Draw stage
+		m_shader->setFloat("transparency", 0.5f);
+		m_songBG->Draw(*m_shader);
+		m_shader->setFloat("transparency", 1.0f);
 		m_stageBG->Draw(*m_shader);
 		m_stageLeft->Draw(*m_shader);
 		m_stageRight->Draw(*m_shader);

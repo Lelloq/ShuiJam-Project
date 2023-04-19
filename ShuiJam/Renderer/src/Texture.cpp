@@ -6,7 +6,7 @@
 
 namespace SJ
 {
-	Texture::Texture(std::string filepath, int wrapping)
+	Texture::Texture(std::filesystem::path filepath, int wrapping)
 	{
 		//Generate and bind texture to texture unit 0
 		glGenTextures(1, &m_ID);
@@ -17,7 +17,7 @@ namespace SJ
 
 		//If data exists generate the texture
 		int width, height, channels;
-		unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &channels, 4);
+		unsigned char* data = stbi_load(filepath.string().c_str(), &width, &height, &channels, 4);
 		if (data)
 		{
 			m_channels = channels;
@@ -79,7 +79,7 @@ namespace SJ
 		glActiveTexture(GL_TEXTURE0 + slot);
 		glBindTexture(GL_TEXTURE_2D, m_ID);
 	}
-	void Texture::reloadTexture(std::string& filepath, int wrapping)
+	void Texture::reloadTexture(std::filesystem::path filepath, int wrapping)
 	{
 		glActiveTexture(GL_TEXTURE0 + m_slot);
 		glBindTexture(GL_TEXTURE_2D, m_ID);
@@ -88,7 +88,7 @@ namespace SJ
 
 		//If data exists generate the texture
 		int width, height, channels;
-		unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &channels, 4);
+		unsigned char* data = stbi_load(filepath.string().c_str(), &width, &height, &channels, 4);
 		if (data)
 		{
 			m_channels = channels;

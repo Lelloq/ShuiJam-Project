@@ -153,8 +153,9 @@ namespace SJ
 			m_songWheelText.at(i)->Draw(*m_textShader);
 		}
 
-		m_shader->setFloat("transparency", 1.0f);
+		m_shader->setFloat("transparency", 0.7f);
 		m_songBg->Draw(*m_shader);
+		m_shader->setFloat("transparency", 1.0f);
 		m_songSelect->Draw(*m_shader);
 
 		if (m_logoBtn->hasMouseOnTop(posX, posY)) { m_shader->setFloat("transparency", 2.0f); }
@@ -250,6 +251,7 @@ namespace SJ
 						m_source->Play(m_scrollSound);
 						if (m_music != nullptr) m_music->Stop();
 						m_music = std::make_unique<Music>(L"../ShuiJamGame/Songs/" + m_songData.at(i).dirPath + L"/" + m_songData.at(i).audio);
+						m_songBGIm->reloadTexture(L"../ShuiJamGame/Songs/" + m_songData.at(i).dirPath + L"/" + m_songData.at(i).background, GL_CLAMP_TO_EDGE);
 						m_isPlaying = true;
 					}
 				}
@@ -348,6 +350,7 @@ namespace SJ
 			{ 
 				m_isPlaying = false;
 				m_music->Stop(); 
+				m_songBGIm->reloadTexture(SJFOLDER + IMAGES + "selectbg.png", GL_CLAMP_TO_EDGE);
 			}
 		}
 		m_songText->changeText(L" ");
@@ -368,6 +371,7 @@ namespace SJ
 			{
 				m_isPlaying = false;
 				m_music->Stop(); 
+				m_songBGIm->reloadTexture(SJFOLDER + IMAGES + "selectbg.png", GL_CLAMP_TO_EDGE);
 			}
 		}
 		m_songText->changeText(L" ");
