@@ -9,7 +9,7 @@
 
 namespace SJ
 {
-	static const std::size_t NUM_BUFFERS = 8;//!<Number of buffers inside a buffer
+	static const std::size_t NUM_BUFFERS = 16;//!<Number of buffers inside a buffer
 	static const ALsizei BUFFER_SIZE = 8192;//!<Size of the buffer
 
 	/*\struct MP3StreamData
@@ -64,5 +64,6 @@ namespace SJ
 		void Stop();//!<Stops the music
 		void Update();//!<Updates the buffer stream
 		inline int getTimePosition() { return m_timepos; }//!<Get time position in milliseconds
+		inline bool songEnded() { return m_atEnd; }
 	};
 }

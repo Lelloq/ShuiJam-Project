@@ -6,7 +6,7 @@
 
 namespace SJ
 {
-	Texture::Texture(std::string& filepath, int wrapping)
+	Texture::Texture(std::string filepath, int wrapping)
 	{
 		//Generate and bind texture to texture unit 0
 		glGenTextures(1, &m_ID);

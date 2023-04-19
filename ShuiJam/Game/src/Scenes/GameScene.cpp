@@ -25,11 +25,6 @@ namespace SJ
 		//Create textures
 		for (int i = 0; i < 7; i++)
 		{
-			//Create note images
-			m_riceIm.at(i) = std::make_unique<Texture>(SJFOLDER + IMAGES + "notes/note" + std::to_string(i + 1) + ".png", GL_CLAMP_TO_EDGE);
-			m_headIm.at(i) = std::make_unique<Texture>(SJFOLDER + IMAGES + "notes/head" + std::to_string(i + 1) + ".png", GL_CLAMP_TO_EDGE);
-			m_tailIm.at(i) = std::make_unique<Texture>(SJFOLDER + IMAGES + "notes/tail" + std::to_string(i + 1) + ".png", GL_CLAMP_TO_EDGE);
-			m_bodyIm.at(i) = std::make_unique<Texture>(SJFOLDER + IMAGES + "notes/body" + std::to_string(i + 1) + ".png", GL_CLAMP_TO_EDGE);
 			//Key press images
 			m_keyIm.at(i) = std::make_unique<Texture>(SJFOLDER + IMAGES + "game/key" + std::to_string(i + 1) + ".png", GL_CLAMP_TO_EDGE);
 		}
@@ -118,41 +113,33 @@ namespace SJ
 		else
 		{
 			m_leadin = 0;
-			m_music->Play();
-			m_music->Update();
+			std::async(std::launch::async, &GameScene::play, this);
 		}
-		int timePos = m_music->getTimePosition();
+		m_curTimePos = m_music->getTimePosition();
 
 		//Note spawning (Idea taken from https://www.gamedeveloper.com/programming/music-syncing-in-rhythm-games)
 		//Originally for unity but the theory behind it can apply to here
 		int noteX = (VPORT_WIDTH / 2) - (m_stageBGIm->getWidth() / 2);
 		for (int i = 0; i < m_notes.size(); i++)
 		{
-			for(int j = m_nextNote.at(i); j < m_notes.at(i).size(); j++)
+			if(m_nextNote.at(i) < m_notes.at(i).size() && m_notes.at(i).at(m_nextNote.at(i)).timingPoint < m_music->getTimePosition() + m_cSpeed)
 			{
-				if(m_nextNote.at(i) < m_notes.at(i).size() && m_notes.at(i).at(m_nextNote.at(i)).timingPoint < m_music->getTimePosition() + 300000.0f)
+				int column = m_notes.at(i).at(m_nextNote.at(i)).column;
+				int release = m_notes.at(i).at(m_nextNote.at(i)).releasePoint;
+				int timing = m_notes.at(i).at(m_nextNote.at(i)).timingPoint;
+				if(release != 0)
 				{
-					int release = m_notes.at(i).at(m_nextNote.at(i)).releasePoint;
-					int timing = m_notes.at(i).at(m_nextNote.at(i)).timingPoint;
-					if(release != 0)
-					{
-						//m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_headIm.at(i)));
-						//m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, *m_bodyIm.at(i)));
-						//m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_tailIm.at(i)));
-
-						m_noteObj.at(i).push_back(
-							{std::make_shared<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_headIm.at(i)),
-							 std::make_shared<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, *m_bodyIm.at(i)),
-							 std::make_shared<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_tailIm.at(i))
-							});
-					}
-					else
-					{
-						m_noteObj.at(i).push_back({std::make_shared<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, *m_riceIm.at(i))});
-						//m_noteObj.at(i).push_back(std::make_unique<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, *m_riceIm.at(i)));
-					}
-					m_nextNote.at(i)++;
+					m_noteObj.at(column).push_back(
+						{std::make_shared<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, SJFOLDER + IMAGES + "notes/head" + std::to_string(i + 1) + ".png"),
+						 std::make_shared<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 2, SJFOLDER + IMAGES + "notes/body" + std::to_string(i + 1) + ".png"),
+						 std::make_shared<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, SJFOLDER + IMAGES + "notes/tail" + std::to_string(i + 1) + ".png")
+						});
 				}
+				else
+				{
+					m_noteObj.at(column).push_back({std::make_shared<Rect>(glm::vec2(noteX, m_spawnPos), glm::vec2(m_stageBGIm->getWidth() / 7, m_noteHeight), 3, SJFOLDER + IMAGES + "notes/note" + std::to_string(i + 1) + ".png")});
+				}
+				m_nextNote.at(i)++;
 			}
 			noteX += m_stageBGIm->getWidth() / 7;
 		}
@@ -163,17 +150,15 @@ namespace SJ
 			for (int j = m_notesPassed.at(i); j < m_notes.at(i).size(); j++)
 			{
 				Note note = m_notes.at(i).at(j);
-
 				int timing = note.timingPoint;
 				int release = note.releasePoint;
 
 				int lerped = lerp(m_spawnPos, m_hitPosition,
-					((2000.0f - m_cSpeed) - (timing - (timePos - m_leadin))) / (2000.0f - m_cSpeed));
+					((2000.0f - m_cSpeed) - (timing - (m_curTimePos - m_leadin))) / (2000.0f - m_cSpeed));
 				int lerpedRel = lerp(m_spawnPos, m_hitPosition,
-						((2000.0f - m_cSpeed) - (release - (timePos - m_leadin))) / (2000.0f - m_cSpeed));
+						((2000.0f - m_cSpeed) - (release - (m_curTimePos - m_leadin))) / (2000.0f - m_cSpeed));
 				if(lerped <= VPORT_HEIGHT)
 				{
-					//Note object are not aligned with the note data itself
 					if(release != 0)
 					{
 						std::shared_ptr<Rect>& head = m_noteObj.at(i).at(j).at(0);
@@ -192,12 +177,6 @@ namespace SJ
 					}
 				}
 				else { break; }
-				//Increasing the notes passed instead of using vector erase due to some errors with it where
-				//All the notes gets erased instead
-				if((timing + release) - timePos < -m_cSpeed)
-				{
-					m_notesPassed.at(i)++;
-				}
 			}
 			noteX += m_stageBGIm->getWidth() / 7;
 		}
@@ -281,9 +260,28 @@ namespace SJ
 			for (int j = m_notesPassed.at(i); j < m_noteObj.at(i).size(); j++)
 			{
 				for(auto& noteObj : m_noteObj.at(i).at(j))
-				if (noteObj->getPosition().y <= VPORT_HEIGHT && noteObj->getPosition().y + noteObj->getSize().y >= 0)
 				{
-					noteObj->Draw(*m_shader);
+					if (noteObj->getPosition().y <= VPORT_HEIGHT && noteObj->getPosition().y + noteObj->getSize().y >= 0)
+					{
+						noteObj->Draw(*m_shader);
+					}
+				}
+				//Cleanup
+				if(m_noteObj.at(i).at(j).size() > 1)
+				{
+					if (m_noteObj.at(i).at(j).at(2)->getPosition().y + m_noteObj.at(i).at(j).at(2)->getSize().y < 0)
+					{
+						m_noteObj.at(i).at(j).clear();
+						m_notesPassed.at(i)++;
+					}
+				}
+				else
+				{
+					if (m_noteObj.at(i).at(j).at(0)->getPosition().y + m_noteObj.at(i).at(j).at(0)->getSize().y < 0)
+					{
+						m_noteObj.at(i).at(j).clear();
+						m_notesPassed.at(i)++;
+					}
 				}
 			}
 		}
@@ -323,5 +321,11 @@ namespace SJ
 	float GameScene::lerp(float a, float b, float t)
 	{
 		return a + (b - a) * t;
+	}
+
+	void GameScene::play()
+	{
+		m_music->Play();
+		m_music->Update();
 	}
 }

@@ -44,6 +44,7 @@ namespace SJ
 		 * \param image - Texture&, image is put in here and will be rendered on the rectangle
 		 */
 		Rect(const glm::vec2& pos, const glm::vec2& size, const int zIndex, Texture& image);
+		Rect(const glm::vec2& pos, const glm::vec2& size, const int zIndex, std::string file);
 		void Draw(Shader& shader);//!< Bind the buffer objects and texture slot and draw it to screen
 		void repositionVerts(glm::vec2 pos);
 		void resizeVerts(glm::vec2 size);
