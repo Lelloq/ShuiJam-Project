@@ -71,6 +71,8 @@ namespace SJ
 		std::array<int, 7> m_nextNote = {0,0,0,0,0,0,0};
 		std::array<std::vector<std::vector<std::shared_ptr<Rect>>>, 7> m_noteObj;
 		std::array<int, 7> m_notesPassed = {0,0,0,0,0,0,0};
+		int m_totalNotes = 0;
+		int m_totalNotesPassed = 0;
 
 		//OTHER DATA
 		std::wstring m_folder = L"../ShuiJamGame/Songs/";
@@ -80,13 +82,14 @@ namespace SJ
 		float m_t1 = 0;//The intermediate value for the timing buffer lerping
 		float m_cSpeed = 550.f;
 		float m_curTimePos = 0.f;
+		bool m_gameEnded = false;
 
 		std::array<int, 7> m_inputs = //Default keyboard inputs
 		{GLFW_KEY_Z, GLFW_KEY_X, GLFW_KEY_C , GLFW_KEY_SPACE, GLFW_KEY_COMMA, GLFW_KEY_PERIOD, GLFW_KEY_SLASH};
 		std::array<bool, 7> m_pressed = { false, false, false, false, false ,false ,false };
 		std::array<bool, 7> m_holdingNote = { false, false, false, false, false ,false ,false };
 		std::array<bool, 7> m_failedRelease = { false, false, false, false, false ,false ,false };
-		int m_hitPosition = 120;//Pixels above the bottom of the screen determines bar where you hit the note on time
+		int m_hitPosition = 100;//Pixels above the bottom of the screen determines bar where you hit the note on time
 		int m_comboPosition = 470;
 		int m_judgePosition = 370;
 		bool m_hasHitRecently = false;

@@ -21,6 +21,15 @@ namespace SJ
 		m_shader->use();
 		m_shader->setMat4("projection", projection);
 
+		//Count total notes
+		for(int i = 0; i < m_notes.size(); i++)
+		{
+			for(int j = 0; j < m_notes.at(i).size(); j++)
+			{
+				m_totalNotes++;
+			}
+		}
+
 	#pragma region texture creation
 		//Create textures
 		for (int i = 0; i < 7; i++)
@@ -117,13 +126,20 @@ namespace SJ
 			m_accuracy = glm::clamp((m_notesHitWeighted / m_notesProcessedWeighted) * 100.f, 0.0f, 100.f);
 		}
 
+	#pragma region Conditions to results screen and animation
+		if(m_totalNotesPassed >= m_totalNotes)
+		{
+			//Animate the screen closing and move to results screen
+		}
+	#pragma endregion
+
 	#pragma region Note spawning
 		//Note spawning (Idea taken from https://www.gamedeveloper.com/programming/music-syncing-in-rhythm-games)
 		//Originally for unity but the theory behind it can apply to here
 		int noteX = (VPORT_WIDTH / 2) - (m_stageBGIm->getWidth() / 2);
 		for (int i = 0; i < m_notes.size(); i++)
 		{
-			if(m_nextNote.at(i) < m_notes.at(i).size() && m_notes.at(i).at(m_nextNote.at(i)).timingPoint < m_music->getTimePosition() + m_cSpeed)
+			if(m_nextNote.at(i) < m_notes.at(i).size() && m_notes.at(i).at(m_nextNote.at(i)).timingPoint < m_music->getTimePosition() + 10000.f)
 			{
 				int column = m_notes.at(i).at(m_nextNote.at(i)).column;
 				int release = m_notes.at(i).at(m_nextNote.at(i)).releasePoint;
@@ -192,6 +208,7 @@ namespace SJ
 						m_notesProcessedWeighted += 1.0;
 						m_hasHitRecently = true;
 						m_recentJudgement = 4;
+						m_hp -= 2.5f;
 					}
 					if (m_curTimePos - release >= m_missWindow)
 					{ 
@@ -201,6 +218,8 @@ namespace SJ
 						m_recentJudgement = 4;
 						m_noteObj.at(i).at(j).clear();
 						m_notesPassed.at(i)++;
+						m_totalNotesPassed++;
+						m_hp -= 2.5f;
 					}
 				}
 				else if(release == 0)
@@ -214,6 +233,8 @@ namespace SJ
 						m_recentJudgement = 4;
 						m_noteObj.at(i).at(j).clear();
 						m_notesPassed.at(i)++;
+						m_totalNotesPassed++;
+						m_hp -= 5.0f;
 					}
 				}
 			}
@@ -238,6 +259,8 @@ namespace SJ
 		m_stagebottom->Draw(*m_shader);
 		m_stageHitposition->Draw(*m_shader);
 		//Draw health
+		if (m_hp > 100.f) m_hp = 100.f;
+		if (m_hp < 0.f) m_hp = 0.f, m_gameEnded = true;
 		float healthPercent = m_hp / 100.f;
 		m_health->resizeVerts(glm::vec2(m_healthIm->getWidth(), m_healthIm->getHeightf() * healthPercent));
 		m_healthBG->Draw(*m_shader);
@@ -312,6 +335,10 @@ namespace SJ
 				}
 			}
 		}
+
+	#pragma endregion
+
+	#pragma region Closing screen
 
 	#pragma endregion
 	}
@@ -407,8 +434,10 @@ namespace SJ
 		m_notesProcessedWeighted += 1.0;
 		if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 1)
 		{
+			m_hp += weight * 5.0f;
 			m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
 			m_notesPassed.at(column)++;
+			m_totalNotesPassed++;
 		}
 		else
 		{
@@ -454,8 +483,10 @@ namespace SJ
 		m_notesProcessedWeighted += 1.0;
 		if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 3)
 		{
+			m_hp += weight * 5.0f;
 			m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
 			m_notesPassed.at(column)++;
+			m_totalNotesPassed++;
 		}
 	}
 
