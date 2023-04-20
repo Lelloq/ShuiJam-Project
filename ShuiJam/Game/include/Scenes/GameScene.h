@@ -84,6 +84,8 @@ namespace SJ
 		std::array<int, 7> m_inputs = //Default keyboard inputs
 		{GLFW_KEY_Z, GLFW_KEY_X, GLFW_KEY_C , GLFW_KEY_SPACE, GLFW_KEY_COMMA, GLFW_KEY_PERIOD, GLFW_KEY_SLASH};
 		std::array<bool, 7> m_pressed = { false, false, false, false, false ,false ,false };
+		std::array<bool, 7> m_holdingNote = { false, false, false, false, false ,false ,false };
+		std::array<bool, 7> m_failedRelease = { false, false, false, false, false ,false ,false };
 		int m_hitPosition = 120;//Pixels above the bottom of the screen determines bar where you hit the note on time
 		int m_comboPosition = 470;
 		int m_judgePosition = 370;
@@ -114,7 +116,7 @@ namespace SJ
 		int m_missWindow = 300;
 		//Accuracy weighting (perf = 100%, great = 95% etc.) will be tuned throughout development
 		float m_perfWeight = 1.0f;
-		float m_greatWeight = 0.95f;
+		float m_greatWeight = 0.97f;
 		float m_goodWeight = 0.75f;
 		float m_badWeight = 0.25f;
 		float m_missWeight = 0.0f;
@@ -128,7 +130,9 @@ namespace SJ
 		 */
 		float lerp(float a, float b, float t);
 		void calcJudgementHit(int column);
+		void hitJudgement(int column, int recent, float weight);
 		void calcJudgementRelease(int column);
+		void releaseJudgement(int column, int recent, float weight);
 		void play();
 	public:
 		GameScene(GLFWwindow* window);

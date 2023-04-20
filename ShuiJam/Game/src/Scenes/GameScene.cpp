@@ -186,14 +186,16 @@ namespace SJ
 				if(release != 0)
 				{
 					//300ms late
-					if (m_curTimePos - timing >= m_missWindow) 
+					if (m_curTimePos - timing >= m_missWindow && !m_holdingNote.at(i)) 
 					{
+						m_combo = 0;
 						m_notesProcessedWeighted += 1.0;
 						m_hasHitRecently = true;
 						m_recentJudgement = 4;
 					}
 					if (m_curTimePos - release >= m_missWindow)
 					{ 
+						m_combo = 0;
 						m_notesProcessedWeighted += 1.0; 
 						m_hasHitRecently = true;
 						m_recentJudgement = 4;
@@ -206,6 +208,7 @@ namespace SJ
 					//300ms late
 					if (m_curTimePos - timing >= m_missWindow) 
 					{ 
+						m_combo = 0;
 						m_notesProcessedWeighted += 1.0;
 						m_hasHitRecently = true;
 						m_recentJudgement = 4;
@@ -327,7 +330,11 @@ namespace SJ
 			else if (action == GLFW_RELEASE && key == m_inputs.at(i))
 			{
 				m_pressed.at(i) = false;
-				calcJudgementRelease(i);
+				if(m_holdingNote.at(i))
+				{
+					calcJudgementRelease(i);
+					m_holdingNote.at(i) = false;
+				}
 			}
 		}
 	}
@@ -363,139 +370,85 @@ namespace SJ
 		//Remove the note if its a rice note
 		if(difference <= m_perfWindow && difference >= -m_perfWindow)
 		{
-			m_combo++;
-			m_hasHitRecently = true;
-			m_recentJudgement = 0;
-			m_notesHitWeighted += m_perfWeight;
-			m_notesProcessedWeighted += 1.0;
-			if(m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 1)
-			{
-				m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
-				m_notesPassed.at(column)++;
-			}
+			hitJudgement(column, 0, m_perfWeight);
 		}
 		else if (difference <= m_greatWindow && difference >= -m_greatWindow)
 		{
-			m_combo++;
-			m_hasHitRecently = true;
-			m_recentJudgement = 1;
-			m_notesHitWeighted += m_greatWeight;
-			m_notesProcessedWeighted += 1.0;
-			if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 1)
-			{
-				m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
-				m_notesPassed.at(column)++;
-			}
+			hitJudgement(column, 1, m_greatWeight);
 		}
 		else if (difference <= m_goodWindow && difference >= -m_goodWindow)
 		{
-			m_combo++;
-			m_hasHitRecently = true;
-			m_recentJudgement = 2;
-			m_notesHitWeighted += m_goodWeight;
-			m_notesProcessedWeighted += 1.0;
-			if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 1)
-			{
-				m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
-				m_notesPassed.at(column)++;
-			}
+			hitJudgement(column, 2, m_goodWeight);
 		}
 		else if (difference <= m_badWindow && difference >= -m_badWindow)
 		{
-			m_combo = 0;
-			m_hasHitRecently = true;
-			m_recentJudgement = 3;
-			m_notesHitWeighted += m_badWeight;
-			m_notesProcessedWeighted += 1.0;
-			if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 1)
-			{
-				m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
-				m_notesPassed.at(column)++;
-			}
+			hitJudgement(column, 3, m_badWeight);
 		}
 		else if (difference <= m_missWindow && difference >= -m_missWindow)
 		{
-			m_combo = 0;
-			m_hasHitRecently = true;
-			m_recentJudgement = 4;
-			m_notesHitWeighted += m_missWeight;
-			m_notesProcessedWeighted += 1.0;
-			if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 1)
-			{
-				m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
-				m_notesPassed.at(column)++;
-			}
+			hitJudgement(column, 4, m_missWeight);
+		}
+	}
+
+	void GameScene::hitJudgement(int column,int recent, float weight)
+	{
+		if(recent != 4) { m_combo++; }
+		else { m_combo = 0; }
+		m_hasHitRecently = true;
+		m_recentJudgement = recent;
+		m_notesHitWeighted += weight;
+		m_notesProcessedWeighted += 1.0;
+		if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 1)
+		{
+			m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
+			m_notesPassed.at(column)++;
+		}
+		else
+		{
+			m_holdingNote.at(column) = true;
 		}
 	}
 
 	void GameScene::calcJudgementRelease(int column)
 	{
-		int release = m_notes.at(column).at(m_notesPassed.at(column)).timingPoint;
+		int release = m_notes.at(column).at(m_notesPassed.at(column)).releasePoint;
 		float difference = m_curTimePos - release;
 		if (difference <= m_perfWindow && difference >= -m_perfWindow)
 		{
-			m_combo++;
-			m_hasHitRecently = true;
-			m_recentJudgement = 0;
-			m_notesHitWeighted += m_perfWeight;
-			m_notesProcessedWeighted += 1.0;
-			if(m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 3)
-			{
-				m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
-				m_notesPassed.at(column)++;
-			}
+			releaseJudgement(column, 0, m_perfWeight);
 		}
 		else if (difference <= m_greatWindow && difference >= -m_greatWindow)
 		{
-			m_combo++;
-			m_hasHitRecently = true;
-			m_recentJudgement = 1;
-			m_notesHitWeighted += m_greatWeight;
-			m_notesProcessedWeighted += 1.0;
-			if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 3)
-			{
-				m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
-				m_notesPassed.at(column)++;
-			}
+			releaseJudgement(column, 1, m_greatWeight);
 		}
 		else if (difference <= m_goodWindow && difference >= -m_goodWindow)
 		{
-			m_combo++;
-			m_hasHitRecently = true;
-			m_recentJudgement = 2;
-			m_notesHitWeighted += m_goodWeight;
-			m_notesProcessedWeighted += 1.0;
-			if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 3)
-			{
-				m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
-				m_notesPassed.at(column)++;
-			}
+			releaseJudgement(column, 2, m_goodWeight);
 		}
 		else if (difference <= m_badWindow && difference >= -m_badWindow)
 		{
-			m_combo = 0;
-			m_hasHitRecently = true;
-			m_recentJudgement = 3;
-			m_notesHitWeighted += m_badWeight;
-			m_notesProcessedWeighted += 1.0;
-			if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 3)
-			{
-				m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
-				m_notesPassed.at(column)++;
-			}
+			releaseJudgement(column, 3, m_badWeight);
 		}
 		else if (difference <= m_missWindow && difference >= -m_missWindow)
 		{
 			m_combo = 0;
 			m_hasHitRecently = true;
+			m_failedRelease.at(column) = true;
 			m_recentJudgement = 4;
-			m_notesHitWeighted += m_missWeight;
-			m_notesProcessedWeighted += 1.0;
-			if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 3)
-			{
-				m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
-				m_notesPassed.at(column)++;
-			}
+		}
+	}
+
+	void GameScene::releaseJudgement(int column, int recent, float weight)
+	{
+		m_combo++;
+		m_hasHitRecently = true;
+		m_recentJudgement = recent;
+		m_notesHitWeighted += weight;
+		m_notesProcessedWeighted += 1.0;
+		if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 3)
+		{
+			m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
+			m_notesPassed.at(column)++;
 		}
 	}
 
