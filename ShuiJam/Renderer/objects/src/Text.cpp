@@ -9,14 +9,16 @@
 
 namespace SJ
 {
-	void Text::InitFT()
+	void Text::InitFT(std::string fontFile)
 	{
 		if (FT_Init_FreeType(&m_ft)) { std::cout << "Failed to init freetype library" << "\n"; }
-		if (FT_New_Face(m_ft, (SJFOLDER + FONTS + "NotoSansJP-Regular.otf").c_str(), 0, &m_face)) { std::cout << "Failed to load font face" << "\n"; }
+		if (FT_New_Face(m_ft, (SJFOLDER + FONTS + fontFile).c_str(), 0, &m_face)) { std::cout << "Failed to load font face" << "\n"; }
 	}
 
-	Text::Text(const glm::vec2& pos, std::wstring text, unsigned int width, unsigned int fontsize, unsigned int zIndex)
+	Text::Text(const glm::vec2& pos, std::wstring text, unsigned int width, unsigned int fontsize, unsigned int zIndex, std::string fontFile)
 	{
+		InitFT(fontFile);
+
 		m_text = text;
 		m_size = fontsize;
 		m_pos = pos;
@@ -27,6 +29,7 @@ namespace SJ
 		{
 			x = fontsize * text.size() / width;
 		}
+
 		//Reversed the positions so that the text renders the right way up
 		m_verts =
 		//POSITION												//UV_COORDS
@@ -35,7 +38,6 @@ namespace SJ
 		 pos.x + fontsize * text.size(), pos.y,					static_cast<float>(zIndex), x, 1.0f,
 		 pos.x, pos.y,											static_cast<float>(zIndex), 0.0f, 1.0f, };
 
-		InitFT();
 
 		if(FT_Set_Pixel_Sizes(m_face, 0, fontsize)) { std::cout << "Failed to set font size." << "\n"; }
 		FT_Select_Charmap(m_face, FT_ENCODING_UNICODE);
@@ -78,11 +80,21 @@ namespace SJ
 
 		if(m_isTextDifferent)
 		{
+			int bitmapWidth = 0;
+			for (int i = 0; i < m_text.size(); i++)
+			{
+				if (FT_Load_Char(m_face, m_text.at(i), FT_LOAD_RENDER)) std::cout << "Failed to load character " << m_text.at(i) << "\n";
+				else
+				{
+					bitmapWidth += m_face->glyph->bitmap.width;
+				}
+			}
+
 			//VBO needed to be edited in order to prevent stretching of the text, squishing is intentional
 			float x = 1.0f;
-			if (m_size * m_text.size() > m_width)
+			if (bitmapWidth > m_width)
 			{
-				x = m_size * m_text.size() / m_width;
+				x = bitmapWidth / m_width;
 			}
 
 			m_verts =

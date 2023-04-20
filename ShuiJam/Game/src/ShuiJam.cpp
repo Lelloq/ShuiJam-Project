@@ -9,7 +9,7 @@ SJ::SoundEffect* soundEffect;
 
 void main()
 {
-	SJ::WindowManager gameWindow = SJ::WindowManager(SCR_WIDTH, SCR_HEIGHT, 0, 0, "ShuiJam");
+	SJ::WindowManager gameWindow = SJ::WindowManager(SCR_WIDTH, SCR_HEIGHT, false, false, "ShuiJam");
 	std::unique_ptr<SJ::MenuScene> menu = std::make_unique<SJ::MenuScene>(gameWindow.getWindow());
 	std::unique_ptr<SJ::SongScene> songSelect;
 	std::unique_ptr<SJ::GameScene> game;

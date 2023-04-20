@@ -20,23 +20,13 @@ namespace SJ
 		m_startIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "starttext.png", GL_CLAMP_TO_EDGE);
 		m_start = std::make_unique<Rect>(glm::vec2(520.f, 100.f), glm::vec2(240.f, 25.f), 1, *m_startIm);
 
-		glm::mat4 model{ 1.0f };
-		glm::mat4 view{ 1.0f };
 		glm::mat4 projection{ glm::ortho(0.f, VPORT_WIDTH, 0.f, VPORT_HEIGHT, -1000.f, 1.f) };
 		m_bgShader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
 		m_titleShader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
 		m_startShader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
 
-		//m_bgShader->use();
-		m_bgShader->setMat4("model", model);
 		m_bgShader->setMat4("projection", projection);
-
-		//m_titleShader->use();
-		m_titleShader->setMat4("model", model);
 		m_titleShader->setMat4("projection", projection);
-
-		//m_startShader->use();
-		m_startShader->setMat4("model", model);
 		m_startShader->setMat4("projection", projection);
 	}
 

@@ -9,7 +9,7 @@
 
 namespace SJ
 {
-	static const std::size_t NUM_BUFFERS = 8;//!<Number of buffers inside a buffer
+	static const std::size_t NUM_BUFFERS = 16;//!<Number of buffers inside a buffer
 	static const ALsizei BUFFER_SIZE = 8192;//!<Size of the buffer
 
 	/*\struct MP3StreamData
@@ -47,16 +47,16 @@ namespace SJ
 		ALuint m_source;//!<OpenAL sound source
 		ALuint m_buffers[NUM_BUFFERS];//!<Number of buffers
 		ALenum m_format;//!<OpenAL audio format
-		std::unique_ptr<MP3StreamData> mStream;//!<Empty Mp3Data struct if the file reads a mp3 file
-		std::unique_ptr<OggStreamData> oStream;//!<Empty OggData struct if the file reads an ogg file
-		std::unique_ptr<WavStreamData> wStream;//!<Empty WavData struct if the file reads a wav file
+		MP3StreamData mStream;//!<Empty Mp3Data struct if the file reads a mp3 file
+		OggStreamData oStream;//!<Empty OggData struct if the file reads an ogg file
+		WavStreamData wStream;//!<Empty WavData struct if the file reads a wav file
 
 		int m_timepos = 0;//!<Time position of the song in milliseconds
+		float m_sampleRate = 0;
+		float m_samplesProcessed = 0;
 		bool m_atEnd = false;//!<Is the song at the end
 		std::string m_extension;//!<Song file extension
 
-		void timerThread();//!<Function that accumulates time, done on a separate thread
-		void startTimer();//!<Creates a thread that starts the timer
 	public:
 		Music(std::filesystem::path filePath);//!<Loads music with the assigned file path
 		~Music();//!<Destructor
@@ -64,5 +64,6 @@ namespace SJ
 		void Stop();//!<Stops the music
 		void Update();//!<Updates the buffer stream
 		inline int getTimePosition() { return m_timepos; }//!<Get time position in milliseconds
+		inline bool songEnded() { return m_atEnd; }
 	};
 }

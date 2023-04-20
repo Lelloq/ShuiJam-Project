@@ -5,7 +5,6 @@ layout (location = 1) in vec2 aUV;//UV coordinates
 
 out vec2 uv;
 
-uniform mat4 model;
 uniform mat4 projection;
 
 layout (std140) uniform P
@@ -15,6 +14,6 @@ layout (std140) uniform P
 
 void main()
 {
-	gl_Position = projection * model * vec4(aPos,1.0);
+	gl_Position = projection * vec4(aPos,1.0);
 	uv = aUV;
 }

@@ -6,45 +6,29 @@
 
 namespace SJ
 {
-	Texture::Texture(std::string& filepath, int wrapping)
+	Texture::Texture(std::filesystem::path filepath, int wrapping)
 	{
 		//Generate and bind texture to texture unit 0
 		glGenTextures(1, &m_ID);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_ID);
 
-		if (filepath.find(".png") != std::string::npos)
-		{
-			stbi_set_flip_vertically_on_load(true);
-		}
-		else
-		{
-			stbi_set_flip_vertically_on_load(false);
-		}
+		stbi_set_flip_vertically_on_load(true);
 
 		//If data exists generate the texture
 		int width, height, channels;
-		unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &channels, 0);
+		unsigned char* data = stbi_load(filepath.string().c_str(), &width, &height, &channels, 4);
 		if (data)
 		{
 			m_channels = channels;
 			m_width = width;
 			m_height = height;
-			//Choose the right format based on the data gathered above
-			GLenum format;
-			switch (channels)
-			{
-			case 1: format = GL_RED; glPixelStorei(GL_UNPACK_ALIGNMENT, 1); break;
-			case 3: format = GL_RGB; glPixelStorei(GL_UNPACK_ALIGNMENT, 4); break;
-			case 4: format = GL_RGBA; glPixelStorei(GL_UNPACK_ALIGNMENT, 4); break;
-			default: format = GL_RGB; glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-			}
 			Renderer::textureUnitManager.clear();
 			//Set active texture to 0 and bind the texture
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, m_ID);
 			//Create the texture image with the parameters
-			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
 			//Texture parameter settings
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapping);
@@ -83,17 +67,11 @@ namespace SJ
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, data); 
 		}
-		else if (channels == 3) 
-		{ 
-			glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data); 
-		}
-		else if (channels == 4) 
+		else
 		{ 
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data); 
 		}
-		else return;
 	}
 	void Texture::bind(unsigned int slot)
 	{
@@ -101,39 +79,23 @@ namespace SJ
 		glActiveTexture(GL_TEXTURE0 + slot);
 		glBindTexture(GL_TEXTURE_2D, m_ID);
 	}
-	void Texture::reloadTexture(std::string& filepath, int wrapping)
+	void Texture::reloadTexture(std::filesystem::path filepath, int wrapping)
 	{
 		glActiveTexture(GL_TEXTURE0 + m_slot);
 		glBindTexture(GL_TEXTURE_2D, m_ID);
-		if (filepath.find(".png") != std::string::npos)
-		{
-			stbi_set_flip_vertically_on_load(true);
-		}
-		else
-		{
-			stbi_set_flip_vertically_on_load(false);
-		}
+
+		stbi_set_flip_vertically_on_load(true);
 
 		//If data exists generate the texture
 		int width, height, channels;
-		unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &channels, 0);
+		unsigned char* data = stbi_load(filepath.string().c_str(), &width, &height, &channels, 4);
 		if (data)
 		{
 			m_channels = channels;
 			m_width = width;
 			m_height = height;
-			//Choose the right format based on the data gathered above
-			GLenum format;
-			switch (channels)
-			{
-			case 1: format = GL_RED; glPixelStorei(GL_UNPACK_ALIGNMENT, 1); break;
-			case 3: format = GL_RGB; glPixelStorei(GL_UNPACK_ALIGNMENT, 4); break;
-			case 4: format = GL_RGBA; glPixelStorei(GL_UNPACK_ALIGNMENT, 4); break;
-			default: format = GL_RGB; glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-			}
-
 			//Create the texture image with the parameters
-			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
 			//Texture parameter settings
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapping);
@@ -157,15 +119,10 @@ namespace SJ
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, NULL); 
 		}
-		if (channels == 3)
+		else if (channels == 4)
 		{
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-		}
-		else if (channels == 4) 
-		{ 
-			glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL); 
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 		}
 	}
 	void Texture::edit(uint32_t xOffset, uint32_t yOffset, uint32_t width, uint32_t height, unsigned char* data)
@@ -179,11 +136,6 @@ namespace SJ
 			{
 				glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 				glTextureSubImage2D(m_ID, 0, xOffset, yOffset, width, height, GL_RED, GL_UNSIGNED_BYTE, data);
-			}
-			if (m_channels == 3)
-			{
-				glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-				glTextureSubImage2D(m_ID, 0, xOffset, yOffset, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
 			}
 			else if (m_channels == 4) 
 			{ 

@@ -87,6 +87,8 @@ project "ShuiJam"
 		defines "RELEASE"
 		runtime "Release"
 		optimize "On"
+		kind "WindowedApp"
+		entrypoint "mainCRTStartup"
 
 group "Vendor"
 	include "vendor/glfw"

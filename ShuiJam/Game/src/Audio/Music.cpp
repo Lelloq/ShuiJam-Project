@@ -1,5 +1,6 @@
 /*\file Music.cpp*/
 #include "Audio/Music.h"
+#include <future>
 
 namespace SJ
 {
@@ -14,33 +15,35 @@ namespace SJ
 		//Open the file using drmp3 if it detects a mp3 file
 		if(filePath.extension() == ".mp3")
 		{
-			mStream.reset(new MP3StreamData);
+			mStream = MP3StreamData();
 			m_extension = ".mp3";
-			if (!drmp3_init_file(&mStream->mp3, filePath.string().c_str(), NULL)) std::cout << "Failed to load song file: " << filePath.string() << std::endl;
+			if (!drmp3_init_file(&mStream.mp3, filePath.string().c_str(), NULL)) std::cout << "Failed to load song file: " << filePath.string() << std::endl;
 			else
 			{
-				if (mStream->mp3.channels == 1) m_format = AL_FORMAT_MONO16;
-				else if (mStream->mp3.channels == 2) m_format = AL_FORMAT_STEREO16;
+				if (mStream.mp3.channels == 1) m_format = AL_FORMAT_MONO16;
+				else if (mStream.mp3.channels == 2) m_format = AL_FORMAT_STEREO16;
 				
 				//Allocate the buffer which will be used to fill the queued buffers
-				frame_size = (size_t)(BUFFER_SIZE * mStream->mp3.channels) * 2;
-				mStream->buffer = new int16_t[frame_size];
+				frame_size = (size_t)(BUFFER_SIZE * mStream.mp3.channels) * 2;
+				mStream.buffer = new int16_t[frame_size];
+				m_sampleRate = mStream.mp3.sampleRate;
 			}
 		}
 		//Open the file using drwav if it detects a wav file
 		else if(filePath.extension() == ".wav")
 		{
-			wStream.reset(new WavStreamData);
+			wStream = WavStreamData();
 			m_extension = ".wav";
-			if (!drwav_init_file(&wStream->wav, filePath.string().c_str(), NULL)) std::cout << "Failed to load song file: " << filePath.string() << std::endl;
+			if (!drwav_init_file(&wStream.wav, filePath.string().c_str(), NULL)) std::cout << "Failed to load song file: " << filePath.string() << std::endl;
 			else
 			{
-				if (wStream->wav.channels == 1) m_format = AL_FORMAT_MONO16;
-				else if (wStream->wav.channels == 2) m_format = AL_FORMAT_STEREO16;
+				if (wStream.wav.channels == 1) m_format = AL_FORMAT_MONO16;
+				else if (wStream.wav.channels == 2) m_format = AL_FORMAT_STEREO16;
 
 				//Allocate the buffer which will be used to fill the queued buffers
-				frame_size = (size_t)(BUFFER_SIZE * wStream->wav.channels) * 2;
-				wStream->buffer = new int16_t[frame_size];
+				frame_size = (size_t)(BUFFER_SIZE * wStream.wav.channels) * 2;
+				wStream.buffer = new int16_t[frame_size];
+				m_sampleRate = wStream.wav.sampleRate;
 			}
 		}
 		//Open the file using vorbis if it detects an ogg file
@@ -48,24 +51,38 @@ namespace SJ
 		{
 			fopen_s(&file, filePath.string().c_str(), "rb");
 
-			oStream.reset(new OggStreamData);
+			oStream = OggStreamData();
 			m_extension = ".ogg";
-			if (ov_open_callbacks(file, &oStream->vfile, NULL, 0, OV_CALLBACKS_NOCLOSE) < 0) { std::cout << "Failed to load song file: " << filePath.string() << std::endl; }
+			if (ov_open_callbacks(file, &oStream.vfile, NULL, 0, OV_CALLBACKS_NOCLOSE) < 0) { std::cout << "Failed to load song file: " << filePath.string() << std::endl; }
 			else
 			{
-				oStream->info = ov_info(&oStream->vfile, -1);
-				if (oStream->info->channels == 1) m_format = AL_FORMAT_MONO16;
-				else if (oStream->info->channels == 2) m_format = AL_FORMAT_STEREO16;
+				oStream.info = ov_info(&oStream.vfile, -1);
+				if (oStream.info->channels == 1) m_format = AL_FORMAT_MONO16;
+				else if (oStream.info->channels == 2) m_format = AL_FORMAT_STEREO16;
 
-				frame_size = (size_t)(BUFFER_SIZE * oStream->info->channels) * 2;
-				oStream->buffer = new int16_t[frame_size];
+				frame_size = (size_t)(BUFFER_SIZE * oStream.info->channels) * 2;
+				oStream.buffer = new int16_t[frame_size];
+				m_sampleRate = oStream.info->rate;
 			}
 		}
 	}
 	Music::~Music()
 	{
+		m_atEnd = true;
 		alDeleteSources(1, &m_source);
 		alDeleteBuffers(NUM_BUFFERS, m_buffers);
+		if(m_extension == ".mp3")
+		{
+			drmp3_free(mStream.buffer, nullptr);
+		}
+		else if(m_extension == ".wav")
+		{
+			drwav_free(wStream.buffer, nullptr);
+		}
+		else if(m_extension == ".ogg")
+		{
+			ov_clear(&oStream.vfile);
+		}
 	}
 	void Music::Play()
 	{
@@ -80,10 +97,10 @@ namespace SJ
 			{
 				for (i = 0; i < NUM_BUFFERS; i++)
 				{
-					drmp3_uint64 sample = drmp3_read_pcm_frames_s16(&mStream->mp3, BUFFER_SIZE, mStream->buffer);//Frame data
+					drmp3_uint64 sample = drmp3_read_pcm_frames_s16(&mStream.mp3, BUFFER_SIZE, mStream.buffer);//Frame data
 					if (sample < 1) break;
-					sample *= mStream->mp3.channels * 2;//Resize it to channels by size of a short (without this it will playback really fast)
-					alBufferData(m_buffers[i], m_format, mStream->buffer, (ALsizei)sample, mStream->mp3.sampleRate);//Fill al buffer data
+					sample *= mStream.mp3.channels * 2;//Resize it to channels by size of a short (without this it will playback really fast)
+					alBufferData(m_buffers[i], m_format, mStream.buffer, (ALsizei)sample, mStream.mp3.sampleRate);//Fill al buffer data
 				}
 				if(alGetError() != AL_NO_ERROR)
 				{
@@ -97,10 +114,10 @@ namespace SJ
 			{
 				for (i = 0; i < NUM_BUFFERS; i++)
 				{
-					drwav_uint64 sample = drwav_read_pcm_frames_s16(&wStream->wav, BUFFER_SIZE, wStream->buffer);//Frame data
+					drwav_uint64 sample = drwav_read_pcm_frames_s16(&wStream.wav, BUFFER_SIZE, wStream.buffer);//Frame data
 					if (sample < 1) break;
-					sample *= wStream->wav.channels * 2;//Resize it to channels by size of a short (without this it will playback really fast)
-					alBufferData(m_buffers[i], m_format, wStream->buffer, (ALsizei)sample, wStream->wav.sampleRate);//Fill al buffer data
+					sample *= wStream.wav.channels * 2;//Resize it to channels by size of a short (without this it will playback really fast)
+					alBufferData(m_buffers[i], m_format, wStream.buffer, (ALsizei)sample, wStream.wav.sampleRate);//Fill al buffer data
 				}
 
 				if (alGetError() != AL_NO_ERROR)
@@ -116,40 +133,24 @@ namespace SJ
 				//Read the bytes using ovread and fill each buffer with data
 				for(i = 0; i < NUM_BUFFERS; i++)
 				{
-					long sample = ov_read(&oStream->vfile, (char*)oStream->buffer, BUFFER_SIZE, 0, 2, 1, &oStream->section);
+					long sample = ov_read(&oStream.vfile, (char*)oStream.buffer, BUFFER_SIZE, 0, 2, 1, &oStream.section);
 					if (sample < 1) break;
-					alBufferData(m_buffers[i], m_format, oStream->buffer, (ALsizei)sample, oStream->info->rate);
+					alBufferData(m_buffers[i], m_format, oStream.buffer, (ALsizei)sample, oStream.info->rate);
 				}
 
 				alSourceQueueBuffers(m_source, i, m_buffers);
 				alSourcePlay(m_source);
 			}
-			startTimer();//Start the song timer
 		}
 	}
 
 	void Music::Stop()
 	{
-		//Stop the music and free all data
+		//Stop the music and close the file if its using vorbis
 		alSourceStop(m_source);
-		if (mStream != NULL) 
-		{ 
-			drmp3_free(&mStream->mp3, nullptr);
-			mStream.release(); 
-			return; 
-		}
-		else if (wStream != NULL) 
-		{ 
-			drwav_free(&wStream->wav, nullptr);
-			wStream.release(); 
-			return; 
-		}
-		else if (oStream != NULL) 
+		if (file != nullptr)
 		{ 
 			fclose(file);
-			ov_clear(&oStream->vfile);
-			oStream.release(); 
-			return; 
 		}
 	}
 
@@ -170,41 +171,54 @@ namespace SJ
 		while(processed > 0)
 		{
 			ALuint bufid;
+			ALint sizeInBytes;
+			ALint channels;
+			ALint bits;
 
 			alSourceUnqueueBuffers(m_source, 1, &bufid);
+
+			alGetBufferi(bufid, AL_SIZE, &sizeInBytes);
+			alGetBufferi(bufid, AL_CHANNELS, &channels);
+			alGetBufferi(bufid, AL_BITS, &bits);
+			m_samplesProcessed += sizeInBytes * 8 / (channels * bits);
+
 			processed--;
 
 			if(m_extension == ".mp3")
 			{
-				drmp3_uint64 sample = drmp3_read_pcm_frames_s16(&mStream->mp3, BUFFER_SIZE, mStream->buffer);//Frame data
+				drmp3_uint64 sample = drmp3_read_pcm_frames_s16(&mStream.mp3, BUFFER_SIZE, mStream.buffer);//Frame data
 				if(sample > 0)
 				{
-					sample *= mStream->mp3.channels * 2;//Resize it to channels by size of a short (without this it will playback really fast)
-					alBufferData(bufid, m_format, mStream->buffer, (ALsizei)sample, mStream->mp3.sampleRate);//Fill al buffer data
+					sample *= mStream.mp3.channels * 2;//Resize it to channels by size of a short (without this it will playback really fast)
+					alBufferData(bufid, m_format, mStream.buffer, (ALsizei)sample, mStream.mp3.sampleRate);//Fill al buffer data
 					alSourceQueueBuffers(m_source, 1, &bufid);//Add the buffer to the queue
 				}
 			}
 			else if(m_extension == ".wav")
 			{
-				drwav_uint64 sample = drwav_read_pcm_frames_s16(&wStream->wav, BUFFER_SIZE, wStream->buffer);//Frame data
+				drwav_uint64 sample = drwav_read_pcm_frames_s16(&wStream.wav, BUFFER_SIZE, wStream.buffer);//Frame data
 				if (sample > 0)
 				{
-					sample *= wStream->wav.channels * 2;//Resize it to channels by size of a short (without this it will playback really fast)
-					alBufferData(bufid, m_format, wStream->buffer, (ALsizei)sample, wStream->wav.sampleRate);//Fill al buffer data
+					sample *= wStream.wav.channels * 2;//Resize it to channels by size of a short (without this it will playback really fast)
+					alBufferData(bufid, m_format, wStream.buffer, (ALsizei)sample, wStream.wav.sampleRate);//Fill al buffer data
 					alSourceQueueBuffers(m_source, 1, &bufid);//Add the buffer to the queue
 				}
 			}
 			else if(m_extension == ".ogg")
 			{
 				//Read the bytes up to 8192 bytes and then fill the buffer with data
-				long sample = ov_read(&oStream->vfile, (char*)oStream->buffer, BUFFER_SIZE, 0, 2, 1, &oStream->section);
+				long sample = ov_read(&oStream.vfile, (char*)oStream.buffer, BUFFER_SIZE, 0, 2, 1, &oStream.section);
 				if(sample > 0)
 				{
-					alBufferData(bufid, m_format, oStream->buffer, (ALsizei)sample, oStream->info->rate);
+					alBufferData(bufid, m_format, oStream.buffer, (ALsizei)sample, oStream.info->rate);
 					alSourceQueueBuffers(m_source, 1, &bufid);
 				}
 			}
 		}
+
+		ALfloat offset;
+		alGetSourcef(m_source, AL_SAMPLE_OFFSET, &offset);
+		m_timepos = ((m_samplesProcessed + offset) / m_sampleRate) * 1000;
 
 		//Keep playing the source to the end unless it has been paused or stopped
 		if(state != AL_PLAYING && state != AL_PAUSED)
@@ -220,31 +234,6 @@ namespace SJ
 			}
 
 			alSourcePlay(m_source);
-		}
-	}
-
-	//Needs to be changed somewhat in the future to account for lag spikes
-	void Music::timerThread()
-	{
-		using namespace std;
-		while(!m_atEnd)
-		{
-			auto start = chrono::steady_clock::now();	
-			this_thread::sleep_for(1ms);
-			auto end = chrono::steady_clock::now();
-			m_timepos += chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-		}
-		startTimer();
-	}
-
-	void Music::startTimer()
-	{
-		std::thread tThread(&Music::timerThread, this);
-		if (!m_atEnd) tThread.detach();
-		else 
-		{ 
-			tThread.join(); 
-			m_atEnd = false;
 		}
 	}
 }
