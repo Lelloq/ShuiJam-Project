@@ -5,5 +5,6 @@
 #include "Scenes/MenuScene.h"
 #include "Scenes/SongScene.h"
 #include "Scenes/GameScene.h"
+#include "Scenes/ResultsScene.h"
 #include "Utils/FileExtractor.h"
 #include "Utils/Properties.h"

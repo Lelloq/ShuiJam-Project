@@ -83,6 +83,7 @@ namespace SJ
 		float m_cSpeed = 550.f;
 		float m_curTimePos = 0.f;
 		bool m_gameEnded = false;
+		float m_totalTransparency = 1.0f;
 
 		std::array<int, 7> m_inputs = //Default keyboard inputs
 		{GLFW_KEY_Z, GLFW_KEY_X, GLFW_KEY_C , GLFW_KEY_SPACE, GLFW_KEY_COMMA, GLFW_KEY_PERIOD, GLFW_KEY_SLASH};
@@ -115,8 +116,8 @@ namespace SJ
 		int m_perfWindow = 21;
 		int m_greatWindow = 60;
 		int m_goodWindow = 120;
-		int m_badWindow = 200;
-		int m_missWindow = 300;
+		int m_badWindow = 160;
+		int m_missWindow = 200;
 		//Accuracy weighting (perf = 100%, great = 95% etc.) will be tuned throughout development
 		float m_perfWeight = 1.0f;
 		float m_greatWeight = 0.97f;
@@ -124,6 +125,7 @@ namespace SJ
 		float m_badWeight = 0.25f;
 		float m_missWeight = 0.0f;
 		
+		float m_windowMult = 1.3f;
 		/**
 		 * \function float lerp(float a, float b, float t)
 		 * \param a Start position of the lerp

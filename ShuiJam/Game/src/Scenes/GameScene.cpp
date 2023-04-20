@@ -139,6 +139,7 @@ namespace SJ
 		int noteX = (VPORT_WIDTH / 2) - (m_stageBGIm->getWidth() / 2);
 		for (int i = 0; i < m_notes.size(); i++)
 		{
+			//Create a rice note if it has no release timing i.e 0 otherwise create an long note object
 			if(m_nextNote.at(i) < m_notes.at(i).size() && m_notes.at(i).at(m_nextNote.at(i)).timingPoint < m_music->getTimePosition() + 10000.f)
 			{
 				int column = m_notes.at(i).at(m_nextNote.at(i)).column;
@@ -250,9 +251,9 @@ namespace SJ
 
 	#pragma region Stage and numbers
 		//Draw stage
-		m_shader->setFloat("transparency", 0.5f);
+		m_shader->setFloat("transparency", m_totalTransparency - 0.5f);
 		m_songBG->Draw(*m_shader);
-		m_shader->setFloat("transparency", 1.0f);
+		m_shader->setFloat("transparency", m_totalTransparency);
 		m_stageBG->Draw(*m_shader);
 		m_stageLeft->Draw(*m_shader);
 		m_stageRight->Draw(*m_shader);
@@ -275,6 +276,7 @@ namespace SJ
 		{
 			if(m_accStr.at(i) != '.')
 			{
+				//0 to 9 in ascii terms
 				percentNumPosX -= m_numIm.at(m_accStr.at(i) - '0')->getWidth();
 				m_num.at(m_accStr.at(i) - '0')->repositionVerts(glm::vec2(percentNumPosX, percentNumPosY));
 				m_num.at(m_accStr.at(i) - '0')->Draw(*m_shader);
@@ -401,24 +403,25 @@ namespace SJ
 		//Increase combo or reset combo depending if its a perfect to good or bad to a miss
 		//Display the combo and judge
 		//Calculate accuracy
-		//Remove the note if its a rice note
-		if(difference <= m_perfWindow && difference >= -m_perfWindow)
+		//Remove the note if its at the end of the long note
+		//Giving the release window a slightly wider window since I think releases are harder than hitting
+		if(difference <= m_perfWindow * m_windowMult && difference >= -m_perfWindow * m_windowMult)
 		{
 			hitJudgement(column, 0, m_perfWeight);
 		}
-		else if (difference <= m_greatWindow && difference >= -m_greatWindow)
+		else if (difference <= m_greatWindow * m_windowMult && difference >= -m_greatWindow * m_windowMult)
 		{
 			hitJudgement(column, 1, m_greatWeight);
 		}
-		else if (difference <= m_goodWindow && difference >= -m_goodWindow)
+		else if (difference <= m_goodWindow * m_windowMult && difference >= -m_goodWindow * m_windowMult)
 		{
 			hitJudgement(column, 2, m_goodWeight);
 		}
-		else if (difference <= m_badWindow && difference >= -m_badWindow)
+		else if (difference <= m_badWindow * m_windowMult && difference >= -m_badWindow * m_windowMult)
 		{
 			hitJudgement(column, 3, m_badWeight);
 		}
-		else if (difference <= m_missWindow && difference >= -m_missWindow)
+		else if (difference <= m_missWindow * m_windowMult && difference >= -m_missWindow * m_windowMult)
 		{
 			hitJudgement(column, 4, m_missWeight);
 		}

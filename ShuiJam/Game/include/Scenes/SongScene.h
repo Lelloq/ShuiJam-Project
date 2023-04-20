@@ -12,6 +12,7 @@
 #include "Utils/FileProcessor.h"
 #include <GLFW/glfw3.h>
 #include <map>
+#include <array>
 
 namespace SJ
 {
@@ -36,16 +37,17 @@ namespace SJ
 		//GRAPHICS
 		//Buttons
 		std::vector<std::unique_ptr<Button>> m_buttons;//Buttons in song select 11 buttons
-		std::vector<std::unique_ptr<Button>> m_sbuttons;//Buttons in settings 2 buttons
 		//Shader
 		std::unique_ptr<Shader> m_shader;
 		//Textures
 		std::unique_ptr<Texture> m_songBGIm, m_songSelectIm, m_logoIm;
+		std::unique_ptr<Texture> m_songBGImPlay;//This appears on top of everything when the player presses play
 		std::shared_ptr<Texture> m_selectWheelIm;
 		//Buttons
 		std::unique_ptr<Button> m_logoBtn;
 		//Objects
 		std::unique_ptr<Rect> m_songBg;
+		std::unique_ptr<Rect> m_songBGPlay;//This appears on top of everything when the player presses play
 		std::unique_ptr<Rect> m_songSelect;
 		//Text
 		std::unique_ptr<Shader> m_textShader;
@@ -105,7 +107,8 @@ namespace SJ
 		bool m_settingsOpen = false;//Settings ui open or not
 		bool m_keybindsOpen = false;//Keybinds ui open or not
 		std::unique_ptr<Texture> m_settingsIm, m_keybindIm;
-		std::unique_ptr<Button> m_keybindBtn, m_sButtonmBtn;
+		std::unique_ptr<Button> m_keybindBtn, m_settingsBtn;
+		std::array<std::unique_ptr<Button>, 7> m_keysBtn;//Key button
 	public:
 		SongScene(GLFWwindow* window);
 		void Update(float dt);

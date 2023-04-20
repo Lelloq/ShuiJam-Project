@@ -29,6 +29,9 @@ namespace SJ
 		m_songBGIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "selectbg.png", GL_CLAMP_TO_EDGE);
 		m_songBg = std::make_unique<Rect>(glm::vec2(0.f, 0.f), glm::vec2(VPORT_WIDTH, VPORT_HEIGHT), 0, *m_songBGIm);
 
+		m_songBGImPlay = std::make_unique<Texture>("", GL_CLAMP_TO_EDGE);
+		m_songBGPlay = std::make_unique<Rect>(glm::vec2(0.0f, 0.0f), glm::vec2(VPORT_WIDTH, VPORT_HEIGHT), 10, *m_songBGImPlay);
+
 		m_selectWheelIm = std::make_shared<Texture>(SJFOLDER + IMAGES + "selectbar.png", GL_CLAMP_TO_EDGE);
 
 		int yPos = 0;
@@ -252,6 +255,7 @@ namespace SJ
 						if (m_music != nullptr) m_music->Stop();
 						m_music = std::make_unique<Music>(L"../ShuiJamGame/Songs/" + m_songData.at(i).dirPath + L"/" + m_songData.at(i).audio);
 						m_songBGIm->reloadTexture(L"../ShuiJamGame/Songs/" + m_songData.at(i).dirPath + L"/" + m_songData.at(i).background, GL_CLAMP_TO_EDGE);
+						m_songBGImPlay->reloadTexture(L"../ShuiJamGame/Songs/" + m_songData.at(i).dirPath + L"/" + m_songData.at(i).background, GL_CLAMP_TO_EDGE);
 						m_isPlaying = true;
 					}
 				}
