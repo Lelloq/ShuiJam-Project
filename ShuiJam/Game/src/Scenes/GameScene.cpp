@@ -321,19 +321,22 @@ namespace SJ
 		for (int i = 0; i < 7; i++)
 		{
 			//Check timing inputs
-			if (action == GLFW_PRESS && key == m_inputs.at(i))
+			if(m_notesPassed.at(i) < m_notes.at(i).size())
 			{
-				//m_pressed is for showing the key pressed image
-				m_pressed.at(i) = true;
-				calcJudgementHit(i);
-			}
-			else if (action == GLFW_RELEASE && key == m_inputs.at(i))
-			{
-				m_pressed.at(i) = false;
-				if(m_holdingNote.at(i))
+				if (action == GLFW_PRESS && key == m_inputs.at(i))
 				{
-					calcJudgementRelease(i);
-					m_holdingNote.at(i) = false;
+					//m_pressed is for showing the key pressed image
+					m_pressed.at(i) = true;
+					calcJudgementHit(i);
+				}
+				else if (action == GLFW_RELEASE && key == m_inputs.at(i))
+				{
+					m_pressed.at(i) = false;
+					if(m_holdingNote.at(i))
+					{
+						calcJudgementRelease(i);
+						m_holdingNote.at(i) = false;
+					}
 				}
 			}
 		}
