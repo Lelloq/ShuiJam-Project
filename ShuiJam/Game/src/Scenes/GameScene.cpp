@@ -339,6 +339,10 @@ namespace SJ
 					}
 				}
 			}
+			else
+			{
+				m_pressed.at(i) = false;
+			}
 		}
 	}
 
