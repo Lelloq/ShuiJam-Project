@@ -126,6 +126,8 @@ namespace SJ
 		float m_missWeight = 0.0f;
 		
 		float m_windowMult = 1.3f;
+		float m_gainLossRice = 10.0f;
+		float m_gainLossLN = 5.0f;
 		/**
 		 * \function float lerp(float a, float b, float t)
 		 * \param a Start position of the lerp

@@ -209,7 +209,7 @@ namespace SJ
 						m_notesProcessedWeighted += 1.0;
 						m_hasHitRecently = true;
 						m_recentJudgement = 4;
-						m_hp -= 2.5f;
+						m_hp -= m_gainLossLN;
 					}
 					if (m_curTimePos - release >= m_missWindow)
 					{ 
@@ -220,7 +220,7 @@ namespace SJ
 						m_noteObj.at(i).at(j).clear();
 						m_notesPassed.at(i)++;
 						m_totalNotesPassed++;
-						m_hp -= 2.5f;
+						m_hp -= m_gainLossLN;
 					}
 				}
 				else if(release == 0)
@@ -235,7 +235,7 @@ namespace SJ
 						m_noteObj.at(i).at(j).clear();
 						m_notesPassed.at(i)++;
 						m_totalNotesPassed++;
-						m_hp -= 5.0f;
+						m_hp -= m_gainLossLN;
 					}
 				}
 			}
@@ -437,7 +437,8 @@ namespace SJ
 		m_notesProcessedWeighted += 1.0;
 		if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 1)
 		{
-			m_hp += weight * 5.0f;
+			if (recent == 3) m_hp -= weight * m_gainLossRice;
+			else m_hp += weight * m_gainLossRice;
 			m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
 			m_notesPassed.at(column)++;
 			m_totalNotesPassed++;
@@ -486,7 +487,8 @@ namespace SJ
 		m_notesProcessedWeighted += 1.0;
 		if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 3)
 		{
-			m_hp += weight * 5.0f;
+			if (recent == 3) m_hp -= weight * m_gainLossLN;
+			else m_hp += weight * m_gainLossLN;
 			m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
 			m_notesPassed.at(column)++;
 			m_totalNotesPassed++;
