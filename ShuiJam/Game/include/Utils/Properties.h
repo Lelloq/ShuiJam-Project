@@ -8,8 +8,8 @@ const std::string SONGS = "./Songs/";
 const std::string SHADER = "./Shader/";
 const std::string FONTS = "./Fonts/";
 
-const float SCR_WIDTH = 1280.f;//Default screen width
-const float SCR_HEIGHT = 720.f;//Default screen height
+inline float SCR_WIDTH = 1280.f;//Default screen width
+inline float SCR_HEIGHT = 720.f;//Default screen height
 const float VPORT_WIDTH = 1280.f;//Default viewport width (used for UI click position)
 const float VPORT_HEIGHT = 720.f;//Default viewport height (used for UI click position)
 

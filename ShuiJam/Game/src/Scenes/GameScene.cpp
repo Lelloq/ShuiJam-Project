@@ -127,9 +127,28 @@ namespace SJ
 		}
 
 	#pragma region Conditions to results screen and animation
-		if(m_totalNotesPassed >= m_totalNotes)
+		if(m_totalNotesPassed >= m_totalNotes || m_gameEnded)
 		{
 			//Animate the screen closing and move to results screen
+			m_totalTransparency -= dt * 2.0f;
+			if(m_totalTransparency <= 0.0f)
+			{
+
+			}
+		}
+
+		if(m_gameEnded)
+		{
+			m_music->Stop();
+		}
+
+		if(m_hasHitRecently)
+		{
+			m_numTimer -= dt * 0.25f;
+			if(m_numTimer <= 0)
+			{
+				m_hasHitRecently = false;
+			}
 		}
 	#pragma endregion
 
@@ -203,10 +222,11 @@ namespace SJ
 				if(release != 0)
 				{
 					//300ms late
-					if (m_curTimePos - timing >= m_missWindow && !m_holdingNote.at(i)) 
+					if (m_curTimePos - timing >= m_missWindow && !m_holdingNote.at(i) && !m_failedRelease.at(i)) 
 					{
 						m_combo = 0;
 						m_notesProcessedWeighted += 1.0;
+						m_failedRelease.at(i) = true;
 						m_hasHitRecently = true;
 						m_recentJudgement = 4;
 						m_hp -= m_gainLossLN;
@@ -216,6 +236,7 @@ namespace SJ
 						m_combo = 0;
 						m_notesProcessedWeighted += 1.0; 
 						m_hasHitRecently = true;
+						m_failedRelease.at(i) = false;
 						m_recentJudgement = 4;
 						m_noteObj.at(i).at(j).clear();
 						m_notesPassed.at(i)++;
@@ -350,7 +371,7 @@ namespace SJ
 		for (int i = 0; i < 7; i++)
 		{
 			//Check timing inputs
-			if(m_notesPassed.at(i) < m_notes.at(i).size())
+			if(m_notesPassed.at(i) < m_notes.at(i).size() && !m_gameEnded)
 			{
 				if (action == GLFW_PRESS && key == m_inputs.at(i))
 				{
@@ -404,24 +425,23 @@ namespace SJ
 		//Display the combo and judge
 		//Calculate accuracy
 		//Remove the note if its at the end of the long note
-		//Giving the release window a slightly wider window since I think releases are harder than hitting
-		if(difference <= m_perfWindow * m_windowMult && difference >= -m_perfWindow * m_windowMult)
+		if(difference <= m_perfWindow && difference >= -m_perfWindow)
 		{
 			hitJudgement(column, 0, m_perfWeight);
 		}
-		else if (difference <= m_greatWindow * m_windowMult && difference >= -m_greatWindow * m_windowMult)
+		else if (difference <= m_greatWindow && difference >= -m_greatWindow)
 		{
 			hitJudgement(column, 1, m_greatWeight);
 		}
-		else if (difference <= m_goodWindow * m_windowMult && difference >= -m_goodWindow * m_windowMult)
+		else if (difference <= m_goodWindow && difference >= -m_goodWindow)
 		{
 			hitJudgement(column, 2, m_goodWeight);
 		}
-		else if (difference <= m_badWindow * m_windowMult && difference >= -m_badWindow * m_windowMult)
+		else if (difference <= m_badWindow && difference >= -m_badWindow)
 		{
 			hitJudgement(column, 3, m_badWeight);
 		}
-		else if (difference <= m_missWindow * m_windowMult && difference >= -m_missWindow * m_windowMult)
+		else if (difference <= m_missWindow && difference >= -m_missWindow)
 		{
 			hitJudgement(column, 4, m_missWeight);
 		}
@@ -429,15 +449,20 @@ namespace SJ
 
 	void GameScene::hitJudgement(int column,int recent, float weight)
 	{
-		if(recent != 4) { m_combo++; }
-		else { m_combo = 0; }
-		m_hasHitRecently = true;
-		m_recentJudgement = recent;
-		m_notesHitWeighted += weight;
-		m_notesProcessedWeighted += 1.0;
+		if(!m_failedRelease.at(column))
+		{
+			if(recent != 4) { m_combo++; }
+			else { m_combo = 0; }
+			m_hasHitRecently = true;
+			m_recentJudgement = recent;
+			m_notesHitWeighted += weight;
+			m_notesProcessedWeighted += 1.0;
+			m_numTimer = 5.0f;
+		}
+
 		if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 1)
 		{
-			if (recent == 3) m_hp -= weight * m_gainLossRice;
+			if (recent == 3) m_hp -= weight * m_gainLossRice * 2.0f;
 			else m_hp += weight * m_gainLossRice;
 			m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
 			m_notesPassed.at(column)++;
@@ -446,30 +471,32 @@ namespace SJ
 		else
 		{
 			m_holdingNote.at(column) = true;
+			m_hp += weight * m_gainLossLN;
 		}
 	}
 
 	void GameScene::calcJudgementRelease(int column)
 	{
+		//Giving the release window a slightly wider window since I think releases are harder than hitting
 		int release = m_notes.at(column).at(m_notesPassed.at(column)).releasePoint;
 		float difference = m_curTimePos - release;
-		if (difference <= m_perfWindow && difference >= -m_perfWindow)
+		if (difference <= m_perfWindow * m_windowMult && difference >= -m_perfWindow * m_windowMult)
 		{
 			releaseJudgement(column, 0, m_perfWeight);
 		}
-		else if (difference <= m_greatWindow && difference >= -m_greatWindow)
+		else if (difference <= m_greatWindow * m_windowMult && difference >= -m_greatWindow * m_windowMult)
 		{
 			releaseJudgement(column, 1, m_greatWeight);
 		}
-		else if (difference <= m_goodWindow && difference >= -m_goodWindow)
+		else if (difference <= m_goodWindow * m_windowMult && difference >= -m_goodWindow * m_windowMult)
 		{
 			releaseJudgement(column, 2, m_goodWeight);
 		}
-		else if (difference <= m_badWindow && difference >= -m_badWindow)
+		else if (difference <= m_badWindow * m_windowMult && difference >= -m_badWindow * m_windowMult)
 		{
 			releaseJudgement(column, 3, m_badWeight);
 		}
-		else if (difference <= m_missWindow && difference >= -m_missWindow)
+		else
 		{
 			m_combo = 0;
 			m_hasHitRecently = true;
@@ -485,9 +512,10 @@ namespace SJ
 		m_recentJudgement = recent;
 		m_notesHitWeighted += weight;
 		m_notesProcessedWeighted += 1.0;
+		m_numTimer = 5.0f;
 		if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 3)
 		{
-			if (recent == 3) m_hp -= weight * m_gainLossLN;
+			if (recent == 3) m_hp -= weight * m_gainLossLN * 2.0f;
 			else m_hp += weight * m_gainLossLN;
 			m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
 			m_notesPassed.at(column)++;
