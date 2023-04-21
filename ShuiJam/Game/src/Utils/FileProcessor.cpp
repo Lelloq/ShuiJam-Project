@@ -1,5 +1,6 @@
 #include "Utils/FileProcessor.h"
 #include "Utils/Properties.h"
+#include <cstdlib>
 
 namespace SJ
 {
@@ -30,12 +31,10 @@ namespace SJ
 		namespace fs = std::filesystem;
 		for (auto& entry : fs::directory_iterator(m_songsFolder))
 		{
-			int mapCount = 0;
 			if (!entry.is_directory()) continue;
 			for (auto& osu : fs::directory_iterator(entry))
 			{
 				if (osu.path().extension() != ".osu") continue;
-				mapCount++;
 				std::fstream file;
 				file.open(osu);
 				std::string mode, keymode;
@@ -50,17 +49,11 @@ namespace SJ
 					if (line.find("CircleSize") != std::string::npos)
 					{
 						keymode = line;
-						file.close();
 						break;
 					}
 				}
-				if (mode != "Mode: 3" || keymode != "CircleSize:7")
-				{
-					fs::remove(osu);
-					mapCount--;
-				}
+				file.close();
 			}
-			if (mapCount == 0) fs::remove_all(entry);
 		}
 	}
 
@@ -114,6 +107,7 @@ namespace SJ
 			std::wstring dirPath = fs::relative(entry, m_songsFolder);
 			for (auto& osu : fs::directory_iterator(entry))
 			{
+				bool isMania = false, is7K = false;
 				std::wstring artist, version, title, osuPath, bgPath, audioPath;
 				std::wfstream file;
 				if (osu.path().extension() != ".osu") continue;
@@ -126,6 +120,14 @@ namespace SJ
 				int bgCounter = 0;//Counter is there since there is a line that is consistent with all .osu files and the one below is not
 				for(std::wstring line; std::getline(file, line); )
 				{
+					if(line.find(L"Mode: 3") != std::wstring::npos)
+					{
+						isMania = true;
+					}
+					if(line.find(L"CircleSize:7") != std::wstring::npos)
+					{
+						is7K = true;
+					}
 					if(line.find(L"Title:") != std::wstring::npos)
 					{
 						std::wstring temp = L"Title:";
@@ -167,30 +169,33 @@ namespace SJ
 				}
 				file.close();
 
-				sqlite3_stmt* stmt;
-				sqlite3_prepare16_v2(m_db, insertCommand.c_str(), -1, &stmt, nullptr);
-
-				//Binds the values into the insert statement
-				sqlite3_bind_int(stmt, 1, id);
-				sqlite3_bind_text16(stmt, 2, version.c_str(), -1, SQLITE_STATIC);
-				sqlite3_bind_text16(stmt, 3, artist.c_str(), -1, SQLITE_STATIC);
-				sqlite3_bind_text16(stmt, 4, title.c_str(), -1, SQLITE_STATIC);
-				sqlite3_bind_text16(stmt, 5, dirPath.c_str(), -1, SQLITE_STATIC);
-				sqlite3_bind_text16(stmt, 6, osuPath.c_str(), -1, SQLITE_STATIC);
-				sqlite3_bind_text16(stmt, 7, bgPath.c_str(), -1, SQLITE_STATIC);
-				sqlite3_bind_text16(stmt, 8, audioPath.c_str(), -1, SQLITE_STATIC);
-
-				int val = sqlite3_step(stmt);
-				if(val != SQLITE_DONE)
+				if(isMania && is7K)
 				{
-					std::cout << "Error inserting data" << "\n";
-				}
-				else
-				{
-					id++;
-				}
+					sqlite3_stmt* stmt;
+					sqlite3_prepare16_v2(m_db, insertCommand.c_str(), -1, &stmt, nullptr);
 
-				sqlite3_finalize(stmt);
+					//Binds the values into the insert statement
+					sqlite3_bind_int(stmt, 1, id);
+					sqlite3_bind_text16(stmt, 2, version.c_str(), -1, SQLITE_STATIC);
+					sqlite3_bind_text16(stmt, 3, artist.c_str(), -1, SQLITE_STATIC);
+					sqlite3_bind_text16(stmt, 4, title.c_str(), -1, SQLITE_STATIC);
+					sqlite3_bind_text16(stmt, 5, dirPath.c_str(), -1, SQLITE_STATIC);
+					sqlite3_bind_text16(stmt, 6, osuPath.c_str(), -1, SQLITE_STATIC);
+					sqlite3_bind_text16(stmt, 7, bgPath.c_str(), -1, SQLITE_STATIC);
+					sqlite3_bind_text16(stmt, 8, audioPath.c_str(), -1, SQLITE_STATIC);
+
+					int val = sqlite3_step(stmt);
+					if(val != SQLITE_DONE)
+					{
+						std::cout << "Error inserting data" << "\n";
+					}
+					else
+					{
+						id++;
+					}
+
+					sqlite3_finalize(stmt);
+				}
 			}
 		}
 		setLastID();

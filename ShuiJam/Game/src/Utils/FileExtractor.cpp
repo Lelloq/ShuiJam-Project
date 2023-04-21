@@ -1,6 +1,7 @@
 /*\file FileExtractor.cpp*/
 #include "Utils/FileExtractor.h"
 #include "Utils/FileProcessor.h"
+#include "Utils/Properties.h"
 
 //TODO
 //Filter out the non 7 key .osu files within each file
@@ -30,6 +31,7 @@ namespace SJ
 					std::wstring songPath = std::filesystem::current_path();//Set the path to the songs folder
 					if(!std::filesystem::exists(folderName))
 					{
+						filesExtracted++;
 						std::filesystem::create_directory("x");//Create a temp folder so it's less likely to cause an error when extracting the file due to having a too long string
 						songPath += '/'; songPath += L"x";//Append '/' and temp
 						inputPath += '/'; inputPath += fileName;//Append '/' and folder name
@@ -44,9 +46,7 @@ namespace SJ
 						std::filesystem::current_path("../Input");
 						std::filesystem::remove(fileName);
 					}
-					#ifdef DEBUG
 					std::wcout << "Extracted " << folderName << "\n";
-					#endif 
 				}
 			}
 			catch (const BitException& e)
@@ -56,9 +56,8 @@ namespace SJ
 			}
 			std::filesystem::current_path(m_origin);
 		}
-		#ifdef DEBUG
 		std::cout << "Extraction complete" << "\n";
-		#endif
+		if (filesExtracted > 0) { g_filesChanged = true; }
 		return true;
 	}
 }

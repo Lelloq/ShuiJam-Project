@@ -20,6 +20,10 @@ inline std::wstring g_CurrentDifficulty = L"";
 inline std::wstring g_CurrentSong = L"";
 inline std::wstring g_CurrentBG = L"";
 
+//file status
+inline bool g_filesChanged = false;
+
+//Gameplay
 inline int g_perfCount = 0;
 inline int g_greatCount = 0;
 inline int g_goodCount = 0;

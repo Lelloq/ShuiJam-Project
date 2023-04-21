@@ -149,6 +149,7 @@ namespace SJ
 	{
 		//Stop the music and close the file if its using vorbis
 		alSourceStop(m_source);
+		alSourcei(m_source, AL_BUFFER, NULL);
 	}
 
 	void Music::Update()

@@ -6,6 +6,7 @@
  *********************************************************************/
 #include "Scenes/SongScene.h"
 #include "Utils/Properties.h"
+#include "Utils/Settings.h"
 #include <GLFW/glfw3.h>
 #include <future>
 
@@ -75,8 +76,11 @@ namespace SJ
 	#pragma endregion
 
 	#pragma region song data processing
-		m_fileProcessor->ProcessFiles();
-		std::async(std::launch::async, &FileProcessor::reloadSongs, &*m_fileProcessor);
+		if(g_filesChanged)
+		{
+			m_fileProcessor->ProcessFiles();
+			m_fileProcessor->reloadSongs();
+		}
 		m_lastSong = m_fileProcessor->getLastID();
 		updateSongWheel();
 	#pragma endregion
@@ -189,7 +193,9 @@ namespace SJ
 				m_source->Play(m_refreshSound);
 			}
 			m_fileProcessor->ProcessFiles();
-			std::async(std::launch::async, &FileProcessor::reloadSongs, &*m_fileProcessor);
+			m_fileProcessor->reloadSongs();
+			m_lastSong = m_fileProcessor->getLastID();
+			updateSongWheel();
 		}
 		//An alternative way to scroll up or down the song wheel
 		if((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_UP && m_scrollDirection == 0 && m_canScrollDown)
@@ -252,7 +258,7 @@ namespace SJ
 					{
 						m_source = std::make_unique<SFXSource>();
 						m_source->Play(m_scrollSound);
-						if (m_music != nullptr) m_music->Stop();
+						if (m_music != nullptr) m_music.reset();
 						m_music = std::make_unique<Music>(L"../ShuiJamGame/Songs/" + m_songData.at(i).dirPath + L"/" + m_songData.at(i).audio);
 						m_songBGIm->reloadTexture(L"../ShuiJamGame/Songs/" + m_songData.at(i).dirPath + L"/" + m_songData.at(i).background, GL_CLAMP_TO_EDGE);
 						m_songBGImPlay->reloadTexture(L"../ShuiJamGame/Songs/" + m_songData.at(i).dirPath + L"/" + m_songData.at(i).background, GL_CLAMP_TO_EDGE);
@@ -336,7 +342,7 @@ namespace SJ
 		{
 			m_source = std::make_unique<SFXSource>();
 			m_source->Play(m_startSound);
-			m_music->Stop();
+			m_music.reset();
 		}
 		g_CurrentScene = "game";
 	}
@@ -353,7 +359,7 @@ namespace SJ
 			if (m_music != nullptr) 
 			{ 
 				m_isPlaying = false;
-				m_music->Stop(); 
+				m_music.reset();
 				m_songBGIm->reloadTexture(SJFOLDER + IMAGES + "selectbg.png", GL_CLAMP_TO_EDGE);
 			}
 		}
@@ -374,7 +380,7 @@ namespace SJ
 			if (m_music != nullptr) 
 			{
 				m_isPlaying = false;
-				m_music->Stop(); 
+				m_music.reset();
 				m_songBGIm->reloadTexture(SJFOLDER + IMAGES + "selectbg.png", GL_CLAMP_TO_EDGE);
 			}
 		}
