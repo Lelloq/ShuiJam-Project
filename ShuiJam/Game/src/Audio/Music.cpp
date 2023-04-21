@@ -82,6 +82,7 @@ namespace SJ
 		else if(m_extension == ".ogg")
 		{
 			ov_clear(&oStream.vfile);
+			fclose(file);
 		}
 	}
 	void Music::Play()
@@ -148,10 +149,6 @@ namespace SJ
 	{
 		//Stop the music and close the file if its using vorbis
 		alSourceStop(m_source);
-		if (file != nullptr)
-		{ 
-			fclose(file);
-		}
 	}
 
 	void Music::Update()

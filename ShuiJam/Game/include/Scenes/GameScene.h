@@ -87,7 +87,7 @@ namespace SJ
 		float m_totalTransparency = 1.0f;
 
 		std::array<int, 7> m_inputs = //Default keyboard inputs
-		{keyOne, keyTwo, keyThree , keyFour, keyFive, keySix, keySeven};
+		{g_keyOne, g_keyTwo, g_keyThree , g_keyFour, g_keyFive, g_keySix, g_keySeven};
 		std::array<bool, 7> m_pressed = { false, false, false, false, false ,false ,false };
 		std::array<bool, 7> m_holdingNote = { false, false, false, false, false ,false ,false };
 		std::array<bool, 7> m_failedRelease = { false, false, false, false, false ,false ,false };
@@ -100,6 +100,7 @@ namespace SJ
 		int m_recentJudgement = 0;//Most recent judgement hit
 		float m_hp = 100;
 		int m_combo = 0;
+		int m_highestCombo = 0;
 		float m_accuracy = 100.000f;
 		//Accuracy throughout the song will be calculated as:
 		/*((perfCount* perfWeight) + 
@@ -111,8 +112,8 @@ namespace SJ
 		float m_notesHitWeighted = 0.0f;
 		float m_notesProcessedWeighted = 0.0f;
 		//Judgement counts will be taken over to the results scene
-		int m_jPerfCount = 0, m_jGreatCount = 0, m_jGoodCount = 0;
-		int m_jBadCount = 0, m_jMissCount = 0;
+		//[0] = Perfect [1] = Great [2] = Good [3] = Bad [4] = miss
+		std::array<int, 5> m_judgementCounts = { 0,0,0,0,0 };
 		//Accuracy windows (in milliseconds (perf->bad taken from lunatic rave 2 easy judge))
 		//Positive means late, negative means early
 		int m_perfWindow = 21;
@@ -127,7 +128,7 @@ namespace SJ
 		float m_badWeight = 0.25f;
 		float m_missWeight = 0.0f;
 		
-		float m_windowMult = 1.3f;
+		float m_windowMult = 2.0f;
 		float m_gainLossRice = 10.0f;
 		float m_gainLossLN = 5.0f;
 		/**

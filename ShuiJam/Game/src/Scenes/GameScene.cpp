@@ -133,7 +133,14 @@ namespace SJ
 			m_totalTransparency -= dt * 2.0f;
 			if(m_totalTransparency <= 0.0f)
 			{
-
+				g_accuracy = m_accuracy;
+				g_perfCount = m_judgementCounts.at(0);
+				g_greatCount = m_judgementCounts.at(1);
+				g_goodCount = m_judgementCounts.at(2);
+				g_badCount = m_judgementCounts.at(3);
+				g_missCount = m_judgementCounts.at(4);
+				g_highestCombo = m_highestCombo;
+				g_CurrentScene = "result";
 			}
 		}
 
@@ -159,7 +166,7 @@ namespace SJ
 		for (int i = 0; i < m_notes.size(); i++)
 		{
 			//Create a rice note if it has no release timing i.e 0 otherwise create an long note object
-			if(m_nextNote.at(i) < m_notes.at(i).size() && m_notes.at(i).at(m_nextNote.at(i)).timingPoint < m_music->getTimePosition() + 10000.f)
+			if(m_nextNote.at(i) < m_notes.at(i).size() && m_notes.at(i).at(m_nextNote.at(i)).timingPoint < m_music->getTimePosition() + (2000.0f - m_cSpeed))
 			{
 				int column = m_notes.at(i).at(m_nextNote.at(i)).column;
 				int release = m_notes.at(i).at(m_nextNote.at(i)).releasePoint;
@@ -242,6 +249,7 @@ namespace SJ
 						m_notesPassed.at(i)++;
 						m_totalNotesPassed++;
 						m_hp -= m_gainLossLN;
+						m_judgementCounts.at(4)++;
 					}
 				}
 				else if(release == 0)
@@ -257,6 +265,7 @@ namespace SJ
 						m_notesPassed.at(i)++;
 						m_totalNotesPassed++;
 						m_hp -= m_gainLossLN;
+						m_judgementCounts.at(4)++;
 					}
 				}
 			}
@@ -264,6 +273,7 @@ namespace SJ
 		}
 	#pragma endregion
 
+		if (m_combo > m_highestCombo) m_highestCombo = m_combo;
 	}
 
 	void GameScene::Render()
@@ -449,21 +459,23 @@ namespace SJ
 
 	void GameScene::hitJudgement(int column,int recent, float weight)
 	{
-		if(!m_failedRelease.at(column))
+		if(!m_failedRelease.at(column) || m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 1)
 		{
 			if(recent != 4) { m_combo++; }
 			else { m_combo = 0; }
+			if (recent == 3) m_hp -= weight * m_gainLossRice * 2.0f;
+			else if (recent == 4) m_hp -= m_gainLossRice * 2.0f;
+			else m_hp += weight * m_gainLossRice;
 			m_hasHitRecently = true;
 			m_recentJudgement = recent;
 			m_notesHitWeighted += weight;
 			m_notesProcessedWeighted += 1.0;
+			m_judgementCounts.at(recent)++;
 			m_numTimer = 5.0f;
 		}
 
 		if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 1)
-		{
-			if (recent == 3) m_hp -= weight * m_gainLossRice * 2.0f;
-			else m_hp += weight * m_gainLossRice;
+		{	
 			m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
 			m_notesPassed.at(column)++;
 			m_totalNotesPassed++;
@@ -471,7 +483,6 @@ namespace SJ
 		else
 		{
 			m_holdingNote.at(column) = true;
-			m_hp += weight * m_gainLossLN;
 		}
 	}
 
@@ -519,6 +530,7 @@ namespace SJ
 			else m_hp += weight * m_gainLossLN;
 			m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
 			m_notesPassed.at(column)++;
+			m_judgementCounts.at(recent)++;
 			m_totalNotesPassed++;
 		}
 	}
