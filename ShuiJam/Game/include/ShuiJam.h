@@ -8,3 +8,4 @@
 #include "Scenes/ResultsScene.h"
 #include "Utils/FileExtractor.h"
 #include "Utils/Properties.h"
+#include "Utils/SaveManager.cpp"

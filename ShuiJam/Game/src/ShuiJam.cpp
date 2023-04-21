@@ -19,9 +19,6 @@ void main()
 	audioDevice = SJ::AudioDevice::get();
 	soundEffect = SJ::SoundEffect::get();
 
-	//SJ::Music m(SJFOLDER + SOUNDS + "parallax.mp3");
-	//std::shared_ptr<SJ::SFXSource> SFX(new SJ::SFXSource);
-
 	//Extract any files in the input folder
 	auto isExtracted = std::async(std::launch::async, SJ::FileExtractor::extractFiles);
 	//m.Play();

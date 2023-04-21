@@ -4,6 +4,7 @@
 #include "Scene.h"
 #include "Audio/Audio.h"
 #include "objects/objects.h"
+#include <array>
 
 namespace SJ
 {
@@ -23,9 +24,26 @@ namespace SJ
 		//GRAPHICS
 		//Shader
 		std::unique_ptr<Shader> m_shader;
+		std::unique_ptr<Shader> m_textShader;
 		//Textures
-
+		std::unique_ptr<Texture> m_songIm;
+		std::array<std::unique_ptr<Texture>, 5> m_judgementIm;
+		std::array<std::unique_ptr<Texture>, 8> m_gradesIm;
+		std::unique_ptr<Texture> m_gradesBGIm;
 		//Objects
+		std::unique_ptr<Rect> m_song;
+		std::unique_ptr<Rect> m_grades;
+		std::unique_ptr<Rect> m_gradesBG;
+
+		//Text
+		std::unique_ptr<Text> m_percent;
+		std::unique_ptr<Text> m_highestCombo;
+		std::unique_ptr<Text> m_perfCount;
+		std::unique_ptr<Text> m_greatCount;
+		std::unique_ptr<Text> m_goodCount;
+		std::unique_ptr<Text> m_badCount;
+		std::unique_ptr<Text> m_missCount;
+
 	public:
 		ResultsScene(GLFWwindow* window);
 		void Update(float dt);

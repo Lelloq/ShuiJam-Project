@@ -31,10 +31,13 @@ namespace SJ
 		namespace fs = std::filesystem;
 		for (auto& entry : fs::directory_iterator(m_songsFolder))
 		{
+			int mapCount = 0;
+			bool success = 0;
 			if (!entry.is_directory()) continue;
 			for (auto& osu : fs::directory_iterator(entry))
 			{
 				if (osu.path().extension() != ".osu") continue;
+				mapCount++;
 				std::fstream file;
 				file.open(osu);
 				std::string mode, keymode;
@@ -49,10 +52,24 @@ namespace SJ
 					if (line.find("CircleSize") != std::string::npos)
 					{
 						keymode = line;
+						file.close();
 						break;
 					}
 				}
-				file.close();
+				if (mode != "Mode: 3" || keymode != "CircleSize:7")
+				{
+					int res = fs::remove(osu);
+					mapCount -= res;
+				}
+				else success = true;
+			}
+			if(mapCount == 0)
+			{
+				fs::remove_all(entry);
+			}
+			else if(mapCount > 0 && !success)
+			{
+				std::cout << "Failed to fully delete" << entry.path().string() << ". Filename too long." << "\n";
 			}
 		}
 	}
