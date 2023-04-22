@@ -55,6 +55,7 @@ namespace SJ
 		void InitFT(std::string fontFile);
 	public:
 		Text(const glm::vec2& pos, std::wstring text,unsigned int width ,unsigned int fontsize, unsigned int zIndex, std::string fontFile);
+		~Text();
 		void repositionVerts(glm::vec2 pos);
 		void changeText(std::wstring text);
 		void Draw(Shader& shader);

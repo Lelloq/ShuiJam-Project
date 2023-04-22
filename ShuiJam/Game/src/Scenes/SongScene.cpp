@@ -82,6 +82,7 @@ namespace SJ
 		updateSongWheel();
 	#pragma endregion
 	}
+
 	void SongScene::Update(float dt)
 	{
 		#pragma region song wheel scrolling

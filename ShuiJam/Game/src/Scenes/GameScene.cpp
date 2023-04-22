@@ -109,6 +109,14 @@ namespace SJ
 	#pragma endregion
 	}
 
+	GameScene::~GameScene()
+	{
+		for(int i = 0; i < 7;i++)
+		{
+			m_noteObj.at(i).clear();
+		}
+	}
+
 	void GameScene::Update(float dt)
 	{
 		if(m_t1 < 1.f)

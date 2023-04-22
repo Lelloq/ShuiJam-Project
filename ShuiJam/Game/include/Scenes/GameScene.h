@@ -175,6 +175,7 @@ namespace SJ
 		void releaseJudgement(int column, int recent, float weight);
 	public:
 		GameScene(GLFWwindow* window);
+		~GameScene();
 		/**
 		 * \function void Update(float dt).
 		 * \brief Update visuals such as positions and other data

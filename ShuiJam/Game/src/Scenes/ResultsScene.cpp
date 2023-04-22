@@ -79,6 +79,11 @@ namespace SJ
 	#pragma endregion
 	}
 
+	ResultsScene::~ResultsScene()
+	{
+		m_sfx->removeSFX(m_anyKeySound);
+	}
+
 	void ResultsScene::Update(float dt)
 	{
 		if(m_goBackToSelect)
