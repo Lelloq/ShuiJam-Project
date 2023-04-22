@@ -173,12 +173,6 @@ namespace SJ
 		 * \param weight the value it is worth in health and accuracy
 		 */
 		void releaseJudgement(int column, int recent, float weight);
-
-		/**
-		 * \function void play().
-		 * \brief plays the music.
-		 */
-		void play();
 	public:
 		GameScene(GLFWwindow* window);
 		/**

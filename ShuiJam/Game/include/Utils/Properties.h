@@ -19,6 +19,8 @@ inline std::wstring g_CurrentOsuDir = L"";
 inline std::wstring g_CurrentDifficulty = L"";
 inline std::wstring g_CurrentSong = L"";
 inline std::wstring g_CurrentBG = L"";
+inline std::wstring g_CurrentTitle = L"";
+inline std::wstring g_CurrentDiffName = L"";
 
 //file status
 inline bool g_filesChanged = false;
@@ -31,3 +33,4 @@ inline int g_badCount = 0;
 inline int g_missCount = 0;
 inline int g_highestCombo = 0;
 inline float g_accuracy = 0;
+inline bool g_failed = false;

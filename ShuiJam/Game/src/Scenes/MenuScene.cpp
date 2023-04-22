@@ -1,4 +1,4 @@
-/*\file MenuScenec.pp*/
+/*\file MenuScene.cpp*/
 #include "Scenes/MenuScene.h"
 #include "Utils/Properties.h"
 #include <GLFW/glfw3.h>

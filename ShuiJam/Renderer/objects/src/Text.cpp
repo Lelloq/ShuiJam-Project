@@ -42,6 +42,18 @@ namespace SJ
 		if(FT_Set_Pixel_Sizes(m_face, 0, fontsize)) { std::cout << "Failed to set font size." << "\n"; }
 		FT_Select_Charmap(m_face, FT_ENCODING_UNICODE);
 
+		//Get bitmap width so it can be used for centre alignment later
+		int bitmapWidth = 0;
+		for (int i = 0; i < m_text.size(); i++)
+		{
+			if (FT_Load_Char(m_face, m_text.at(i), FT_LOAD_RENDER)) std::cout << "Failed to load character " << m_text.at(i) << "\n";
+			else
+			{
+				bitmapWidth += m_face->glyph->bitmap.width;
+			}
+		}
+		m_bitwidth = bitmapWidth;
+
 		//Create an empty texture
 		m_texture = std::make_unique<Texture>(fontsize * text.size(), fontsize * 2, 1, nullptr);
 
@@ -109,6 +121,7 @@ namespace SJ
 			m_isTextDifferent = false;
 			m_texture->resize(m_size * m_text.size(), m_size * 2, 1);
 			needsUpdating = true;
+			m_bitwidth = bitmapWidth;
 		}
 
 		/*

@@ -155,7 +155,6 @@ namespace SJ
 					{
 						std::wstring temp = L"Version:";
 						line.erase(0, temp.size());
-						title = title + L" [" + line + L"]";
 						version = line;
 					}
 					else if(line.find(L"AudioFilename: ") != std::wstring::npos)

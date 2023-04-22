@@ -40,7 +40,13 @@ void main()
 		{
 			//Cleanup the menu and result screen objects if they haven't already
 			if (menu != nullptr) menu.reset();
-			if (result != nullptr) result.reset();
+			if (result != nullptr) 
+			{
+				result.reset(); 
+				//Since its going back to the song select which isn't cleared since you want to save the position of the song wheel
+				//I have to set input callbacks back to the song select
+				SJ::Scene::setInputCallbacks(songSelect.get());
+			}
 			//Create the scene or render it if it has been created already
 			if (songSelect == nullptr)
 			{

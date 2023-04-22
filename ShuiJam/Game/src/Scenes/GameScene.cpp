@@ -12,7 +12,7 @@ namespace SJ
 	GameScene::GameScene(GLFWwindow* window) : m_window(window), m_device(AudioDevice::get()), m_sfx(SoundEffect::get())
 	{
 		//Disable cursor movement to prevent closing while the player is playing
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		//Get all the note data
 		m_notes = std::async(std::launch::async, OsuParser::parse, g_CurrentOsuDir, g_CurrentDifficulty).get();
 		m_music = std::make_unique<Music>(m_folder + g_CurrentOsuDir + L"/" + g_CurrentSong);
@@ -119,7 +119,8 @@ namespace SJ
 		else
 		{
 			m_leadin = 0;
-			std::async(std::launch::async, &GameScene::play, this);
+			m_music->Play();
+			m_music->Update();
 		}
 		m_curTimePos = m_music->getTimePosition();
 
@@ -294,7 +295,7 @@ namespace SJ
 		m_stageHitposition->Draw(*m_shader);
 		//Draw health
 		if (m_hp > 100.f) m_hp = 100.f;
-		if (m_hp < 0.f) m_hp = 0.f, m_gameEnded = true;
+		if (m_hp < 0.f) m_hp = 0.f, m_gameEnded = true, g_accuracy = m_accuracy, g_failed = true;;
 		float healthPercent = m_hp / 100.f;
 		m_health->resizeVerts(glm::vec2(m_healthIm->getWidth(), m_healthIm->getHeightf() * healthPercent));
 		m_healthBG->Draw(*m_shader);
@@ -406,6 +407,7 @@ namespace SJ
 				m_pressed.at(i) = false;
 			}
 		}
+		if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE) m_gameEnded = true, g_failed = true;
 	}
 
 #pragma region NOT IN USE
@@ -431,7 +433,7 @@ namespace SJ
 	{
 		//Late: >=
 		//Early: <=
-		int hit = m_notes.at(column).at(m_notesPassed.at(column)).timingPoint;
+		int hit = m_notes.at(column).at(m_notesPassed.at(column)).timingPoint + m_leadin;
 		float difference = m_curTimePos - hit;
 		//Increase combo or reset combo depending if its a perfect to good or bad to a miss
 		//Display the combo and judge
@@ -491,7 +493,7 @@ namespace SJ
 	void GameScene::calcJudgementRelease(int column)
 	{
 		//Giving the release window a slightly wider window since I think releases are harder than hitting
-		int release = m_notes.at(column).at(m_notesPassed.at(column)).releasePoint;
+		int release = m_notes.at(column).at(m_notesPassed.at(column)).releasePoint + m_leadin;
 		float difference = m_curTimePos - release;
 		if (difference <= m_perfWindow * m_windowMult && difference >= -m_perfWindow * m_windowMult)
 		{
@@ -535,11 +537,5 @@ namespace SJ
 			m_judgementCounts.at(recent)++;
 			m_totalNotesPassed++;
 		}
-	}
-
-	void GameScene::play()
-	{
-		m_music->Play();
-		m_music->Update();
 	}
 }

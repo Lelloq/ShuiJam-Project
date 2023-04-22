@@ -46,6 +46,7 @@ namespace SJ
 		glm::vec2 m_pos;
 		bool m_firstEdit = true;
 		bool m_isTextDifferent = false;
+		float m_bitwidth = 0;
 
 		std::unique_ptr<Texture> m_texture;
 		FT_Library m_ft;
@@ -57,5 +58,6 @@ namespace SJ
 		void repositionVerts(glm::vec2 pos);
 		void changeText(std::wstring text);
 		void Draw(Shader& shader);
+		inline float getBitmapWidth() { return m_bitwidth; }
 	};
 }

@@ -15,6 +15,7 @@ namespace SJ
 	SongScene::SongScene(GLFWwindow* window) : m_window(window), m_device(AudioDevice::get()), m_sfx(SoundEffect::get())
 	{
 		m_fileProcessor = std::make_unique<FileProcessor>();
+		g_failed = false;
 
 	#pragma region Main graphics and audio
 		m_scrollSound = m_sfx->addSFX(SJFOLDER + SOUNDS + "scroll.wav");
@@ -313,16 +314,14 @@ namespace SJ
 			if (ptr > m_lastSong) ptr = 0;
 			int index = (m_head + i) % 11;
 			m_songData.at(index) = m_fileProcessor->retrieveSong(ptr);
-			//std::wcout << index << ": " << m_songData.at(index).title << "\n";
-			m_songWheelText.at(index)->changeText(m_fileProcessor->retrieveSong(ptr).title);
 			ptr++;
-			if (m_songData.at(index).title.size() > 30)
+			if (m_songData.at(index).title.size() + m_songData.at(index).version.size() > 30)
 			{
 				m_songWheelText.at(index)->changeText(m_songData.at(index).title.substr(0, 30) + L"...");
 			}
 			else
 			{
-				m_songWheelText.at(index)->changeText(m_songData.at(index).title);
+				m_songWheelText.at(index)->changeText(m_songData.at(index).title + L" [" + m_songData.at(index).version + L"]");
 			}
 		}
 	}
@@ -335,12 +334,15 @@ namespace SJ
 		g_CurrentSong = m_songData.at(m_confirmation).audio;
 		g_CurrentDifficulty = m_songData.at(m_confirmation).osuPath;
 		g_CurrentOsuDir = m_songData.at(m_confirmation).dirPath;
+		g_CurrentDiffName = m_songData.at(m_confirmation).version;
+		g_CurrentTitle = m_songData.at(m_confirmation).title;
 		{
 			m_source = std::make_unique<SFXSource>();
 			m_source->Play(m_startSound);
 			m_music.reset();
 		}
 		g_CurrentScene = "game";
+		m_canClick = true;
 	}
 
 	void SongScene::scrollDown()

@@ -32,11 +32,14 @@ namespace SJ
 		std::unique_ptr<Texture> m_gradesBGIm;
 		//Objects
 		std::unique_ptr<Rect> m_song;
-		std::unique_ptr<Rect> m_grades;
 		std::unique_ptr<Rect> m_gradesBG;
+		std::array<std::unique_ptr<Rect>, 5> m_judgement;
+		std::array<std::unique_ptr<Rect>, 8> m_grades;
 
 		//Text
 		std::unique_ptr<Text> m_percent;
+		std::unique_ptr<Text> m_title;
+		std::unique_ptr<Text> m_difficulty;
 		std::unique_ptr<Text> m_highestCombo;
 		std::unique_ptr<Text> m_perfCount;
 		std::unique_ptr<Text> m_greatCount;
@@ -47,6 +50,8 @@ namespace SJ
 		//OTHER DATA
 		std::array<float, 7> m_gradeThresholds = {99.75f, 98.0f, 95.0f, 90.0f, 80.0f, 75.0f, 70.0f};
 		std::wstring m_folder = L"../ShuiJamGame/Songs/";
+		bool m_goBackToSelect = false;
+		float m_totalTransparency = 1.0f;
 	public:
 		ResultsScene(GLFWwindow* window);
 		/**
