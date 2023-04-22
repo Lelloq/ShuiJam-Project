@@ -9,6 +9,8 @@ SJ::SoundEffect* soundEffect;
 
 void main()
 {
+	SJ::SaveManager::Init();
+
 	//Create window and prepare the scenes
 	SJ::WindowManager gameWindow = SJ::WindowManager(SCR_WIDTH, SCR_HEIGHT, false, false, "ShuiJam");
 	std::unique_ptr<SJ::MenuScene> menu = std::make_unique<SJ::MenuScene>(gameWindow.getWindow());
