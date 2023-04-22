@@ -41,6 +41,7 @@ namespace SJ
 		g_width = settings.at(2).at(1);//width (width -> value)
 		g_height = settings.at(3).at(1);//height
 		g_volume = settings.at(4).at(1);//volume
+		g_fullscreen = settings.at(5).at(1);//fullscreen window
 	}
 
 	void SaveManager::Save()
@@ -64,6 +65,7 @@ namespace SJ
 			{"width:", g_width},
 			{"height:", g_height},
 			{"volume:", g_volume},
+			{"fullscreen:", g_fullscreen},
 		};
 		file << values.dump();
 		file.close();

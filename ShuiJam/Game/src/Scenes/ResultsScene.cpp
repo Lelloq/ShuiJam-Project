@@ -54,16 +54,16 @@ namespace SJ
 		}
 
 		m_judgement.at(0) = std::make_unique<Rect>(glm::vec2(200.0f, 405.f), glm::vec2(m_judgementIm.at(0)->getWidthf(), m_judgementIm.at(0)->getHeightf()), 2, *m_judgementIm.at(0));
-		m_judgement.at(1) = std::make_unique<Rect>(glm::vec2(200.0f, 305.f), glm::vec2(m_judgementIm.at(1)->getWidthf(), m_judgementIm.at(1)->getHeightf()), 2, *m_judgementIm.at(1));
-		m_judgement.at(2) = std::make_unique<Rect>(glm::vec2(200.0f, 205.f), glm::vec2(m_judgementIm.at(2)->getWidthf(), m_judgementIm.at(2)->getHeightf()), 2, *m_judgementIm.at(2));
-		m_judgement.at(3) = std::make_unique<Rect>(glm::vec2(200.0f, 105.f), glm::vec2(m_judgementIm.at(3)->getWidthf(), m_judgementIm.at(3)->getHeightf()), 2, *m_judgementIm.at(3));
-		m_judgement.at(4) = std::make_unique<Rect>(glm::vec2(200.0f, 5.f) , glm::vec2(m_judgementIm.at(4)->getWidthf(), m_judgementIm.at(4)->getHeightf()), 2, *m_judgementIm.at(4));
+		m_judgement.at(1) = std::make_unique<Rect>(glm::vec2(200.0f, 325.f), glm::vec2(m_judgementIm.at(1)->getWidthf(), m_judgementIm.at(1)->getHeightf()), 2, *m_judgementIm.at(1));
+		m_judgement.at(2) = std::make_unique<Rect>(glm::vec2(200.0f, 245.f), glm::vec2(m_judgementIm.at(2)->getWidthf(), m_judgementIm.at(2)->getHeightf()), 2, *m_judgementIm.at(2));
+		m_judgement.at(3) = std::make_unique<Rect>(glm::vec2(200.0f, 165.f), glm::vec2(m_judgementIm.at(3)->getWidthf(), m_judgementIm.at(3)->getHeightf()), 2, *m_judgementIm.at(3));
+		m_judgement.at(4) = std::make_unique<Rect>(glm::vec2(200.0f, 85.f) , glm::vec2(m_judgementIm.at(4)->getWidthf(), m_judgementIm.at(4)->getHeightf()), 2, *m_judgementIm.at(4));
 
 		m_perfCount = std::make_unique<Text>(glm::vec2(210.f + m_judgementIm.at(0)->getWidthf(), 395.f), L": " + std::to_wstring(g_perfCount), 200, 48, 2, "NotoSansJP-Light.otf");
-		m_greatCount = std::make_unique<Text>(glm::vec2(210.f + m_judgementIm.at(1)->getWidthf(), 295.f), L": " + std::to_wstring(g_greatCount), 200, 48, 2, "NotoSansJP-Light.otf");
-		m_goodCount = std::make_unique<Text>(glm::vec2(210.f + m_judgementIm.at(2)->getWidthf(), 195.f), L": " + std::to_wstring(g_goodCount), 200, 48, 2, "NotoSansJP-Light.otf");
-		m_badCount = std::make_unique<Text>(glm::vec2(210.f + m_judgementIm.at(3)->getWidthf(), 95.f), L": " + std::to_wstring(g_badCount), 200, 48, 2, "NotoSansJP-Light.otf");
-		m_missCount = std::make_unique<Text>(glm::vec2(210.f + m_judgementIm.at(4)->getWidthf(), -5.f), L": " + std::to_wstring(g_missCount), 200, 48, 2, "NotoSansJP-Light.otf");
+		m_greatCount = std::make_unique<Text>(glm::vec2(210.f + m_judgementIm.at(1)->getWidthf(), 315.f), L": " + std::to_wstring(g_greatCount), 200, 48, 2, "NotoSansJP-Light.otf");
+		m_goodCount = std::make_unique<Text>(glm::vec2(210.f + m_judgementIm.at(2)->getWidthf(), 235.f), L": " + std::to_wstring(g_goodCount), 200, 48, 2, "NotoSansJP-Light.otf");
+		m_badCount = std::make_unique<Text>(glm::vec2(210.f + m_judgementIm.at(3)->getWidthf(), 155.f), L": " + std::to_wstring(g_badCount), 200, 48, 2, "NotoSansJP-Light.otf");
+		m_missCount = std::make_unique<Text>(glm::vec2(210.f + m_judgementIm.at(4)->getWidthf(), 75.f), L": " + std::to_wstring(g_missCount), 200, 48, 2, "NotoSansJP-Light.otf");
 
 		m_title = std::make_unique<Text>(glm::vec2(0, 0), g_CurrentTitle, g_CurrentTitle.size() * 86, 86, 3, "NotoSansJP-Bold.otf");
 		m_title->repositionVerts(glm::vec2((VPORT_WIDTH / 2) - (m_title->getBitmapWidth() / 2), VPORT_HEIGHT - 128));
@@ -77,11 +77,6 @@ namespace SJ
 		m_percent = std::make_unique<Text>(glm::vec2(720.f, 0.f), 
 			std::to_wstring(g_accuracy).substr(0, std::to_wstring(g_accuracy).find_first_of('.') + 3) + L"%", 500, 96, 3, "NotoSansJP-Regular.otf");
 	#pragma endregion
-	}
-
-	ResultsScene::~ResultsScene()
-	{
-		m_sfx->removeSFX(m_anyKeySound);
 	}
 
 	void ResultsScene::Update(float dt)

@@ -6,6 +6,7 @@
  *********************************************************************/
 #pragma once
 
+inline bool g_fullscreen = false;
 inline int g_offset = 0;
 inline int g_hitposition = 100;
 inline int g_keyOne = 'Z';

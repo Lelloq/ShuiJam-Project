@@ -54,7 +54,6 @@ namespace SJ
 		float m_totalTransparency = 1.0f;
 	public:
 		ResultsScene(GLFWwindow* window);
-		~ResultsScene();
 		/**
 		 * \function void Update(float dt).
 		 * \brief Update visuals such as positions and other data
