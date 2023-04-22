@@ -49,16 +49,31 @@ namespace SJ
 		 * \param image - Texture&, image is put in here and will be rendered on the rectangle
 		 */
 		Button(const glm::vec2& pos, const glm::vec2& size, const int zIndex, Texture& image);
+		/**
+		 * \function void Draw(Shader& shader).
+		 * \brief Draw the object to screen
+		 * \param shader the shader class
+		 */
 		void Draw(Shader& shader);
+		/**
+		 * \function void readjustBounds(glm::vec2 pos).
+		 * \brief Change the bounding box of the buttons
+		 * \param pos the x,y position
+		 */
 		void readjustBounds(glm::vec2 pos);
+		/**
+		 * \function void repositionVerts(glm::vec2 pos).
+		 * \brief Change the position of the object
+		 * \param pos the x,y position
+		 */
 		void repositionVerts(glm::vec2 pos);
-		[[nodiscard]] bool hasMouseOnTop(double posx, double posy);
+		[[nodiscard]] bool hasMouseOnTop(double posx, double posy);//!< Check if the mouse is in the bounding box
 		[[nodiscard]] inline VAO& getVAO() { return *m_VAO; }//!< Access the vao for rendering
 		[[nodiscard]] inline EBO& getEBO() { return *m_EBO; }//!< Access the ebo for rendering
-		[[nodiscard]] inline float getZIndex() { return m_z; }
-		[[nodiscard]] inline glm::vec2 getPosition() { return m_position; }
-		[[nodiscard]] inline glm::vec2 getSize() { return m_size; }
-		[[nodiscard]] inline glm::vec2 getClickBoundsX() {return m_clickBoundsX; }
-		[[nodiscard]] inline glm::vec2 getClickBoundsY() {return m_clickBoundsY; }
+		[[nodiscard]] inline float getZIndex() { return m_z; }//!< Access the z index
+		[[nodiscard]] inline glm::vec2 getPosition() { return m_position; }//!< Get position
+		[[nodiscard]] inline glm::vec2 getSize() { return m_size; }//!< Get size
+		[[nodiscard]] inline glm::vec2 getClickBoundsX() {return m_clickBoundsX; }//!< Get bounding box in y dimension
+		[[nodiscard]] inline glm::vec2 getClickBoundsY() {return m_clickBoundsY; }//!< Get bounding box in y dimension
 	};
 }

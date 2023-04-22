@@ -18,7 +18,7 @@ namespace SJ
 		unsigned int channels = 0; //!< Channels for the wav data mono/stereo
 		unsigned int sampleRate = 0; //!< Sample rate of the audio file
 		drwav_uint64 totalPCMFrameCount = 0; //!< Total samples of the audio file
-		unsigned int size;
+		unsigned int size;//!<Size of all the samples
 	};
 
 	/*\struct MP3Data*/
@@ -43,8 +43,8 @@ namespace SJ
 	class AudioProcessor
 	{
 	public:
-		static WavData ProcessWavData(std::filesystem::path& filepath);//!< Decodes wav data all at once, not for music
-		static MP3Data ProcessMP3Data(std::filesystem::path& filepath);//!< Decodes mp3 data all at once, not for music
-		static OggData ProcessOggData(std::filesystem::path& filepath);//!< Decodes ogg data all at once, not for music
+		static WavData ProcessWavData(std::filesystem::path& filepath);//!< Decodes wav data all at once onto memory, not for music or long files
+		static MP3Data ProcessMP3Data(std::filesystem::path& filepath);//!< Decodes mp3 data all at once onto memory, not for music or long files
+		static OggData ProcessOggData(std::filesystem::path& filepath);//!< Decodes ogg data all at once onto memory, not for music or long files
 	};
 }

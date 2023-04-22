@@ -32,13 +32,18 @@ namespace SJ
 	class SFXSource
 	{
 	private:
-		ALuint m_source;
-		ALuint m_buffer = 0;
+		ALuint m_source;//!<Audio source
+		ALuint m_buffer = 0;//!<Audio buffer
 
 	public:
 		SFXSource();
 		~SFXSource();
 
+		/**
+		 * \function void Play(const ALuint buffer).
+		 * \brief Plays the sound effect stored in that buffer ID
+		 * \param buffer the audio buffer ID
+		 */
 		void Play(const ALuint buffer);
 	};
 }

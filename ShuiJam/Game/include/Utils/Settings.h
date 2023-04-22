@@ -16,4 +16,5 @@ inline int g_keySix = '.';
 inline int g_keySeven = '/';
 inline float g_Width = 1280.f;
 inline float g_Height = 720.f;
+inline float g_volume = 1.0f;
 

@@ -175,4 +175,9 @@ namespace SJ
 		m_pos = pos;
 		m_VBO->Edit(sizeof(m_verts), m_verts.data());
 	}
+	Text::~Text()
+	{
+		FT_Done_Face(m_face);
+		FT_Done_FreeType(m_ft);
+	}
 }
