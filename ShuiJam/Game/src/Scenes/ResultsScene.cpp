@@ -1,7 +1,7 @@
 /*****************************************************************//**
  * \file   ResultsScene.cpp
  * \brief  the results screen
- * 
+ *
  * \date   April 2023
  *********************************************************************/
 #include "Scenes/ResultsScene.h"
@@ -13,6 +13,8 @@ namespace SJ
 {
 	ResultsScene::ResultsScene(GLFWwindow* window) : m_window(window), m_device(AudioDevice::get()), m_sfx(SoundEffect::get())
 	{
+		//Reenable cursor
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		m_anyKeySound = m_sfx->addSFX(SJFOLDER + SOUNDS + "click.mp3");
 
 		//Create shaders
@@ -22,6 +24,24 @@ namespace SJ
 
 		m_textShader = std::make_unique<Shader>(SJFOLDER + SHADER + "text.vert", SJFOLDER + SHADER + "text.frag");
 		m_textShader->setMat4("projection", projection);
+
+		//Create textures
+		m_songIm = std::make_unique<Texture>(m_folder + g_CurrentOsuDir + L"/" + g_CurrentSong, GL_CLAMP_TO_EDGE);
+		m_gradesBGIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "resultsbg.png", GL_CLAMP_TO_EDGE);
+
+		std::array<std::string, 8> gradePaths = { "GradeP.png", "GradeAAA.png" ,"GradeAA.png" ,"GradeA.png"
+			,"GradeB.png" ,"GradeC.png" ,"GradeD.png" ,"GradeF.png" };
+		for (int i = 0; i < 8; i++)
+		{
+			m_gradesIm.at(i) = std::make_unique<Texture>(SJFOLDER + IMAGES + "game/" + gradePaths.at(i), GL_CLAMP_TO_EDGE);
+		}
+
+		std::array<std::string, 5> judgeFiles =
+		{ "perfect.png","great.png","good.png","bad.png","miss.png" };
+		for (int i = 0; i < 5; i++)
+		{
+			m_judgementIm.at(i) = std::make_unique<Texture>(SJFOLDER + IMAGES + "game/" + judgeFiles.at(i), GL_CLAMP_TO_EDGE);
+		}
 
 
 	}

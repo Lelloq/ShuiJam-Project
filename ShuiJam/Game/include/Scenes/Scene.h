@@ -14,6 +14,7 @@ namespace SJ
 	public:
 		~Scene() = default;
 
+		//Allows the inherited classes to use glfw for inputs for that specific scene
 		virtual void getKey(int key, int scancode, int action, int mods) = 0;
 		virtual void getMouseButton(int button, int action, int mods) = 0;
 		virtual void getScroll(double xoffset, double yoffset) = 0;
@@ -24,6 +25,7 @@ namespace SJ
 			Scene::s_window = window;
 		}
 
+		//Sets the input callbacks to a specific using a lambda function and casting an inherited scene's type
 		static void setInputCallbacks(Scene* scene)
 		{
 			glfwSetWindowUserPointer(s_window, scene);

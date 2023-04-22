@@ -139,18 +139,98 @@ namespace SJ
 		 * \return The position of the lerped value
 		 */
 		float lerp(float a, float b, float t);
+
+		/**
+		 * \function void calcJudgementHit(int column).
+		 * \brief Carries out the hit judgement function whenever the player presses one of the 7 keys
+		 * \param column the corresponding column of the key pressed
+		 */
 		void calcJudgementHit(int column);
+
+		/**
+		 * \function void hitJudgement(int column, int recent, float weight).
+		 * \brief Calculates the hit judgement accuracy, increments or resets combo and gains or takes away HP
+		 * 
+		 * \param column the corresponding column hit
+		 * \param recent the most recent judgement hit
+		 * \param weight the value it is worth in health and accuracy
+		 */
 		void hitJudgement(int column, int recent, float weight);
+
+		/**
+		 * \function void calcJudgementRelease(int column).
+		 * \brief Carries out the hit judgement function whenever the player releases one of the 7 keys
+		 * \param column the corresponding column of the key released
+		 */
 		void calcJudgementRelease(int column);
+
+		/**
+		 * \function void releaseJudgement(int column, int recent, float weight).
+		 * \brief Calculates the release judgement accuracy, increments or resets combo and gains or takes away HP
+		 * 
+		 * \param column the corresponding column release
+		 * \param recent the most recent judgement release
+		 * \param weight the value it is worth in health and accuracy
+		 */
 		void releaseJudgement(int column, int recent, float weight);
+
+		/**
+		 * \function void play().
+		 * \brief plays the music.
+		 */
 		void play();
 	public:
 		GameScene(GLFWwindow* window);
+		/**
+		 * \function void Update(float dt).
+		 * \brief Update visuals such as positions and other data
+		 * 
+		 * \param dt deltatime
+		 */
 		void Update(float dt);
+
+		/**
+		 * \function void Render().
+		 * \brief Renders the graphics on screen using OpenGL
+		 */
 		void Render();
+
+		/**
+		 * \function getKey(int key, int scancode, int action, int mods) override.
+		 * \brief Callbacks that gets keyboard inputs using glfw
+		 * 
+		 * \param key
+		 * \param scancode
+		 * \param action
+		 * \param mods
+		 */
 		void getKey(int key, int scancode, int action, int mods) override;
+
+		/**
+		 * \function void getMouseButton(int button, int action, int mods) override.
+		 * \brief Callbacks that gets mouse button inputs using glfw
+		 * 
+		 * \param button
+		 * \param action
+		 * \param mods
+		 */
 		void getMouseButton(int button, int action, int mods) override;
+
+		/**
+		 * \function void getScroll(double xoffset, double yoffset) override.
+		 * \brief Callbacks that gets the scroll direction of the scroll wheel using glfw
+		 * 
+		 * \param xoffset
+		 * \param yoffset
+		 */
 		void getScroll(double xoffset, double yoffset) override;
+
+		/**
+		 * \function void fileDrop(int count, const char** paths) override.
+		 * 
+		 * \param count how many files there are
+		 * \param paths file path
+		 */
 		void fileDrop(int count, const char** paths) override;
 	};
 }

@@ -111,11 +111,56 @@ namespace SJ
 		std::array<std::unique_ptr<Button>, 7> m_keysBtn;//Key button
 	public:
 		SongScene(GLFWwindow* window);
+		/**
+		 * \function void Update(float dt).
+		 * \brief Update visuals such as positions and other data
+		 *
+		 * \param dt deltatime
+		 */
 		void Update(float dt);
+
+		/**
+		 * \function void Render().
+		 * \brief Renders the graphics on screen using OpenGL
+		 */
 		void Render();
+
+		/**
+		 * \function getKey(int key, int scancode, int action, int mods) override.
+		 * \brief Callbacks that gets keyboard inputs using glfw
+		 *
+		 * \param key
+		 * \param scancode
+		 * \param action
+		 * \param mods
+		 */
 		void getKey(int key, int scancode, int action, int mods) override;
+
+		/**
+		 * \function void getMouseButton(int button, int action, int mods) override.
+		 * \brief Callbacks that gets mouse button inputs using glfw
+		 *
+		 * \param button
+		 * \param action
+		 * \param mods
+		 */
 		void getMouseButton(int button, int action, int mods) override;
+
+		/**
+		 * \function void getScroll(double xoffset, double yoffset) override.
+		 * \brief Callbacks that gets the scroll direction of the scroll wheel using glfw
+		 *
+		 * \param xoffset
+		 * \param yoffset
+		 */
 		void getScroll(double xoffset, double yoffset) override;
+
+		/**
+		 * \function void fileDrop(int count, const char** paths) override.
+		 *
+		 * \param count how many files there are
+		 * \param paths file path
+		 */
 		void fileDrop(int count, const char** paths) override;
 	};
 }
