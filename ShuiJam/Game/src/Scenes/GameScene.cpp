@@ -11,7 +11,9 @@ namespace SJ
 {
 	GameScene::GameScene(GLFWwindow* window) : m_window(window), m_device(AudioDevice::get()), m_sfx(SoundEffect::get())
 	{
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		//Disable cursor movement to prevent closing while the player is playing
+		glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		//Get all the note data
 		m_notes = std::async(std::launch::async, OsuParser::parse, g_CurrentOsuDir, g_CurrentDifficulty).get();
 		m_music = std::make_unique<Music>(m_folder + g_CurrentOsuDir + L"/" + g_CurrentSong);
 
@@ -117,7 +119,8 @@ namespace SJ
 		else
 		{
 			m_leadin = 0;
-			std::async(std::launch::async, &GameScene::play, this);
+			m_music->Play();
+			m_music->Update();
 		}
 		m_curTimePos = m_music->getTimePosition();
 
@@ -127,9 +130,35 @@ namespace SJ
 		}
 
 	#pragma region Conditions to results screen and animation
-		if(m_totalNotesPassed >= m_totalNotes)
+		if(m_totalNotesPassed >= m_totalNotes || m_gameEnded)
 		{
 			//Animate the screen closing and move to results screen
+			m_totalTransparency -= dt * 2.0f;
+			if(m_totalTransparency <= 0.0f)
+			{
+				g_accuracy = m_accuracy;
+				g_perfCount = m_judgementCounts.at(0);
+				g_greatCount = m_judgementCounts.at(1);
+				g_goodCount = m_judgementCounts.at(2);
+				g_badCount = m_judgementCounts.at(3);
+				g_missCount = m_judgementCounts.at(4);
+				g_highestCombo = m_highestCombo;
+				g_CurrentScene = "result";
+			}
+		}
+
+		if(m_gameEnded)
+		{
+			m_music->Stop();
+		}
+
+		if(m_hasHitRecently)
+		{
+			m_numTimer -= dt * 0.25f;
+			if(m_numTimer <= 0)
+			{
+				m_hasHitRecently = false;
+			}
 		}
 	#pragma endregion
 
@@ -139,7 +168,8 @@ namespace SJ
 		int noteX = (VPORT_WIDTH / 2) - (m_stageBGIm->getWidth() / 2);
 		for (int i = 0; i < m_notes.size(); i++)
 		{
-			if(m_nextNote.at(i) < m_notes.at(i).size() && m_notes.at(i).at(m_nextNote.at(i)).timingPoint < m_music->getTimePosition() + 10000.f)
+			//Create a rice note if it has no release timing i.e 0 otherwise create an long note object
+			if(m_nextNote.at(i) < m_notes.at(i).size() && m_notes.at(i).at(m_nextNote.at(i)).timingPoint < m_music->getTimePosition() + (2000.0f - m_cSpeed))
 			{
 				int column = m_notes.at(i).at(m_nextNote.at(i)).column;
 				int release = m_notes.at(i).at(m_nextNote.at(i)).releasePoint;
@@ -202,24 +232,27 @@ namespace SJ
 				if(release != 0)
 				{
 					//300ms late
-					if (m_curTimePos - timing >= m_missWindow && !m_holdingNote.at(i)) 
+					if (m_curTimePos - timing >= m_missWindow && !m_holdingNote.at(i) && !m_failedRelease.at(i)) 
 					{
 						m_combo = 0;
 						m_notesProcessedWeighted += 1.0;
+						m_failedRelease.at(i) = true;
 						m_hasHitRecently = true;
 						m_recentJudgement = 4;
-						m_hp -= 2.5f;
+						m_hp -= m_gainLossLN;
 					}
 					if (m_curTimePos - release >= m_missWindow)
 					{ 
 						m_combo = 0;
 						m_notesProcessedWeighted += 1.0; 
 						m_hasHitRecently = true;
+						m_failedRelease.at(i) = false;
 						m_recentJudgement = 4;
 						m_noteObj.at(i).at(j).clear();
 						m_notesPassed.at(i)++;
 						m_totalNotesPassed++;
-						m_hp -= 2.5f;
+						m_hp -= m_gainLossLN;
+						m_judgementCounts.at(4)++;
 					}
 				}
 				else if(release == 0)
@@ -234,7 +267,8 @@ namespace SJ
 						m_noteObj.at(i).at(j).clear();
 						m_notesPassed.at(i)++;
 						m_totalNotesPassed++;
-						m_hp -= 5.0f;
+						m_hp -= m_gainLossLN;
+						m_judgementCounts.at(4)++;
 					}
 				}
 			}
@@ -242,6 +276,7 @@ namespace SJ
 		}
 	#pragma endregion
 
+		if (m_combo > m_highestCombo) m_highestCombo = m_combo;
 	}
 
 	void GameScene::Render()
@@ -250,9 +285,9 @@ namespace SJ
 
 	#pragma region Stage and numbers
 		//Draw stage
-		m_shader->setFloat("transparency", 0.5f);
+		m_shader->setFloat("transparency", m_totalTransparency - 0.5f);
 		m_songBG->Draw(*m_shader);
-		m_shader->setFloat("transparency", 1.0f);
+		m_shader->setFloat("transparency", m_totalTransparency);
 		m_stageBG->Draw(*m_shader);
 		m_stageLeft->Draw(*m_shader);
 		m_stageRight->Draw(*m_shader);
@@ -260,7 +295,7 @@ namespace SJ
 		m_stageHitposition->Draw(*m_shader);
 		//Draw health
 		if (m_hp > 100.f) m_hp = 100.f;
-		if (m_hp < 0.f) m_hp = 0.f, m_gameEnded = true;
+		if (m_hp < 0.f) m_hp = 0.f, m_gameEnded = true, g_accuracy = m_accuracy, g_failed = true;;
 		float healthPercent = m_hp / 100.f;
 		m_health->resizeVerts(glm::vec2(m_healthIm->getWidth(), m_healthIm->getHeightf() * healthPercent));
 		m_healthBG->Draw(*m_shader);
@@ -275,6 +310,7 @@ namespace SJ
 		{
 			if(m_accStr.at(i) != '.')
 			{
+				//0 to 9 in ascii terms
 				percentNumPosX -= m_numIm.at(m_accStr.at(i) - '0')->getWidth();
 				m_num.at(m_accStr.at(i) - '0')->repositionVerts(glm::vec2(percentNumPosX, percentNumPosY));
 				m_num.at(m_accStr.at(i) - '0')->Draw(*m_shader);
@@ -348,7 +384,7 @@ namespace SJ
 		for (int i = 0; i < 7; i++)
 		{
 			//Check timing inputs
-			if(m_notesPassed.at(i) < m_notes.at(i).size())
+			if(m_notesPassed.at(i) < m_notes.at(i).size() && !m_gameEnded)
 			{
 				if (action == GLFW_PRESS && key == m_inputs.at(i))
 				{
@@ -371,6 +407,7 @@ namespace SJ
 				m_pressed.at(i) = false;
 			}
 		}
+		if (action == GLFW_PRESS && key == GLFW_KEY_ESCAPE) m_gameEnded = true, g_failed = true;
 	}
 
 #pragma region NOT IN USE
@@ -396,12 +433,12 @@ namespace SJ
 	{
 		//Late: >=
 		//Early: <=
-		int hit = m_notes.at(column).at(m_notesPassed.at(column)).timingPoint;
+		int hit = m_notes.at(column).at(m_notesPassed.at(column)).timingPoint + m_leadin;
 		float difference = m_curTimePos - hit;
 		//Increase combo or reset combo depending if its a perfect to good or bad to a miss
 		//Display the combo and judge
 		//Calculate accuracy
-		//Remove the note if its a rice note
+		//Remove the note if its at the end of the long note
 		if(difference <= m_perfWindow && difference >= -m_perfWindow)
 		{
 			hitJudgement(column, 0, m_perfWeight);
@@ -426,15 +463,23 @@ namespace SJ
 
 	void GameScene::hitJudgement(int column,int recent, float weight)
 	{
-		if(recent != 4) { m_combo++; }
-		else { m_combo = 0; }
-		m_hasHitRecently = true;
-		m_recentJudgement = recent;
-		m_notesHitWeighted += weight;
-		m_notesProcessedWeighted += 1.0;
-		if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 1)
+		if(!m_failedRelease.at(column) || m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 1)
 		{
-			m_hp += weight * 5.0f;
+			if(recent != 4) { m_combo++; }
+			else { m_combo = 0; }
+			if (recent == 3) m_hp -= weight * m_gainLossRice * 2.0f;
+			else if (recent == 4) m_hp -= m_gainLossRice * 2.0f;
+			else m_hp += weight * m_gainLossRice;
+			m_hasHitRecently = true;
+			m_recentJudgement = recent;
+			m_notesHitWeighted += weight;
+			m_notesProcessedWeighted += 1.0;
+			m_judgementCounts.at(recent)++;
+			m_numTimer = 5.0f;
+		}
+
+		if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 1)
+		{	
 			m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
 			m_notesPassed.at(column)++;
 			m_totalNotesPassed++;
@@ -447,25 +492,26 @@ namespace SJ
 
 	void GameScene::calcJudgementRelease(int column)
 	{
-		int release = m_notes.at(column).at(m_notesPassed.at(column)).releasePoint;
+		//Giving the release window a slightly wider window since I think releases are harder than hitting
+		int release = m_notes.at(column).at(m_notesPassed.at(column)).releasePoint + m_leadin;
 		float difference = m_curTimePos - release;
-		if (difference <= m_perfWindow && difference >= -m_perfWindow)
+		if (difference <= m_perfWindow * m_windowMult && difference >= -m_perfWindow * m_windowMult)
 		{
 			releaseJudgement(column, 0, m_perfWeight);
 		}
-		else if (difference <= m_greatWindow && difference >= -m_greatWindow)
+		else if (difference <= m_greatWindow * m_windowMult && difference >= -m_greatWindow * m_windowMult)
 		{
 			releaseJudgement(column, 1, m_greatWeight);
 		}
-		else if (difference <= m_goodWindow && difference >= -m_goodWindow)
+		else if (difference <= m_goodWindow * m_windowMult && difference >= -m_goodWindow * m_windowMult)
 		{
 			releaseJudgement(column, 2, m_goodWeight);
 		}
-		else if (difference <= m_badWindow && difference >= -m_badWindow)
+		else if (difference <= m_badWindow * m_windowMult && difference >= -m_badWindow * m_windowMult)
 		{
 			releaseJudgement(column, 3, m_badWeight);
 		}
-		else if (difference <= m_missWindow && difference >= -m_missWindow)
+		else
 		{
 			m_combo = 0;
 			m_hasHitRecently = true;
@@ -481,18 +527,15 @@ namespace SJ
 		m_recentJudgement = recent;
 		m_notesHitWeighted += weight;
 		m_notesProcessedWeighted += 1.0;
+		m_numTimer = 5.0f;
 		if (m_noteObj.at(column).at(m_notesPassed.at(column)).size() == 3)
 		{
-			m_hp += weight * 5.0f;
+			if (recent == 3) m_hp -= weight * m_gainLossLN * 2.0f;
+			else m_hp += weight * m_gainLossLN;
 			m_noteObj.at(column).at(m_notesPassed.at(column)).clear();
 			m_notesPassed.at(column)++;
+			m_judgementCounts.at(recent)++;
 			m_totalNotesPassed++;
 		}
-	}
-
-	void GameScene::play()
-	{
-		m_music->Play();
-		m_music->Update();
 	}
 }

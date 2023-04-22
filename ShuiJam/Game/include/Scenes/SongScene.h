@@ -12,6 +12,7 @@
 #include "Utils/FileProcessor.h"
 #include <GLFW/glfw3.h>
 #include <map>
+#include <array>
 
 namespace SJ
 {
@@ -36,16 +37,17 @@ namespace SJ
 		//GRAPHICS
 		//Buttons
 		std::vector<std::unique_ptr<Button>> m_buttons;//Buttons in song select 11 buttons
-		std::vector<std::unique_ptr<Button>> m_sbuttons;//Buttons in settings 2 buttons
 		//Shader
 		std::unique_ptr<Shader> m_shader;
 		//Textures
 		std::unique_ptr<Texture> m_songBGIm, m_songSelectIm, m_logoIm;
+		std::unique_ptr<Texture> m_songBGImPlay;//This appears on top of everything when the player presses play
 		std::shared_ptr<Texture> m_selectWheelIm;
 		//Buttons
 		std::unique_ptr<Button> m_logoBtn;
 		//Objects
 		std::unique_ptr<Rect> m_songBg;
+		std::unique_ptr<Rect> m_songBGPlay;//This appears on top of everything when the player presses play
 		std::unique_ptr<Rect> m_songSelect;
 		//Text
 		std::unique_ptr<Shader> m_textShader;
@@ -105,14 +107,60 @@ namespace SJ
 		bool m_settingsOpen = false;//Settings ui open or not
 		bool m_keybindsOpen = false;//Keybinds ui open or not
 		std::unique_ptr<Texture> m_settingsIm, m_keybindIm;
-		std::unique_ptr<Button> m_keybindBtn, m_sButtonmBtn;
+		std::unique_ptr<Button> m_keybindBtn, m_settingsBtn;
+		std::array<std::unique_ptr<Button>, 7> m_keysBtn;//Key button
 	public:
 		SongScene(GLFWwindow* window);
+		/**
+		 * \function void Update(float dt).
+		 * \brief Update visuals such as positions and other data
+		 *
+		 * \param dt deltatime
+		 */
 		void Update(float dt);
+
+		/**
+		 * \function void Render().
+		 * \brief Renders the graphics on screen using OpenGL
+		 */
 		void Render();
+
+		/**
+		 * \function getKey(int key, int scancode, int action, int mods) override.
+		 * \brief Callbacks that gets keyboard inputs using glfw
+		 *
+		 * \param key
+		 * \param scancode
+		 * \param action
+		 * \param mods
+		 */
 		void getKey(int key, int scancode, int action, int mods) override;
+
+		/**
+		 * \function void getMouseButton(int button, int action, int mods) override.
+		 * \brief Callbacks that gets mouse button inputs using glfw
+		 *
+		 * \param button
+		 * \param action
+		 * \param mods
+		 */
 		void getMouseButton(int button, int action, int mods) override;
+
+		/**
+		 * \function void getScroll(double xoffset, double yoffset) override.
+		 * \brief Callbacks that gets the scroll direction of the scroll wheel using glfw
+		 *
+		 * \param xoffset
+		 * \param yoffset
+		 */
 		void getScroll(double xoffset, double yoffset) override;
+
+		/**
+		 * \function void fileDrop(int count, const char** paths) override.
+		 *
+		 * \param count how many files there are
+		 * \param paths file path
+		 */
 		void fileDrop(int count, const char** paths) override;
 	};
 }

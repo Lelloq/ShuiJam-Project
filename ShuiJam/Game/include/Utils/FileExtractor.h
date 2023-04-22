@@ -26,6 +26,7 @@ namespace SJ
 		inline static const std::filesystem::path m_origin = std::filesystem::current_path();
 		inline static Bit7zLibrary m_lib{ L"../ShuiJamGame/7z.dll" };//!< Location of the 7zip dll file
 		inline static BitExtractor m_extractor{ m_lib,BitFormat::Zip };//!< Extraction method
+		inline static int filesExtracted = 0;
 
 		static bool fileExtractorThread();
 	public:

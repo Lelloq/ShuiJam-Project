@@ -11,6 +11,7 @@
 #include "objects/objects.h"
 #include "Utils/OsuParser.h"
 #include <GLFW/glfw3.h>
+#include "Utils/Settings.h"
 
 namespace SJ
 {
@@ -83,9 +84,10 @@ namespace SJ
 		float m_cSpeed = 550.f;
 		float m_curTimePos = 0.f;
 		bool m_gameEnded = false;
+		float m_totalTransparency = 1.0f;
 
 		std::array<int, 7> m_inputs = //Default keyboard inputs
-		{GLFW_KEY_Z, GLFW_KEY_X, GLFW_KEY_C , GLFW_KEY_SPACE, GLFW_KEY_COMMA, GLFW_KEY_PERIOD, GLFW_KEY_SLASH};
+		{g_keyOne, g_keyTwo, g_keyThree , g_keyFour, g_keyFive, g_keySix, g_keySeven};
 		std::array<bool, 7> m_pressed = { false, false, false, false, false ,false ,false };
 		std::array<bool, 7> m_holdingNote = { false, false, false, false, false ,false ,false };
 		std::array<bool, 7> m_failedRelease = { false, false, false, false, false ,false ,false };
@@ -93,10 +95,12 @@ namespace SJ
 		int m_comboPosition = 470;
 		int m_judgePosition = 370;
 		bool m_hasHitRecently = false;
+		float m_numTimer = 5.0f;
 		//Numbers tracking
 		int m_recentJudgement = 0;//Most recent judgement hit
 		float m_hp = 100;
 		int m_combo = 0;
+		int m_highestCombo = 0;
 		float m_accuracy = 100.000f;
 		//Accuracy throughout the song will be calculated as:
 		/*((perfCount* perfWeight) + 
@@ -108,22 +112,25 @@ namespace SJ
 		float m_notesHitWeighted = 0.0f;
 		float m_notesProcessedWeighted = 0.0f;
 		//Judgement counts will be taken over to the results scene
-		int m_jPerfCount = 0, m_jGreatCount = 0, m_jGoodCount = 0;
-		int m_jBadCount = 0, m_jMissCount = 0;
+		//[0] = Perfect [1] = Great [2] = Good [3] = Bad [4] = miss
+		std::array<int, 5> m_judgementCounts = { 0,0,0,0,0 };
 		//Accuracy windows (in milliseconds (perf->bad taken from lunatic rave 2 easy judge))
 		//Positive means late, negative means early
 		int m_perfWindow = 21;
 		int m_greatWindow = 60;
 		int m_goodWindow = 120;
-		int m_badWindow = 200;
-		int m_missWindow = 300;
+		int m_badWindow = 160;
+		int m_missWindow = 200;
 		//Accuracy weighting (perf = 100%, great = 95% etc.) will be tuned throughout development
 		float m_perfWeight = 1.0f;
 		float m_greatWeight = 0.97f;
-		float m_goodWeight = 0.75f;
+		float m_goodWeight = 0.50f;
 		float m_badWeight = 0.25f;
 		float m_missWeight = 0.0f;
 		
+		float m_windowMult = 2.0f;
+		float m_gainLossRice = 10.0f;
+		float m_gainLossLN = 5.0f;
 		/**
 		 * \function float lerp(float a, float b, float t)
 		 * \param a Start position of the lerp
@@ -132,18 +139,92 @@ namespace SJ
 		 * \return The position of the lerped value
 		 */
 		float lerp(float a, float b, float t);
+
+		/**
+		 * \function void calcJudgementHit(int column).
+		 * \brief Carries out the hit judgement function whenever the player presses one of the 7 keys
+		 * \param column the corresponding column of the key pressed
+		 */
 		void calcJudgementHit(int column);
+
+		/**
+		 * \function void hitJudgement(int column, int recent, float weight).
+		 * \brief Calculates the hit judgement accuracy, increments or resets combo and gains or takes away HP
+		 * 
+		 * \param column the corresponding column hit
+		 * \param recent the most recent judgement hit
+		 * \param weight the value it is worth in health and accuracy
+		 */
 		void hitJudgement(int column, int recent, float weight);
+
+		/**
+		 * \function void calcJudgementRelease(int column).
+		 * \brief Carries out the hit judgement function whenever the player releases one of the 7 keys
+		 * \param column the corresponding column of the key released
+		 */
 		void calcJudgementRelease(int column);
+
+		/**
+		 * \function void releaseJudgement(int column, int recent, float weight).
+		 * \brief Calculates the release judgement accuracy, increments or resets combo and gains or takes away HP
+		 * 
+		 * \param column the corresponding column release
+		 * \param recent the most recent judgement release
+		 * \param weight the value it is worth in health and accuracy
+		 */
 		void releaseJudgement(int column, int recent, float weight);
-		void play();
 	public:
 		GameScene(GLFWwindow* window);
+		/**
+		 * \function void Update(float dt).
+		 * \brief Update visuals such as positions and other data
+		 * 
+		 * \param dt deltatime
+		 */
 		void Update(float dt);
+
+		/**
+		 * \function void Render().
+		 * \brief Renders the graphics on screen using OpenGL
+		 */
 		void Render();
+
+		/**
+		 * \function getKey(int key, int scancode, int action, int mods) override.
+		 * \brief Callbacks that gets keyboard inputs using glfw
+		 * 
+		 * \param key
+		 * \param scancode
+		 * \param action
+		 * \param mods
+		 */
 		void getKey(int key, int scancode, int action, int mods) override;
+
+		/**
+		 * \function void getMouseButton(int button, int action, int mods) override.
+		 * \brief Callbacks that gets mouse button inputs using glfw
+		 * 
+		 * \param button
+		 * \param action
+		 * \param mods
+		 */
 		void getMouseButton(int button, int action, int mods) override;
+
+		/**
+		 * \function void getScroll(double xoffset, double yoffset) override.
+		 * \brief Callbacks that gets the scroll direction of the scroll wheel using glfw
+		 * 
+		 * \param xoffset
+		 * \param yoffset
+		 */
 		void getScroll(double xoffset, double yoffset) override;
+
+		/**
+		 * \function void fileDrop(int count, const char** paths) override.
+		 * 
+		 * \param count how many files there are
+		 * \param paths file path
+		 */
 		void fileDrop(int count, const char** paths) override;
 	};
 }

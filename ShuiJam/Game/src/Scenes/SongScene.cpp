@@ -6,6 +6,7 @@
  *********************************************************************/
 #include "Scenes/SongScene.h"
 #include "Utils/Properties.h"
+#include "Utils/Settings.h"
 #include <GLFW/glfw3.h>
 #include <future>
 
@@ -14,6 +15,7 @@ namespace SJ
 	SongScene::SongScene(GLFWwindow* window) : m_window(window), m_device(AudioDevice::get()), m_sfx(SoundEffect::get())
 	{
 		m_fileProcessor = std::make_unique<FileProcessor>();
+		g_failed = false;
 
 	#pragma region Main graphics and audio
 		m_scrollSound = m_sfx->addSFX(SJFOLDER + SOUNDS + "scroll.wav");
@@ -28,6 +30,9 @@ namespace SJ
 
 		m_songBGIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "selectbg.png", GL_CLAMP_TO_EDGE);
 		m_songBg = std::make_unique<Rect>(glm::vec2(0.f, 0.f), glm::vec2(VPORT_WIDTH, VPORT_HEIGHT), 0, *m_songBGIm);
+
+		m_songBGImPlay = std::make_unique<Texture>("", GL_CLAMP_TO_EDGE);
+		m_songBGPlay = std::make_unique<Rect>(glm::vec2(0.0f, 0.0f), glm::vec2(VPORT_WIDTH, VPORT_HEIGHT), 10, *m_songBGImPlay);
 
 		m_selectWheelIm = std::make_shared<Texture>(SJFOLDER + IMAGES + "selectbar.png", GL_CLAMP_TO_EDGE);
 
@@ -47,13 +52,9 @@ namespace SJ
 
 		glm::mat4 projection{ glm::ortho(0.f, VPORT_WIDTH, 0.f, VPORT_HEIGHT, -1000.f, 1.f) };
 		m_shader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
-
-		m_shader->use();
 		m_shader->setMat4("projection", projection);
 
 		m_textShader = std::make_unique<Shader>(SJFOLDER + SHADER + "text.vert", SJFOLDER + SHADER + "text.frag");
-
-		m_textShader->use();
 		m_textShader->setMat4("projection", projection);
 	#pragma endregion
 
@@ -72,8 +73,11 @@ namespace SJ
 	#pragma endregion
 
 	#pragma region song data processing
-		m_fileProcessor->ProcessFiles();
-		std::async(std::launch::async, &FileProcessor::reloadSongs, &*m_fileProcessor);
+		if(g_filesChanged || !std::filesystem::exists(L"../ShuiJamGame/shuijam.db"))
+		{
+			m_fileProcessor->ProcessFiles();
+			m_fileProcessor->reloadSongs();
+		}
 		m_lastSong = m_fileProcessor->getLastID();
 		updateSongWheel();
 	#pragma endregion
@@ -186,7 +190,9 @@ namespace SJ
 				m_source->Play(m_refreshSound);
 			}
 			m_fileProcessor->ProcessFiles();
-			std::async(std::launch::async, &FileProcessor::reloadSongs, &*m_fileProcessor);
+			m_fileProcessor->reloadSongs();
+			m_lastSong = m_fileProcessor->getLastID();
+			updateSongWheel();
 		}
 		//An alternative way to scroll up or down the song wheel
 		if((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_UP && m_scrollDirection == 0 && m_canScrollDown)
@@ -249,9 +255,10 @@ namespace SJ
 					{
 						m_source = std::make_unique<SFXSource>();
 						m_source->Play(m_scrollSound);
-						if (m_music != nullptr) m_music->Stop();
+						if (m_music != nullptr) m_music.reset();
 						m_music = std::make_unique<Music>(L"../ShuiJamGame/Songs/" + m_songData.at(i).dirPath + L"/" + m_songData.at(i).audio);
 						m_songBGIm->reloadTexture(L"../ShuiJamGame/Songs/" + m_songData.at(i).dirPath + L"/" + m_songData.at(i).background, GL_CLAMP_TO_EDGE);
+						m_songBGImPlay->reloadTexture(L"../ShuiJamGame/Songs/" + m_songData.at(i).dirPath + L"/" + m_songData.at(i).background, GL_CLAMP_TO_EDGE);
 						m_isPlaying = true;
 					}
 				}
@@ -307,16 +314,14 @@ namespace SJ
 			if (ptr > m_lastSong) ptr = 0;
 			int index = (m_head + i) % 11;
 			m_songData.at(index) = m_fileProcessor->retrieveSong(ptr);
-			//std::wcout << index << ": " << m_songData.at(index).title << "\n";
-			m_songWheelText.at(index)->changeText(m_fileProcessor->retrieveSong(ptr).title);
 			ptr++;
-			if (m_songData.at(index).title.size() > 30)
+			if (m_songData.at(index).title.size() + m_songData.at(index).version.size() > 30)
 			{
 				m_songWheelText.at(index)->changeText(m_songData.at(index).title.substr(0, 30) + L"...");
 			}
 			else
 			{
-				m_songWheelText.at(index)->changeText(m_songData.at(index).title);
+				m_songWheelText.at(index)->changeText(m_songData.at(index).title + L" [" + m_songData.at(index).version + L"]");
 			}
 		}
 	}
@@ -329,12 +334,15 @@ namespace SJ
 		g_CurrentSong = m_songData.at(m_confirmation).audio;
 		g_CurrentDifficulty = m_songData.at(m_confirmation).osuPath;
 		g_CurrentOsuDir = m_songData.at(m_confirmation).dirPath;
+		g_CurrentDiffName = m_songData.at(m_confirmation).version;
+		g_CurrentTitle = m_songData.at(m_confirmation).title;
 		{
 			m_source = std::make_unique<SFXSource>();
 			m_source->Play(m_startSound);
-			m_music->Stop();
+			m_music.reset();
 		}
 		g_CurrentScene = "game";
+		m_canClick = true;
 	}
 
 	void SongScene::scrollDown()
@@ -349,7 +357,7 @@ namespace SJ
 			if (m_music != nullptr) 
 			{ 
 				m_isPlaying = false;
-				m_music->Stop(); 
+				m_music.reset();
 				m_songBGIm->reloadTexture(SJFOLDER + IMAGES + "selectbg.png", GL_CLAMP_TO_EDGE);
 			}
 		}
@@ -370,7 +378,7 @@ namespace SJ
 			if (m_music != nullptr) 
 			{
 				m_isPlaying = false;
-				m_music->Stop(); 
+				m_music.reset();
 				m_songBGIm->reloadTexture(SJFOLDER + IMAGES + "selectbg.png", GL_CLAMP_TO_EDGE);
 			}
 		}

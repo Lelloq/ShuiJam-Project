@@ -17,6 +17,14 @@ namespace SJ
 		return s_device;
 	}
 
+	void AudioDevice::setGain(float gain)
+	{
+		if(s_device != nullptr)
+		{
+			alListenerf(AL_GAIN, gain);
+		}
+	}
+
 	//Create the OpenAL sound device in the constructor
 	AudioDevice::AudioDevice()
 	{

@@ -1,15 +1,16 @@
-/*\file MenuScene.h*/
+/*\file ResultsScene.h*/
 #pragma once
 #include "Renderer.h"
 #include "Scene.h"
 #include "Audio/Audio.h"
 #include "objects/objects.h"
+#include <array>
 
 namespace SJ
 {
-	/*\class MenuScene
-	\brief the title screen*/
-	class MenuScene : public Scene
+	/*\class ResultsScene
+	\brief the result screen of player's performance*/
+	class ResultsScene : public Scene
 	{
 	private:
 		//WINDOW
@@ -22,29 +23,37 @@ namespace SJ
 		ALuint m_anyKeySound;
 		//GRAPHICS
 		//Shader
-		std::unique_ptr<Shader> m_bgShader;
-		std::unique_ptr<Shader> m_titleShader;
-		std::unique_ptr<Shader> m_startShader;
+		std::unique_ptr<Shader> m_shader;
+		std::unique_ptr<Shader> m_textShader;
 		//Textures
-		std::unique_ptr<Texture> m_bgIm;
-		std::unique_ptr<Texture> m_titleIm;
-		std::unique_ptr<Texture> m_startIm;
+		std::unique_ptr<Texture> m_songIm;
+		std::array<std::unique_ptr<Texture>, 5> m_judgementIm;
+		std::array<std::unique_ptr<Texture>, 8> m_gradesIm;
+		std::unique_ptr<Texture> m_gradesBGIm;
 		//Objects
-		std::unique_ptr<Rect> m_bg;
-		std::unique_ptr<Rect> m_title;
-		std::unique_ptr<Rect> m_start;
-		bool m_pressed = false;
+		std::unique_ptr<Rect> m_song;
+		std::unique_ptr<Rect> m_gradesBG;
+		std::array<std::unique_ptr<Rect>, 5> m_judgement;
+		std::array<std::unique_ptr<Rect>, 8> m_grades;
 
-		//Animation toggles and values
-		float m_intermediate = 0.f;
-		bool m_toggle = false;
-		float m_toggleValue = 0.f;
-		float m_toggleThreshold = 0.5f;
-		float m_timer = 0.f;
-		float m_sceneTransparency = 1.f;
+		//Text
+		std::unique_ptr<Text> m_percent;
+		std::unique_ptr<Text> m_title;
+		std::unique_ptr<Text> m_difficulty;
+		std::unique_ptr<Text> m_highestCombo;
+		std::unique_ptr<Text> m_perfCount;
+		std::unique_ptr<Text> m_greatCount;
+		std::unique_ptr<Text> m_goodCount;
+		std::unique_ptr<Text> m_badCount;
+		std::unique_ptr<Text> m_missCount;
+
+		//OTHER DATA
+		std::array<float, 7> m_gradeThresholds = {99.75f, 98.0f, 95.0f, 90.0f, 80.0f, 75.0f, 70.0f};
+		std::wstring m_folder = L"../ShuiJamGame/Songs/";
+		bool m_goBackToSelect = false;
+		float m_totalTransparency = 1.0f;
 	public:
-		MenuScene(GLFWwindow* window);
-		~MenuScene();
+		ResultsScene(GLFWwindow* window);
 		/**
 		 * \function void Update(float dt).
 		 * \brief Update visuals such as positions and other data

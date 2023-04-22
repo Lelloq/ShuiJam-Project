@@ -7,11 +7,6 @@ out vec2 uv;
 
 uniform mat4 projection;
 
-layout (std140) uniform P
-{
-	mat4 p;
-};
-
 void main()
 {
 	gl_Position = projection * vec4(aPos,1.0);
