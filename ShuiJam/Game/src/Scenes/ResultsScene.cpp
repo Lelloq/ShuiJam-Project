@@ -50,7 +50,7 @@ namespace SJ
 
 		for(int i = 0; i < 8; i++)
 		{
-			m_grades.at(i) = std::make_unique<Rect>(glm::vec2(680.0f, 200.f), glm::vec2(200.f, 255.2f), 2 , *m_gradesIm.at(i));
+			m_grades.at(i) = std::make_unique<Rect>(glm::vec2(680.0f, 200.f), glm::vec2(m_gradesIm.at(i)->getWidthf(), m_gradesIm.at(0)->getHeightf()), 2 , *m_gradesIm.at(i));
 		}
 
 		m_judgement.at(0) = std::make_unique<Rect>(glm::vec2(200.0f, 405.f), glm::vec2(m_judgementIm.at(0)->getWidthf(), m_judgementIm.at(0)->getHeightf()), 2, *m_judgementIm.at(0));
@@ -145,7 +145,7 @@ namespace SJ
 
 	void ResultsScene::getMouseButton(int button, int action, int mods)
 	{
-		if(action == GLFW_PRESS && key == GLFW_KEY_ENTER && !m_goBackToSelect)
+		if(action == GLFW_PRESS && !m_goBackToSelect)
 		{
 			{
 				m_source = std::make_unique<SFXSource>();

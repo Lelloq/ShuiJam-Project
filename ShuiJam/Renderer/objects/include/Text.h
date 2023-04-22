@@ -52,13 +52,41 @@ namespace SJ
 		FT_Library m_ft;
 		FT_Face m_face;
 
+		/**
+		 * \function InitFT(std::string fontFile).
+		 * \brief Initialises freetype2 and loads the font file
+		 * \param fontFile the font file
+		 */
 		void InitFT(std::string fontFile);
 	public:
+		/**
+		 * Text constructor.
+		 * \param pos - glm::vec2 the position of the text box on the bottom left origin
+		 * \param text - std::wstring the text itself
+		 * \param width - int width of the text box
+		 * \param fontsize - int the fontsize
+		 * \param zIndex - the z index, higher z number the more on top it will render above the other objects
+		 * \param fontFile - the font file, can be .ttf .otf etc.
+		 */
 		Text(const glm::vec2& pos, std::wstring text,unsigned int width ,unsigned int fontsize, unsigned int zIndex, std::string fontFile);
-		~Text();
+		~Text();//! Destructor
+		/**
+		 * \function void repositionVerts(glm::vec2 pos).
+		 * \brief Change the position of the object
+		 * \param pos the x,y position
+		 */
 		void repositionVerts(glm::vec2 pos);
+		/**
+		 * \function void changeText(std::wstring text).
+		 * \param text - std::wstring the new text
+		 */
 		void changeText(std::wstring text);
+		/**
+		 * \function void Draw(Shader& shader).
+		 * \brief Draw the object to screen
+		 * \param shader the shader class
+		 */
 		void Draw(Shader& shader);
-		inline float getBitmapWidth() { return m_bitwidth; }
+		inline float getBitmapWidth() { return m_bitwidth; }//!<Get the width of the text based on the text width rather than the text box width
 	};
 }
