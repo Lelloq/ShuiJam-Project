@@ -98,7 +98,7 @@ namespace SJ
 		float m_numTimer = 5.0f;
 		//Numbers tracking
 		int m_recentJudgement = 0;//Most recent judgement hit
-		float m_hp = 100;
+		float m_hp = 200;
 		int m_combo = 0;
 		int m_highestCombo = 0;
 		float m_accuracy = 100.000f;

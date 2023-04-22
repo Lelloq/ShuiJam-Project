@@ -133,7 +133,7 @@ namespace SJ
 
 	void ResultsScene::getKey(int key, int scancode, int action, int mods)
 	{
-		if(action == GLFW_PRESS)
+		if(action == GLFW_PRESS && key == GLFW_KEY_ENTER && !m_goBackToSelect)
 		{
 			{
 				m_source = std::make_unique<SFXSource>();
@@ -145,7 +145,7 @@ namespace SJ
 
 	void ResultsScene::getMouseButton(int button, int action, int mods)
 	{
-		if(action == GLFW_PRESS)
+		if(action == GLFW_PRESS && key == GLFW_KEY_ENTER && !m_goBackToSelect)
 		{
 			{
 				m_source = std::make_unique<SFXSource>();

@@ -86,7 +86,7 @@ project "ShuiJam"
 	filter "configurations:Release"
 		defines "RELEASE"
 		runtime "Release"
-		optimize "On"
+		optimize "Speed"
 		kind "WindowedApp"
 		entrypoint "mainCRTStartup"
 

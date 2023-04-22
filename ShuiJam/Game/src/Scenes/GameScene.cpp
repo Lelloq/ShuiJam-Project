@@ -302,9 +302,9 @@ namespace SJ
 		m_stagebottom->Draw(*m_shader);
 		m_stageHitposition->Draw(*m_shader);
 		//Draw health
-		if (m_hp > 100.f) m_hp = 100.f;
+		if (m_hp > 200.f) m_hp = 200.f;
 		if (m_hp < 0.f) m_hp = 0.f, m_gameEnded = true, g_accuracy = m_accuracy, g_failed = true;;
-		float healthPercent = m_hp / 100.f;
+		float healthPercent = m_hp / 200.f;
 		m_health->resizeVerts(glm::vec2(m_healthIm->getWidth(), m_healthIm->getHeightf() * healthPercent));
 		m_healthBG->Draw(*m_shader);
 		m_health->Draw(*m_shader);
