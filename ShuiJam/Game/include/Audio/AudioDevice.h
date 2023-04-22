@@ -24,6 +24,6 @@ namespace SJ
 		AudioDevice(AudioDevice& other) = delete; //!< Prevents cloning another AudioDevice
 		void operator=(const AudioDevice&) = delete; //!< Prevents setting another AudioDevice
 		static AudioDevice* get();//!< Gets instance of AudioDevice
-		void setGain(float gain);
+		void setGain(float gain);//!< Set audio volume
 	};
 }

@@ -64,6 +64,6 @@ namespace SJ
 		void Stop();//!<Stops the music
 		void Update();//!<Updates the buffer stream
 		inline int getTimePosition() { return m_timepos; }//!<Get time position in milliseconds
-		inline bool songEnded() { return m_atEnd; }
+		inline bool songEnded() { return m_atEnd; }//!<If the song has ended
 	};
 }
