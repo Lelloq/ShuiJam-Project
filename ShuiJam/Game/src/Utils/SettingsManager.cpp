@@ -5,6 +5,7 @@
  * \date   April 2023
  *********************************************************************/
 #include "Utils/SettingsManager.h"
+#include <iostream>
 
 using json = nlohmann::json;
 
@@ -16,17 +17,55 @@ namespace SJ
 		if(!fs::exists(m_settingsJson))
 		{
 			std::ofstream file = std::ofstream(m_settingsJson);
+			Save();
 			file.close();
 		}
 	}
 
 	void SaveManager::Load()
 	{
+		std::ifstream jsonf = std::ifstream(m_settingsJson);
+		json settings = json::parse(jsonf);
 
+		g_offset = settings.at(0).at(1).at(1);//Offset (offsets: -> offset -> value)
+		g_hitposition = settings.at(0).at(2).at(1);//Hitposition (offsets: -> hitposition -> value)
+
+		g_keyOne = settings.at(1).at(1).at(1);//Keyone (keys -> keyone -> value)
+		g_keyTwo = settings.at(1).at(2).at(1);//Keytwo
+		g_keyThree = settings.at(1).at(3).at(1);//Keythree
+		g_keyFour = settings.at(1).at(4).at(1);//Keyfour
+		g_keyFive = settings.at(1).at(5).at(1);//Keyfive
+		g_keySix = settings.at(1).at(6).at(1);//Keysix
+		g_keySeven = settings.at(1).at(7).at(1);//Keyseven
+
+		g_width = settings.at(2).at(1);//width (width -> value)
+		g_height = settings.at(3).at(1);//height
+		g_volume = settings.at(4).at(1);//volume
 	}
 
 	void SaveManager::Save()
 	{
-
+		std::ofstream file = std::ofstream(m_settingsJson);
+		json values = 
+		{
+			{"offsets:", 
+				{"offset:", g_offset},
+				{"hitposition:", g_hitposition},
+			},
+			{"Keys:", 
+				{"keyOne:", g_keyOne},
+				{"keyTwo:", g_keyTwo},
+				{"keyThree:", g_keyThree},
+				{"keyFour:", g_keyFour},
+				{"keyFive:", g_keyFive},
+				{"keySix:", g_keySix},
+				{"keySeven:", g_keySeven},
+			},
+			{"width:", g_width},
+			{"height:", g_height},
+			{"volume:", g_volume},
+		};
+		file << values.dump();
+		file.close();
 	}
 }

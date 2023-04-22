@@ -10,6 +10,7 @@ SJ::SoundEffect* soundEffect;
 void main()
 {
 	SJ::SaveManager::Init();
+	SJ::SaveManager::Load();
 
 	//Create window and prepare the scenes
 	SJ::WindowManager gameWindow = SJ::WindowManager(SCR_WIDTH, SCR_HEIGHT, false, false, "ShuiJam");
@@ -20,6 +21,8 @@ void main()
 
 	audioDevice = SJ::AudioDevice::get();
 	soundEffect = SJ::SoundEffect::get();
+
+	audioDevice->setGain(g_volume);
 
 	//Extract any files in the input folder
 	auto isExtracted = std::async(std::launch::async, SJ::FileExtractor::extractFiles);
