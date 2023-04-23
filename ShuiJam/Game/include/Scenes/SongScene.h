@@ -10,6 +10,7 @@
 #include "Audio/Audio.h"
 #include "objects/objects.h"
 #include "Utils/FileProcessor.h"
+#include "Utils/Settings.h"
 #include <GLFW/glfw3.h>
 #include <map>
 #include <array>
@@ -106,9 +107,61 @@ namespace SJ
 		//GRAPHICS FOR SETTINGS SCREEN
 		bool m_settingsOpen = false;//Settings ui open or not
 		bool m_keybindsOpen = false;//Keybinds ui open or not
-		std::unique_ptr<Texture> m_settingsIm, m_keybindIm;
-		std::unique_ptr<Button> m_keybindBtn, m_settingsBtn;
-		std::array<std::unique_ptr<Button>, 7> m_keysBtn;//Key button
+		std::unique_ptr<Texture> m_settingsIm;
+		std::unique_ptr<Button> m_settingsBtn;
+
+		//Images
+		std::unique_ptr<Texture> m_settingsBGIm;
+		std::shared_ptr<Texture> m_leftButtonIm;
+		std::shared_ptr<Texture> m_rightButtonIm;
+		std::unique_ptr<Texture> m_resolutionButtonIm;
+		std::shared_ptr<Texture> m_blankButtonIm;
+		std::shared_ptr<Texture> m_checkButtonIm;
+		//Objects
+		std::unique_ptr<Rect> m_settingsBG;
+
+		std::unique_ptr<Button> m_offsetButtonL;
+		std::unique_ptr<Button> m_offsetButtonR;
+		std::unique_ptr<Text> m_offsetText;
+		std::unique_ptr<Text> m_offsetNum;
+
+		std::unique_ptr<Button> m_hitposButtonL;
+		std::unique_ptr<Button> m_hitposButtonR;
+		std::unique_ptr<Text> m_hitposText;
+		std::unique_ptr<Text> m_hitposNum;
+
+		std::unique_ptr<Button> m_volumeButtonL;
+		std::unique_ptr<Button> m_volumeButtonR;
+		std::unique_ptr<Text> m_volumeText;
+		std::unique_ptr<Text> m_volumeNum;
+		//Values
+		bool m_shiftHeld = false;
+
+		//Objects for keybinds
+		std::unique_ptr<Texture> m_keybindIm;
+		std::unique_ptr<Button> m_keybindBtn;
+
+		std::unique_ptr<Texture> m_keybindBGIm;
+		std::unique_ptr<Rect> m_keybindBG;
+		std::array<std::unique_ptr<Texture>, 7> m_keyIm;
+		std::array<std::unique_ptr<Rect>, 7> m_key;//Key button
+
+		std::shared_ptr<Texture> m_keyBtnIm;
+		std::array<std::unique_ptr<Button>, 7> m_keyBtn;//Key button
+		std::array<std::unique_ptr<Text>, 7> m_keyTxt;
+
+		//Values
+		std::array<int, 7> m_inputs = //keyboard inputs for the tester
+		{ g_keyOne, g_keyTwo, g_keyThree , g_keyFour, g_keyFive, g_keySix, g_keySeven };
+		std::array<bool, 7> m_pressed = { false, false, false, false, false ,false ,false };
+		std::array<bool, 7> m_keyForChange = { false, false, false, false, false ,false ,false };
+
+		bool m_changing = false;
+
+		//Audio functions
+		void playRefresh();
+		void playStart();
+		void playScroll();
 	public:
 		SongScene(GLFWwindow* window);
 		/**
