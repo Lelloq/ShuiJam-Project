@@ -1,3 +1,5 @@
+If you want to play, please take the ZIP file contained in releases.
+
 Default keybinds for the seven keys are:
 ZXC Space ,./
 
