@@ -1,5 +1,5 @@
 /*****************************************************************//**
- * \file   SaveManager.cpp
+ * \file   SettingsManager.cpp
  * \brief  Handles file saving using json files
  * 
  * \date   April 2023
@@ -12,7 +12,7 @@ using json = nlohmann::json;
 namespace SJ
 {
 	namespace fs = std::filesystem;
-	void SaveManager::Init()
+	void SettingsManager::Init()
 	{
 		if(!fs::exists(m_settingsJson))
 		{
@@ -22,7 +22,7 @@ namespace SJ
 		}
 	}
 
-	void SaveManager::Load()
+	void SettingsManager::Load()
 	{
 		std::ifstream jsonf = std::ifstream(m_settingsJson);
 		json settings = json::parse(jsonf);
@@ -44,7 +44,7 @@ namespace SJ
 		g_fullscreen = settings.at(5).at(1);//fullscreen window
 	}
 
-	void SaveManager::Save()
+	void SettingsManager::Save()
 	{
 		std::ofstream file = std::ofstream(m_settingsJson);
 		json values = 

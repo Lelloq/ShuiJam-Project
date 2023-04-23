@@ -6,7 +6,6 @@
  *********************************************************************/
 #include "Scenes/SongScene.h"
 #include "Utils/Properties.h"
-#include "Utils/Settings.h"
 #include "Utils/SettingsManager.h"
 #include <GLFW/glfw3.h>
 #include <future>
@@ -15,6 +14,7 @@ namespace SJ
 {
 	SongScene::SongScene(GLFWwindow* window) : m_window(window), m_device(AudioDevice::get()), m_sfx(SoundEffect::get())
 	{
+		SettingsManager::Load();
 		m_fileProcessor = std::make_unique<FileProcessor>();
 		g_failed = false;
 
@@ -60,6 +60,64 @@ namespace SJ
 	#pragma endregion
 
 	#pragma region settings UI
+		m_settingsIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "settingsicon.png", GL_CLAMP_TO_EDGE);
+		m_settingsBtn = std::make_unique<Button>(glm::vec2(200.f, 5.f), glm::vec2(64.f,64.f), 3, *m_settingsIm);
+
+		m_settingsBGIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "settingsbg.png", GL_CLAMP_TO_EDGE);
+		m_settingsBG = std::make_unique<Rect>(glm::vec2((VPORT_WIDTH / 2) - (m_settingsBGIm->getWidthf() / 2),
+			(VPORT_HEIGHT / 2) - (m_settingsBGIm->getHeightf() / 2)), glm::vec2(m_settingsBGIm->getWidthf(), m_settingsBGIm->getHeightf()), 3, * m_settingsBGIm);
+
+		m_offsetText = std::make_unique<Text>(glm::vec2(0,0), L"Offset:", 300, 24, 4, "NotoSansJP-Regular.otf");
+		m_offsetText->repositionVerts(glm::vec2(m_settingsBG->getPosition().x + 40, m_settingsBG->getPosition().y + m_settingsBG->getSize().y - 72));
+		m_leftButtonIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "buttonleft.png", GL_CLAMP_TO_EDGE);
+		m_rightButtonIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "buttonright.png", GL_CLAMP_TO_EDGE);
+		m_offsetButtonL = std::make_unique<Button>(glm::vec2(m_settingsBG->getPosition().x + 40, m_settingsBG->getPosition().y + m_settingsBG->getSize().y - 100),
+			glm::vec2(m_leftButtonIm->getWidthf(), m_leftButtonIm->getHeightf()), 4, *m_leftButtonIm);
+		m_offsetButtonR = std::make_unique<Button>(glm::vec2(m_settingsBG->getPosition().x + 40 + m_leftButtonIm->getWidthf(), m_settingsBG->getPosition().y + m_settingsBG->getSize().y - 100),
+			glm::vec2(m_rightButtonIm->getWidthf(), m_rightButtonIm->getHeightf()), 4, *m_rightButtonIm);
+		m_offsetNum = std::make_unique<Text>(
+			glm::vec2(m_offsetButtonR->getPosition().x + 50, m_settingsBG->getPosition().y + m_settingsBG->getSize().y - 107), L": " + std::to_wstring(g_offset), 300, 28, 5, "NotoSansJP-Regular.otf");
+
+		m_hitposText = std::make_unique<Text>(glm::vec2(0, 0), L"Hitposition:", 300, 24, 4, "NotoSansJP-Regular.otf");
+		m_hitposText->repositionVerts(glm::vec2(m_settingsBG->getPosition().x + 40, m_settingsBG->getPosition().y + m_settingsBG->getSize().y - 148));
+		m_hitposButtonL = std::make_unique<Button>(glm::vec2(m_settingsBG->getPosition().x + 40, m_settingsBG->getPosition().y + m_settingsBG->getSize().y - 176),
+			glm::vec2(m_leftButtonIm->getWidthf(), m_leftButtonIm->getHeightf()), 4, *m_leftButtonIm);
+		m_hitposButtonR = std::make_unique<Button>(glm::vec2(m_settingsBG->getPosition().x + 40 + m_leftButtonIm->getWidthf(), m_settingsBG->getPosition().y + m_settingsBG->getSize().y - 176),
+			glm::vec2(m_rightButtonIm->getWidthf(), m_rightButtonIm->getHeightf()), 4, *m_rightButtonIm);
+		m_hitposNum = std::make_unique<Text>(
+			glm::vec2(m_offsetButtonR->getPosition().x + 50, m_settingsBG->getPosition().y + m_settingsBG->getSize().y - 183), L": " + std::to_wstring(g_hitposition), 300, 28, 5, "NotoSansJP-Regular.otf");
+
+		m_volumeText = std::make_unique<Text>(glm::vec2(0, 0), L"Volume:", 300, 24, 4, "NotoSansJP-Regular.otf");
+		m_volumeText->repositionVerts(glm::vec2(m_settingsBG->getPosition().x + 40, m_settingsBG->getPosition().y + m_settingsBG->getSize().y - 220));
+		m_volumeButtonL = std::make_unique<Button>(glm::vec2(m_settingsBG->getPosition().x + 40, m_settingsBG->getPosition().y + m_settingsBG->getSize().y - 248),
+			glm::vec2(m_leftButtonIm->getWidthf(), m_leftButtonIm->getHeightf()), 4, *m_leftButtonIm);
+		m_volumeButtonR = std::make_unique<Button>(glm::vec2(m_settingsBG->getPosition().x + 40 + m_leftButtonIm->getWidthf(), m_settingsBG->getPosition().y + m_settingsBG->getSize().y - 248),
+			glm::vec2(m_rightButtonIm->getWidthf(), m_rightButtonIm->getHeightf()), 4, *m_rightButtonIm);
+		std::wstring volStr = std::to_wstring(g_volume).substr(0, std::to_wstring(g_volume).find_first_of('.') + 3);
+		m_volumeNum = std::make_unique<Text>(
+			glm::vec2(m_offsetButtonR->getPosition().x + 50, m_settingsBG->getPosition().y + m_settingsBG->getSize().y - 255), L": " + volStr, 300, 28, 5, "NotoSansJP-Regular.otf");
+	#pragma endregion
+
+	#pragma region keybinds UI
+		m_keybindIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "keybinds.png", GL_CLAMP_TO_EDGE);
+		m_keybindBtn = std::make_unique<Button>(glm::vec2(328.f, 5.f), glm::vec2(64.f, 64.f), 3, *m_keybindIm);
+
+		m_keybindBGIm = std::make_unique<Texture>(SJFOLDER + IMAGES + "keybindbg.png", GL_CLAMP_TO_EDGE);
+		m_keybindBG = std::make_unique<Rect>(glm::vec2((VPORT_WIDTH / 2) - (m_keybindBGIm->getWidthf() / 2),
+			(VPORT_HEIGHT / 2) - (m_keybindBGIm->getHeightf() / 2)), glm::vec2(m_keybindBGIm->getWidthf(), m_keybindBGIm->getHeightf()), 3, *m_keybindBGIm);
+
+		m_keyBtnIm = std::make_shared<Texture>(SJFOLDER + IMAGES + "keybutton.png", GL_CLAMP_TO_EDGE);
+
+		float xPos = 433.f;
+		for(int i = 0; i < 7; i++)
+		{
+			m_keyIm.at(i) = std::make_unique<Texture>(SJFOLDER + IMAGES + "game/key" + std::to_string(i + 1) + ".png", GL_CLAMP_TO_EDGE);
+			m_key.at(i) = std::make_unique<Rect>(glm::vec2(xPos, 365.f),glm::vec2(59.f, 79.f), 4, *m_keyIm.at(i));
+			m_keyBtn.at(i) = std::make_unique<Button>(glm::vec2(xPos, 280.f),glm::vec2(59.f, 79.f), 4, *m_keyBtnIm);
+			m_keyTxt.at(i) = std::make_unique<Text>(glm::vec2(xPos+12, 290.f), std::to_wstring(m_inputs.at(i)), 59.f, 32, 5, "NotoSansJP-Medium.otf");
+			xPos += 59.f;
+		}
+
 
 	#pragma endregion
 
@@ -181,16 +239,76 @@ namespace SJ
 			m_exitNoBtn->Draw(*m_shader);
 			m_exitYesBtn->Draw(*m_shader);
 		}
+
+		if (m_settingsBtn->hasMouseOnTop(posX, posY)) { m_shader->setFloat("transparency", 2.0f); }
+		else m_shader->setFloat("transparency", 1.0f);
+		m_settingsBtn->Draw(*m_shader);
+		m_shader->setFloat("transparency", 1.0f);
+
+	#pragma region settings
+		if(m_settingsOpen)
+		{
+			m_settingsBG->Draw(*m_shader);
+
+			m_offsetText->Draw(*m_textShader);
+			if (m_offsetButtonL->hasMouseOnTop(posX, posY)) { m_shader->setFloat("transparency", 2.0f); }
+			else m_shader->setFloat("transparency", 1.0f);
+			m_offsetButtonL->Draw(*m_shader);
+			if (m_offsetButtonR->hasMouseOnTop(posX, posY)) { m_shader->setFloat("transparency", 2.0f); }
+			else m_shader->setFloat("transparency", 1.0f);
+			m_offsetButtonR->Draw(*m_shader);
+			m_offsetNum->Draw(*m_textShader);
+
+			m_hitposText->Draw(*m_textShader);
+			if (m_hitposButtonL->hasMouseOnTop(posX, posY)) { m_shader->setFloat("transparency", 2.0f); }
+			else m_shader->setFloat("transparency", 1.0f);
+			m_hitposButtonL->Draw(*m_shader);
+			if (m_hitposButtonR->hasMouseOnTop(posX, posY)) { m_shader->setFloat("transparency", 2.0f); }
+			else m_shader->setFloat("transparency", 1.0f);
+			m_hitposButtonR->Draw(*m_shader);
+			m_hitposNum->Draw(*m_textShader);
+
+			m_volumeText->Draw(*m_textShader);
+			if (m_volumeButtonL->hasMouseOnTop(posX, posY)) { m_shader->setFloat("transparency", 2.0f); }
+			else m_shader->setFloat("transparency", 1.0f);
+			m_volumeButtonL->Draw(*m_shader);
+			if (m_volumeButtonR->hasMouseOnTop(posX, posY)) { m_shader->setFloat("transparency", 2.0f); }
+			else m_shader->setFloat("transparency", 1.0f);
+			m_volumeButtonR->Draw(*m_shader);
+			m_volumeNum->Draw(*m_textShader);
+		}
+
+		if (m_keybindBtn->hasMouseOnTop(posX, posY)) { m_shader->setFloat("transparency", 2.0f); }
+		else m_shader->setFloat("transparency", 1.0f);
+		m_keybindBtn->Draw(*m_shader);
+		m_shader->setFloat("transparency", 1.0f);
+
+		if(m_keybindsOpen)
+		{
+			m_keybindBG->Draw(*m_shader);
+			for(int i = 0; i < 7; i++)
+			{
+				if(m_pressed.at(i) && !m_changing)
+				{
+					m_key.at(i)->Draw(*m_shader);
+				}
+				m_keyBtn.at(i)->Draw(*m_shader);
+				m_keyTxt.at(i)->Draw(*m_textShader);
+			}
+		}
+	#pragma endregion
+
+	#pragma region keybinds
+
+	#pragma endregion
 	}
 	void SongScene::getKey(int key, int scancode, int action, int mods)
 	{
+	#pragma region main song buttons
 		//Refresh the song list when the player presses F5
 		if(action == GLFW_PRESS && key == GLFW_KEY_F5)
 		{
-			{
-				m_source = std::make_unique<SFXSource>();
-				m_source->Play(m_refreshSound);
-			}
+			playRefresh();
 			m_fileProcessor->ProcessFiles();
 			m_fileProcessor->reloadSongs();
 			m_lastSong = m_fileProcessor->getLastID();
@@ -214,63 +332,196 @@ namespace SJ
 				startGame();
 			}
 		}
+	#pragma endregion
+		//For settings to change the increment of the settings values
+		if(action == GLFW_PRESS && key == GLFW_KEY_LEFT_SHIFT) { m_shiftHeld = true; }
+		else if (action == GLFW_RELEASE && key == GLFW_KEY_LEFT_SHIFT) { m_shiftHeld = false; }
+	#pragma region keybind tester and changer
+		//Tester
+		if(!m_changing)
+		{
+			for(int i = 0; i < 7;i++)
+			{
+				if (action == GLFW_PRESS && key == m_inputs.at(i))
+				{
+					m_pressed.at(i) = true;
+				}
+				else if (action == GLFW_RELEASE && key == m_inputs.at(i))
+				{
+					m_pressed.at(i) = false;
+				}
+			}
+		}
+		else if(m_changing)
+		{
+			for(int i = 0; i < 7; i++)
+			{
+				if(m_keyForChange.at(i) == true)
+				{
+					m_inputs.at(i) = key;
+					m_changing = false;
+					m_keyForChange.at(i) = false;
+					m_keyTxt.at(i)->changeText(std::to_wstring(m_inputs.at(i)));
+				}
+			}
+			g_keyOne = m_inputs.at(0);
+			g_keyTwo = m_inputs.at(1);
+			g_keyThree = m_inputs.at(2);
+			g_keyFour = m_inputs.at(3);
+			g_keyFive = m_inputs.at(4);
+			g_keySix = m_inputs.at(5);
+			g_keySeven = m_inputs.at(6);
+			SettingsManager::Save();
+		}
+	#pragma endregion
 	}
 	void SongScene::getMouseButton(int button, int action, int mods)
 	{
 		if (!m_canClick) return;
-	#pragma region exit buttons
 		double posX, posY;
 		glfwGetCursorPos(m_window, &posX, &posY);
-		if(m_logoBtn->hasMouseOnTop(posX,posY) && action == GLFW_PRESS)
+
+	#pragma region exit buttons
+		if(m_logoBtn->hasMouseOnTop(posX,posY) && action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1)
 		{
 			if(!m_exitOpen)
 			{
-				m_source = std::make_unique<SFXSource>();
-				m_source->Play(m_refreshSound);
+				playRefresh();
+				m_exitOpen = true;
 			}
-			m_exitOpen = true;
+			m_settingsOpen = false;
+			m_keybindsOpen = false;
 		}
 		else if(m_exitOpen == true)
 		{
-			if(m_exitYesBtn->hasMouseOnTop(posX,posY) && action == GLFW_PRESS)
+			if(m_exitYesBtn->hasMouseOnTop(posX,posY) && action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1)
 			{
 				glfwSetWindowShouldClose(m_window, true);
 			}
-			else if(m_exitNoBtn->hasMouseOnTop(posX,posY) && action == GLFW_PRESS)
+			else if(m_exitNoBtn->hasMouseOnTop(posX,posY) && action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1)
 			{
 				m_exitOpen = false;
 			}
 		}
 	#pragma endregion
 
-	#pragma region songwheel buttons
-		for(int i = 0; i < m_buttons.size(); i++)
+	#pragma region setting buttons
+		if (m_settingsBtn->hasMouseOnTop(posX, posY) && action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1)
 		{
-			if (m_buttons.at(i)->hasMouseOnTop(posX, posY) && action == GLFW_PRESS) 
+			if (!m_settingsOpen) 
+			{ 
+				playRefresh();
+				m_settingsOpen = true; 
+				m_exitOpen = false;
+				m_keybindsOpen = false;
+			}
+			else { m_settingsOpen = false; }
+		}
+		else if(m_settingsOpen)
+		{
+			if(m_offsetButtonL->hasMouseOnTop(posX, posY) && action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1)
 			{
-				if (m_confirmation != i) 
-				{ 
-					m_songText->changeText(m_songData.at(i).title.substr(0, m_songData.at(i).title.find_first_of(L"[")));
-					m_artistText->changeText(m_songData.at(i).artist);
-					m_diffText->changeText(m_songData.at(i).version);
-					m_confirmation = i; 
-					{
-						m_source = std::make_unique<SFXSource>();
-						m_source->Play(m_scrollSound);
-						if (m_music != nullptr) m_music.reset();
-						m_music = std::make_unique<Music>(L"../ShuiJamGame/Songs/" + m_songData.at(i).dirPath + L"/" + m_songData.at(i).audio);
-						m_songBGIm->reloadTexture(L"../ShuiJamGame/Songs/" + m_songData.at(i).dirPath + L"/" + m_songData.at(i).background, GL_CLAMP_TO_EDGE);
-						m_songBGImPlay->reloadTexture(L"../ShuiJamGame/Songs/" + m_songData.at(i).dirPath + L"/" + m_songData.at(i).background, GL_CLAMP_TO_EDGE);
-						m_isPlaying = true;
-					}
-				}
-				else if (m_confirmation == i)
+				if (m_shiftHeld) g_offset -= 10;
+				else g_offset--;
+			}
+			else if (m_offsetButtonR->hasMouseOnTop(posX, posY) && action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1)
+			{
+				if (m_shiftHeld) g_offset += 10;
+				else g_offset++;
+			}
+			g_offset = glm::clamp(g_offset, -300, 300);
+			m_offsetNum->changeText(L": "+ std::to_wstring(g_offset));
+
+			if (m_hitposButtonL->hasMouseOnTop(posX, posY) && action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1)
+			{
+				if (m_shiftHeld) g_hitposition -= 10;
+				else g_hitposition--;
+			}
+			else if (m_hitposButtonR->hasMouseOnTop(posX, posY) && action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1)
+			{
+				if (m_shiftHeld) g_hitposition += 10;
+				else g_hitposition++;
+			}
+			g_hitposition = glm::clamp(g_hitposition, 0, 360);
+			m_hitposNum->changeText(L": " + std::to_wstring(g_hitposition));
+
+			if (m_volumeButtonL->hasMouseOnTop(posX, posY) && action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1)
+			{
+				if (m_shiftHeld) g_volume -= 0.1f;
+				else g_volume -= 0.01f;
+			}
+			else if (m_volumeButtonR->hasMouseOnTop(posX, posY) && action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1)
+			{
+				if (m_shiftHeld) g_volume += 0.1f;
+				else g_volume += 0.01f;
+			}
+			g_volume = glm::clamp(g_volume, 0.0f, 1.0f);
+			std::wstring volStr = std::to_wstring(g_volume).substr(0, std::to_wstring(g_volume).find_first_of('.') + 3);
+			m_volumeNum->changeText(L": " + volStr);
+			m_device->setGain(g_volume);
+			SettingsManager::Save();
+		}
+	#pragma endregion
+
+	#pragma region keybind
+		if (m_keybindBtn->hasMouseOnTop(posX, posY) && action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1)
+		{
+			if (!m_keybindsOpen)
+			{
+				playRefresh();
+				m_settingsOpen = false;
+				m_exitOpen = false;
+				m_keybindsOpen = true;
+			}
+			else m_keybindsOpen = false;
+		}
+		else if(m_keybindsOpen)
+		{
+			for(int i = 0; i < 7; i++)
+			{
+				if(m_keyBtn.at(i)->hasMouseOnTop(posX,posY) && action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1)
 				{
-					startGame();
+					m_changing = true;
+					m_keyForChange.at(i) = true;
+					m_keyTxt.at(i)->changeText(L" ");
 				}
 			}
 		}
 	#pragma endregion
+
+	#pragma region songwheel buttons
+		//Keybind screen overlaps it slightly so I disabled it while it is open
+		if(!m_keybindsOpen)
+		{
+			for(int i = 0; i < m_buttons.size(); i++)
+			{
+				if (m_buttons.at(i)->hasMouseOnTop(posX, posY) && action == GLFW_PRESS) 
+				{
+					if (m_confirmation != i) 
+					{ 
+						m_songText->changeText(m_songData.at(i).title.substr(0, m_songData.at(i).title.find_first_of(L"[")));
+						m_artistText->changeText(m_songData.at(i).artist);
+						m_diffText->changeText(m_songData.at(i).version);
+						m_confirmation = i; 
+						{
+							m_source = std::make_unique<SFXSource>();
+							m_source->Play(m_scrollSound);
+							if (m_music != nullptr) m_music.reset();
+							m_music = std::make_unique<Music>(L"../ShuiJamGame/Songs/" + m_songData.at(i).dirPath + L"/" + m_songData.at(i).audio);
+							m_songBGIm->reloadTexture(L"../ShuiJamGame/Songs/" + m_songData.at(i).dirPath + L"/" + m_songData.at(i).background, GL_CLAMP_TO_EDGE);
+							m_songBGImPlay->reloadTexture(L"../ShuiJamGame/Songs/" + m_songData.at(i).dirPath + L"/" + m_songData.at(i).background, GL_CLAMP_TO_EDGE);
+							m_isPlaying = true;
+						}
+					}
+					else if (m_confirmation == i)
+					{
+						startGame();
+					}
+				}
+			}
+		}
+	#pragma endregion
+
 	}
 	void SongScene::getScroll(double xoffset, double yoffset)
 	{
@@ -339,8 +590,7 @@ namespace SJ
 		g_CurrentDiffName = m_songData.at(m_confirmation).version;
 		g_CurrentTitle = m_songData.at(m_confirmation).title;
 		{
-			m_source = std::make_unique<SFXSource>();
-			m_source->Play(m_startSound);
+			playStart();
 			m_music.reset();
 		}
 		g_CurrentScene = "game";
@@ -351,11 +601,10 @@ namespace SJ
 	{
 		m_head++;//increment the head position
 		m_tail++;//increment the tail position
-		m_confirmation = -1;
+		m_confirmation = -1;//Deselect the current song selected
 		m_scrollDirection = 1;
 		{
-			m_source = std::make_unique<SFXSource>();
-			m_source->Play(m_scrollSound);
+			playScroll();
 			if (m_music != nullptr) 
 			{ 
 				m_isPlaying = false;
@@ -375,8 +624,7 @@ namespace SJ
 		m_confirmation = -1;
 		m_scrollDirection = -1;
 		{
-			m_source = std::make_unique<SFXSource>();
-			m_source->Play(m_scrollSound);
+			playScroll();
 			if (m_music != nullptr) 
 			{
 				m_isPlaying = false;
@@ -387,5 +635,23 @@ namespace SJ
 		m_songText->changeText(L" ");
 		m_artistText->changeText(L" ");
 		m_diffText->changeText(L" ");
+	}
+
+	void SongScene::playRefresh() 
+	{
+		m_source = std::make_unique<SFXSource>();
+		m_source->Play(m_refreshSound);
+	}
+	
+	void SongScene::playScroll() 
+	{
+		m_source = std::make_unique<SFXSource>();
+		m_source->Play(m_scrollSound);
+	}
+	
+	void SongScene::playStart() 
+	{
+		m_source = std::make_unique<SFXSource>();
+		m_source->Play(m_startSound);
 	}
 }

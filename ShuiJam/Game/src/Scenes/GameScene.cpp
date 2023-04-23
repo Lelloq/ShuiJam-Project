@@ -4,6 +4,7 @@
  *********************************************************************/
 #include "Scenes/GameScene.h"
 #include "Utils/Properties.h"
+#include "Utils/SettingsManager.h"
 #include <future>
 #include <format>
 
@@ -11,6 +12,7 @@ namespace SJ
 {
 	GameScene::GameScene(GLFWwindow* window) : m_window(window), m_device(AudioDevice::get()), m_sfx(SoundEffect::get())
 	{
+		SettingsManager::Load();
 		//Disable cursor movement to prevent closing while the player is playing
 		glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		//Get all the note data

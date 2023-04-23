@@ -13,7 +13,7 @@
 
 namespace SJ
 {
-	class SaveManager
+	class SettingsManager
 	{
 	private:
 		inline static const std::wstring m_settingsJson = L"../ShuiJamGame/settings.json";

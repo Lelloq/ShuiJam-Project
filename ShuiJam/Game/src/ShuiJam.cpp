@@ -10,8 +10,8 @@ SJ::SoundEffect* soundEffect;
 void main()
 {
 	//Load json file
-	SJ::SaveManager::Init();
-	SJ::SaveManager::Load();
+	SJ::SettingsManager::Init();
+	SJ::SettingsManager::Load();
 
 	//Set the window width and height
 	SCR_WIDTH = g_width;

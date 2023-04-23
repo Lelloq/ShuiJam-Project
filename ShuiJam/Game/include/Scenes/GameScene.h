@@ -86,7 +86,7 @@ namespace SJ
 		bool m_gameEnded = false;
 		float m_totalTransparency = 1.0f;
 
-		std::array<int, 7> m_inputs = //Default keyboard inputs
+		std::array<int, 7> m_inputs = //Keyboard inputs
 		{g_keyOne, g_keyTwo, g_keyThree , g_keyFour, g_keyFive, g_keySix, g_keySeven};
 		std::array<bool, 7> m_pressed = { false, false, false, false, false ,false ,false };
 		std::array<bool, 7> m_holdingNote = { false, false, false, false, false ,false ,false };
