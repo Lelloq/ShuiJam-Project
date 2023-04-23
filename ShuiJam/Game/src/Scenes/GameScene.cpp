@@ -17,6 +17,9 @@ namespace SJ
 		m_notes = std::async(std::launch::async, OsuParser::parse, g_CurrentOsuDir, g_CurrentDifficulty).get();
 		m_music = std::make_unique<Music>(m_folder + g_CurrentOsuDir + L"/" + g_CurrentSong);
 
+		//Setup settings
+		m_hitPosition = g_hitposition;
+
 		//Create shader
 		glm::mat4 projection{ glm::ortho(0.f, VPORT_WIDTH, 0.f, VPORT_HEIGHT, -1000.f, 1.f) };
 		m_shader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
@@ -177,7 +180,7 @@ namespace SJ
 		for (int i = 0; i < m_notes.size(); i++)
 		{
 			//Create a rice note if it has no release timing i.e 0 otherwise create an long note object
-			if(m_nextNote.at(i) < m_notes.at(i).size() && m_notes.at(i).at(m_nextNote.at(i)).timingPoint < m_music->getTimePosition() + (2000.0f - m_cSpeed))
+			if(m_nextNote.at(i) < m_notes.at(i).size() && m_notes.at(i).at(m_nextNote.at(i)).timingPoint < m_music->getTimePosition() + (2000.0f - m_cSpeed) + g_offset)
 			{
 				int column = m_notes.at(i).at(m_nextNote.at(i)).column;
 				int release = m_notes.at(i).at(m_nextNote.at(i)).releasePoint;
@@ -213,9 +216,9 @@ namespace SJ
 				int release = note.releasePoint;
 
 				int lerped = lerp(m_spawnPos, m_hitPosition,
-					((2000.0f - m_cSpeed) - (timing - (m_curTimePos - m_leadin))) / (2000.0f - m_cSpeed));
+					((2000.0f - m_cSpeed) - (timing - (m_curTimePos - m_leadin + g_offset))) / (2000.0f - m_cSpeed));
 				int lerpedRel = lerp(m_spawnPos, m_hitPosition,
-						((2000.0f - m_cSpeed) - (release - (m_curTimePos - m_leadin))) / (2000.0f - m_cSpeed));
+						((2000.0f - m_cSpeed) - (release - (m_curTimePos - m_leadin + g_offset))) / (2000.0f - m_cSpeed));
 				if(lerped <= VPORT_HEIGHT)
 				{
 					if(release != 0)

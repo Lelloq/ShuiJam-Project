@@ -7,6 +7,7 @@
 #include "Scenes/SongScene.h"
 #include "Utils/Properties.h"
 #include "Utils/Settings.h"
+#include "Utils/SettingsManager.h"
 #include <GLFW/glfw3.h>
 #include <future>
 
