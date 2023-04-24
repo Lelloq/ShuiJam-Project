@@ -42,6 +42,7 @@ namespace SJ
 		g_height = settings.at(3).at(1);//height
 		g_volume = settings.at(4).at(1);//volume
 		g_fullscreen = settings.at(5).at(1);//fullscreen window
+		g_scrollspeed = settings.at(6).at(1);//Note scrollspeed
 	}
 
 	void SettingsManager::Save()
@@ -66,6 +67,7 @@ namespace SJ
 			{"height:", g_height},
 			{"volume:", g_volume},
 			{"fullscreen:", g_fullscreen},
+			{"scrollspeed:", g_scrollspeed}
 		};
 		file << values.dump();
 		file.close();

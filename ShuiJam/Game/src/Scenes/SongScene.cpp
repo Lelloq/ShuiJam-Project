@@ -96,6 +96,15 @@ namespace SJ
 		std::wstring volStr = std::to_wstring(g_volume).substr(0, std::to_wstring(g_volume).find_first_of('.') + 3);
 		m_volumeNum = std::make_unique<Text>(
 			glm::vec2(m_offsetButtonR->getPosition().x + 50, m_settingsBG->getPosition().y + m_settingsBG->getSize().y - 255), L": " + volStr, 300, 28, 5, "NotoSansJP-Regular.otf");
+
+		m_speedText = std::make_unique<Text>(glm::vec2(0, 0), L"Scroll Speed:", 300, 24, 4, "NotoSansJP-Regular.otf");
+		m_speedText->repositionVerts(glm::vec2(m_settingsBG->getPosition().x + 40, m_settingsBG->getPosition().y + m_settingsBG->getSize().y - 292));
+		m_speedButtonL = std::make_unique<Button>(glm::vec2(m_settingsBG->getPosition().x + 40, m_settingsBG->getPosition().y + m_settingsBG->getSize().y - 320),
+			glm::vec2(m_leftButtonIm->getWidthf(), m_leftButtonIm->getHeightf()), 4, *m_leftButtonIm);
+		m_speedButtonR = std::make_unique<Button>(glm::vec2(m_settingsBG->getPosition().x + 40 + m_leftButtonIm->getWidthf(), m_settingsBG->getPosition().y + m_settingsBG->getSize().y - 320),
+			glm::vec2(m_rightButtonIm->getWidthf(), m_rightButtonIm->getHeightf()), 4, *m_rightButtonIm);
+		m_speedNum = std::make_unique<Text>(
+			glm::vec2(m_offsetButtonR->getPosition().x + 50, m_settingsBG->getPosition().y + m_settingsBG->getSize().y - 327), L": " + std::to_wstring(g_scrollspeed), 300, 28, 5, "NotoSansJP-Regular.otf");
 	#pragma endregion
 
 	#pragma region keybinds UI
@@ -276,6 +285,15 @@ namespace SJ
 			else m_shader->setFloat("transparency", 1.0f);
 			m_volumeButtonR->Draw(*m_shader);
 			m_volumeNum->Draw(*m_textShader);
+			
+			m_speedText->Draw(*m_textShader);
+			if (m_speedButtonL->hasMouseOnTop(posX, posY)) { m_shader->setFloat("transparency", 2.0f); }
+			else m_shader->setFloat("transparency", 1.0f);
+			m_speedButtonL->Draw(*m_shader);
+			if (m_speedButtonR->hasMouseOnTop(posX, posY)) { m_shader->setFloat("transparency", 2.0f); }
+			else m_shader->setFloat("transparency", 1.0f);
+			m_speedButtonR->Draw(*m_shader);
+			m_speedNum->Draw(*m_textShader);
 		}
 
 		if (m_keybindBtn->hasMouseOnTop(posX, posY)) { m_shader->setFloat("transparency", 2.0f); }
@@ -459,6 +477,19 @@ namespace SJ
 			std::wstring volStr = std::to_wstring(g_volume).substr(0, std::to_wstring(g_volume).find_first_of('.') + 3);
 			m_volumeNum->changeText(L": " + volStr);
 			m_device->setGain(g_volume);
+
+			if (m_speedButtonL->hasMouseOnTop(posX, posY) && action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1)
+			{
+				if (m_shiftHeld) g_scrollspeed -= 10;
+				else g_scrollspeed--;
+			}
+			else if (m_speedButtonR->hasMouseOnTop(posX, posY) && action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1)
+			{
+				if (m_shiftHeld) g_scrollspeed += 10;
+				else g_scrollspeed++;
+			}
+			g_scrollspeed = glm::clamp(g_scrollspeed, 500, 1500);
+			m_speedNum->changeText(L": " + std::to_wstring(g_scrollspeed));
 			SettingsManager::Save();
 		}
 	#pragma endregion
