@@ -21,6 +21,7 @@ namespace SJ
 
 		//Setup settings
 		m_hitPosition = g_hitposition;
+		m_cSpeed = g_scrollspeed;
 
 		//Create shader
 		glm::mat4 projection{ glm::ortho(0.f, VPORT_WIDTH, 0.f, VPORT_HEIGHT, -1000.f, 1.f) };
