@@ -232,8 +232,8 @@ namespace SJ
 						std::shared_ptr<Rect>& head = m_noteObj.at(i).at(j).at(0);
 						std::shared_ptr<Rect>& body = m_noteObj.at(i).at(j).at(1);
 						std::shared_ptr<Rect>& tail = m_noteObj.at(i).at(j).at(2);
-						head->repositionVerts(glm::vec2(noteX, static_cast<float>(lerped)));
-						tail->repositionVerts(glm::vec2(noteX, static_cast<float>(lerpedRel)));
+						head->repositionVerts(glm::vec2(noteX, lerped));
+						tail->repositionVerts(glm::vec2(noteX, lerpedRel));
 						int length = tail->getPosition().y - head->getPosition().y;
 						body->resizeVerts(glm::vec2(body->getSize().x, length));
 						body->repositionVerts(head->getPosition());
@@ -241,7 +241,7 @@ namespace SJ
 					else
 					{
 						std::shared_ptr<Rect>& rice = m_noteObj.at(i).at(j).at(0);
-						rice->repositionVerts(glm::vec2(noteX, static_cast<float>(lerped)));
+						rice->repositionVerts(glm::vec2(noteX, lerped));
 					}
 				}
 				else { break; }
