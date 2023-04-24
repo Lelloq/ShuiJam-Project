@@ -216,7 +216,7 @@ namespace SJ
 
 		ALfloat offset;
 		alGetSourcef(m_source, AL_SAMPLE_OFFSET, &offset);
-		m_timepos = ((m_samplesProcessed + offset) / m_sampleRate) * 1000;
+		m_timepos = ((m_samplesProcessed + offset) / m_sampleRate) * 1000.f;
 
 		//Keep playing the source to the end unless it has been paused or stopped
 		if(state != AL_PLAYING && state != AL_PAUSED)

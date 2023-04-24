@@ -51,9 +51,9 @@ namespace SJ
 		OggStreamData oStream;//!<Empty OggData struct if the file reads an ogg file
 		WavStreamData wStream;//!<Empty WavData struct if the file reads a wav file
 
-		int m_timepos = 0;//!<Time position of the song in milliseconds
-		float m_sampleRate = 0;
-		float m_samplesProcessed = 0;
+		float m_timepos = 0.f;//!<Time position of the song in milliseconds
+		float m_sampleRate = 0.f;
+		float m_samplesProcessed = 0.f;
 		bool m_atEnd = false;//!<Is the song at the end
 		std::string m_extension;//!<Song file extension
 
@@ -63,7 +63,7 @@ namespace SJ
 		void Play();//!<Plays the music
 		void Stop();//!<Stops the music
 		void Update();//!<Updates the buffer stream
-		inline int getTimePosition() { return m_timepos; }//!<Get time position in milliseconds
+		inline float getTimePosition() { return m_timepos; }//!<Get time position in milliseconds
 		inline bool songEnded() { return m_atEnd; }//!<If the song has ended
 	};
 }
