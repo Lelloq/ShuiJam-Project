@@ -488,7 +488,7 @@ namespace SJ
 				if (m_shiftHeld) g_scrollspeed += 10;
 				else g_scrollspeed++;
 			}
-			g_scrollspeed = glm::clamp(g_scrollspeed, 500, 1500);
+			g_scrollspeed = glm::clamp(g_scrollspeed, 250, 1500);
 			m_speedNum->changeText(L": " + std::to_wstring(g_scrollspeed));
 			SettingsManager::Save();
 		}

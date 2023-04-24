@@ -19,5 +19,5 @@ inline int g_keySeven = '/';
 inline float g_width = 1280.f;
 inline float g_height = 720.f;
 inline float g_volume = 1.0f;
-inline int g_scrollspeed = 1000;
+inline int g_scrollspeed = 550;
 
