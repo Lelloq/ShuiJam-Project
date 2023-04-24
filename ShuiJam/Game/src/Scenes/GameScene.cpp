@@ -6,7 +6,6 @@
 #include "Utils/Properties.h"
 #include "Utils/SettingsManager.h"
 #include <future>
-#include <format>
 
 namespace SJ
 {

@@ -581,6 +581,7 @@ namespace SJ
 		//The text changes based on the data inside m_songData
 		if (m_head <= 0) 
 		{ 
+			m_head = 0;
 			m_canScrollDown = true;
 			m_canScrollUp = false;
 		}
