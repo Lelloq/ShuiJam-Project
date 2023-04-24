@@ -221,10 +221,10 @@ namespace SJ
 				int timing = note.timingPoint;
 				int release = note.releasePoint;
 
-				int lerped = lerp(m_spawnPos, m_hitPosition,
-					((2000.0f - m_cSpeed) - (timing - (m_curTimePos - m_leadin + g_offset))) / (2000.0f - m_cSpeed));
-				int lerpedRel = lerp(m_spawnPos, m_hitPosition,
-						((2000.0f - m_cSpeed) - (release - (m_curTimePos - m_leadin + g_offset))) / (2000.0f - m_cSpeed));
+				float lerped = lerp(m_spawnPos, static_cast<float>(m_hitPosition),
+					((2000.0f - m_cSpeed) - (static_cast<float>(timing) - (m_curTimePos - static_cast<float>(m_leadin) + static_cast<float>(g_offset)))) / (2000.0f - m_cSpeed));
+				float lerpedRel = lerp(m_spawnPos, static_cast<float>(m_hitPosition),
+						((2000.0f - m_cSpeed) - (static_cast<float>(release) - (m_curTimePos - static_cast<float>(m_leadin) + static_cast<float>(g_offset)))) / (2000.0f - m_cSpeed));
 				if(lerped <= VPORT_HEIGHT)
 				{
 					if(release != 0)
@@ -232,8 +232,8 @@ namespace SJ
 						std::shared_ptr<Rect>& head = m_noteObj.at(i).at(j).at(0);
 						std::shared_ptr<Rect>& body = m_noteObj.at(i).at(j).at(1);
 						std::shared_ptr<Rect>& tail = m_noteObj.at(i).at(j).at(2);
-						head->repositionVerts(glm::vec2(noteX, lerped));
-						tail->repositionVerts(glm::vec2(noteX, lerpedRel));
+						head->repositionVerts(glm::vec2(noteX, static_cast<float>(lerped)));
+						tail->repositionVerts(glm::vec2(noteX, static_cast<float>(lerpedRel)));
 						int length = tail->getPosition().y - head->getPosition().y;
 						body->resizeVerts(glm::vec2(body->getSize().x, length));
 						body->repositionVerts(head->getPosition());
@@ -241,7 +241,7 @@ namespace SJ
 					else
 					{
 						std::shared_ptr<Rect>& rice = m_noteObj.at(i).at(j).at(0);
-						rice->repositionVerts(glm::vec2(noteX, lerped));
+						rice->repositionVerts(glm::vec2(noteX, static_cast<float>(lerped)));
 					}
 				}
 				else { break; }
