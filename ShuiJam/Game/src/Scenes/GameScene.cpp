@@ -150,6 +150,7 @@ namespace SJ
 			m_totalTransparency -= dt * 2.0f;
 			if(m_totalTransparency <= 0.0f)
 			{
+				g_failed = false;
 				g_accuracy = m_accuracy;
 				g_perfCount = m_judgementCounts.at(0);
 				g_greatCount = m_judgementCounts.at(1);
