@@ -47,9 +47,9 @@ namespace SJ
 			yPos -= 57;
 		}
 
-		m_songText = std::make_unique<Text>(glm::vec2(25, 380), L" ", 350, 96, 5, "NotoSansJP-Regular.otf");
-		m_artistText = std::make_unique<Text>(glm::vec2(25, 500), L" ", 350, 48, 5, "NotoSansJP-Medium.otf");
-		m_diffText = std::make_unique<Text>(glm::vec2(25, 350), L" ", 350, 36, 5, "NotoSansJP-Regular.otf");
+		m_songText = std::make_unique<Text>(glm::vec2(25, 380), L" ", 350, 96, 2, "NotoSansJP-Regular.otf");
+		m_artistText = std::make_unique<Text>(glm::vec2(25, 500), L" ", 350, 48, 2, "NotoSansJP-Medium.otf");
+		m_diffText = std::make_unique<Text>(glm::vec2(25, 350), L" ", 350, 36, 2, "NotoSansJP-Regular.otf");
 
 		glm::mat4 projection{ glm::ortho(0.f, VPORT_WIDTH, 0.f, VPORT_HEIGHT, -1000.f, 1.f) };
 		m_shader = std::make_unique<Shader>(SJFOLDER + SHADER + "basic.vert", SJFOLDER + SHADER + "basic.frag");
