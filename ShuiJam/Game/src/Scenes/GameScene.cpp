@@ -150,7 +150,6 @@ namespace SJ
 			m_totalTransparency -= dt * 2.0f;
 			if(m_totalTransparency <= 0.0f)
 			{
-				g_failed = false;
 				g_accuracy = m_accuracy;
 				g_perfCount = m_judgementCounts.at(0);
 				g_greatCount = m_judgementCounts.at(1);
@@ -162,9 +161,12 @@ namespace SJ
 			}
 		}
 
+		if (m_totalNotesPassed >= m_totalNotes) { g_failed = false; }
+
 		if(m_gameEnded)
 		{
 			m_music->Stop();
+			g_failed = true;
 		}
 
 		if(m_hasHitRecently)
