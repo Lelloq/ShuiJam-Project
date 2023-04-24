@@ -6,7 +6,7 @@ ZXC Space ,./
 You can change the game to use fullscreen or change the resolution in the JSON file
 but only after you launched the game for the first time.
 
-Make sure to put .osz files into the INPUT folder before launching to ensure that there are songs
+Make sure to put .osz files into the **INPUT** folder before launching to ensure that there are songs
 in the Songs folder.
 
 Supported 7k .osz files can be found in the mania section of https://osu.ppy.sh/beatmapsets?m=3 
