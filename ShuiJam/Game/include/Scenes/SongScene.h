@@ -134,6 +134,11 @@ namespace SJ
 		std::unique_ptr<Button> m_volumeButtonR;
 		std::unique_ptr<Text> m_volumeText;
 		std::unique_ptr<Text> m_volumeNum;
+		
+		std::unique_ptr<Button> m_speedButtonL;
+		std::unique_ptr<Button> m_speedButtonR;
+		std::unique_ptr<Text> m_speedText;
+		std::unique_ptr<Text> m_speedNum;
 		//Values
 		bool m_shiftHeld = false;
 
