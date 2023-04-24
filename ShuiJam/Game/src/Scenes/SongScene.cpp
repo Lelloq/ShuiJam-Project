@@ -132,7 +132,7 @@ namespace SJ
 	#pragma endregion
 
 	#pragma region song data processing
-		if(g_filesChanged || !std::filesystem::exists(L"../ShuiJamGame/shuijam.db"))
+		if(g_filesChanged)
 		{
 			m_fileProcessor->ProcessFiles();
 			m_fileProcessor->reloadSongs();
