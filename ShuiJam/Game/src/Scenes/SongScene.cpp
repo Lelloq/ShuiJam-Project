@@ -7,6 +7,7 @@
 #include "Scenes/SongScene.h"
 #include "Utils/Properties.h"
 #include "Utils/SettingsManager.h"
+#include "Utils/FileExtractor.h"
 #include <GLFW/glfw3.h>
 #include <future>
 
@@ -141,7 +142,7 @@ namespace SJ
 	#pragma endregion
 
 	#pragma region song data processing
-		if(g_filesChanged)
+		if(g_filesChanged || std::filesystem::file_size(L"../ShuiJamGame/shuijam.db") <= 1024)
 		{
 			m_fileProcessor->ProcessFiles();
 			m_fileProcessor->reloadSongs();
@@ -331,6 +332,12 @@ namespace SJ
 			m_fileProcessor->reloadSongs();
 			m_lastSong = m_fileProcessor->getLastID();
 			updateSongWheel();
+		}
+		//Extract files
+		if(action == GLFW_PRESS && key == GLFW_KEY_F6)
+		{
+			playRefresh();
+			auto extract = std::async(std::launch::async, SJ::FileExtractor::extractFiles);
 		}
 		//An alternative way to scroll up or down the song wheel
 		if((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_UP && m_scrollDirection == 0 && m_canScrollDown)
