@@ -30,7 +30,7 @@ void main()
 	audioDevice->setGain(g_volume);
 
 	//Extract any files in the input folder
-	auto isExtracted = std::async(std::launch::async, SJ::FileExtractor::extractFiles);
+	std::async(std::launch::async, SJ::FileExtractor::extractFiles);
 	//m.Play();
 
 	//Set the input callbacks to the main menu
@@ -99,6 +99,5 @@ void main()
 		gameWindow.Swap();
 	}
 
-	isExtracted.wait();
 	gameWindow.Shutdown();
 }
