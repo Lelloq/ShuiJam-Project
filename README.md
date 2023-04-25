@@ -6,7 +6,7 @@ ZXC Space ,./
 You can change the game to use fullscreen or change the resolution in the JSON file
 but only after you launched the game for the first time.
 
-Make sure to put .osz files into the input folder before launching to ensure that there are songs
+Make sure to put .osz files into the **input** folder before launching to ensure that there are songs
 in the Songs folder. You can press F6 in the song select to re-extract files that are in the input folder 
 and press F5 to refresh the song list.
 
