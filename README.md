@@ -1,3 +1,5 @@
+#I plan to rewrite this at some point
+
 Default keybinds for the seven keys are:
 ZXC Space ,./
 
